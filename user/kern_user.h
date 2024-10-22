@@ -24,7 +24,7 @@
 
 #include <sys/types.h>
 
-#include "API.h"
+#include "api.h"
 
 extern mach_port_t connection;
 

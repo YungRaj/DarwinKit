@@ -105,8 +105,8 @@ NSString *get_ip_address() {
 
   struct in_addr inaddr;
 
-  ifaddrs = NULL;
-  ip_address = NULL;
+  ifaddrs = nullptr;
+  ip_address = nullptr;
 
   if (!getifaddrs(&ifaddrs)) {
     for (ifaddr = ifaddrs; ifaddr; ifaddr = ifaddr->ifa_next) {

@@ -1,4 +1,4 @@
-BUILD = build
+BUILD = target
 OBJ = obj
 
 SDK = macosx

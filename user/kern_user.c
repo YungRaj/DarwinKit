@@ -21,7 +21,7 @@
 #include <string.h>
 #include <mach/mach.h>
 
-const char *service_name = "IOKernelRootKitService";
+const char *service_name = "IOKernelDarwinKitService";
 
 mach_port_t connection = MACH_PORT_NULL;
 
@@ -79,7 +79,7 @@ mach_port_t _task_for_pid(int pid)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitTaskForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitTaskForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -98,7 +98,7 @@ mach_vm_address_t get_kernel_symbol(char *symname)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetKernelSymbol, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetKernelSymbol, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -117,7 +117,7 @@ off_t get_kernel_slide()
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetKaslrSlide, input, 0, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetKaslrSlide, input, 0, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -136,7 +136,7 @@ mach_vm_address_t get_kernel_base()
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetKernelBase, input, 0, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetKernelBase, input, 0, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -173,7 +173,7 @@ bool kernel_hook(mach_vm_address_t address, mach_vm_address_t hook, size_t hook_
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitHookKernelFunction, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitHookKernelFunction, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -210,7 +210,7 @@ bool kernel_set_breakpoint(mach_vm_address_t address, mach_vm_address_t breakpoi
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitAddBreakpoint, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitAddBreakpoint, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -249,7 +249,7 @@ uint64_t kernel_call(mach_vm_address_t symaddr, uint64_t *arguments, size_t argc
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelCall, arguments, argcount, 0, 0,  output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelCall, arguments, argcount, 0, 0,  output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -268,7 +268,7 @@ bool kernel_read(mach_vm_address_t address, void *data, size_t size)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelRead, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelRead, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -335,7 +335,7 @@ bool kernel_write(mach_vm_address_t address, const void *data, size_t size)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelWrite, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelWrite, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -374,7 +374,7 @@ mach_vm_address_t kernel_vm_allocate(size_t size)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmAllocate, input, 1, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmAllocate, input, 1, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -393,7 +393,7 @@ void kernel_vm_deallocate(mach_vm_address_t address, size_t size)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmDeallocate, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmDeallocate, input, 2, 0, 0, output, &outputCnt, 0, 0);
 }
 
 bool kernel_vm_protect(mach_vm_address_t address, size_t size, vm_prot_t prot)
@@ -405,7 +405,7 @@ bool kernel_vm_protect(mach_vm_address_t address, size_t size, vm_prot_t prot)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmProtect, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmProtect, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -428,7 +428,7 @@ void* kernel_vm_remap(mach_vm_address_t address, size_t size)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmProtect, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmProtect, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -449,7 +449,7 @@ uint64_t kernel_virtual_to_physical(mach_vm_address_t vaddr)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmProtect, input, 1, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmProtect, input, 1, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -468,7 +468,7 @@ bool phys_read(uint64_t paddr, void *data, size_t size)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitPhysicalRead, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitPhysicalRead, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -535,7 +535,7 @@ bool phys_write(uint64_t paddr, const void *data, size_t size)
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitPhysicalWrite, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitPhysicalWrite, input, 3, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -581,7 +581,7 @@ uint64_t task_call(mach_port_t task_port, mach_vm_address_t symaddr, uint64_t *a
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitMachVmCall, arguments, argcount, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitMachVmCall, arguments, argcount, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -600,7 +600,7 @@ mach_vm_address_t get_task_for_pid(int pid)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetTaskForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetTaskForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -619,7 +619,7 @@ mach_vm_address_t get_proc_for_pid(int pid)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetProcForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetProcForPid, input, 1, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -638,7 +638,7 @@ mach_vm_address_t get_task_by_name(char *name)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetTaskByName, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetTaskByName, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -657,7 +657,7 @@ mach_vm_address_t get_proc_by_name(char *name)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitGetProcByName, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitGetProcByName, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -676,7 +676,7 @@ bool task_vm_read(mach_port_t task, mach_vm_address_t address, void *data, size_
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitMachVmRead, input, 4, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitMachVmRead, input, 4, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -695,7 +695,7 @@ bool task_vm_write(mach_port_t task, mach_vm_address_t address, const void *data
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitMachVmWrite, input, 4, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitMachVmWrite, input, 4, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -714,7 +714,7 @@ mach_vm_address_t task_vm_allocate(mach_port_t task, size_t size)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitMachVmAllocate, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitMachVmAllocate, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -733,7 +733,7 @@ void task_vm_deallocate(mach_port_t task, mach_vm_address_t address, size_t size
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitMachVmDeallocate, input, 3, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitMachVmDeallocate, input, 3, 0, 0, output, &outputCnt, 0, 0);
 }
 
 bool task_vm_protect(mach_port_t task, mach_vm_address_t address, size_t size, vm_prot_t prot)
@@ -745,7 +745,7 @@ bool task_vm_protect(mach_port_t task, mach_vm_address_t address, size_t size, v
 
 	uint32_t outputCnt = 0;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmProtect, input, 4, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmProtect, input, 4, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
@@ -764,7 +764,7 @@ uint64_t virtual_to_physical(mach_port_t task, mach_vm_address_t vaddr)
 
 	uint32_t outputCnt = 1;
 
-	kr = IOConnectCallMethod(connection, kIOKernelRootKitKernelVmProtect, input, 2, 0, 0, output, &outputCnt, 0, 0);
+	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitKernelVmProtect, input, 2, 0, 0, output, &outputCnt, 0, 0);
 
 	if(kr != KERN_SUCCESS)
 	{
