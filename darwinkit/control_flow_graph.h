@@ -23,6 +23,7 @@
 #include "macho.h"
 #include "symbol.h"
 #include "basic_block.h"
+#include "disassembler.h"
 
 namespace darwinkit {
 namespace ir {
@@ -60,6 +61,8 @@ public:
 
 private:
     UInt64 pc;
+
+    Disassembler *disassembler;
 
     T *binary;
 

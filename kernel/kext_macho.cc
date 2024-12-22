@@ -62,7 +62,8 @@ KextMachO::KextMachO(Kernel* kernel, char* name, xnu::KmodInfo* kmod_info)
     InitWithBase(kmod_info->address, 0);
 }
 
-void KextMachO::ParseLinkedit() {}
+void KextMachO::ParseLinkedit() {
+}
 
 void KextMachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms, char* strtab,
                                  Size strsize) {

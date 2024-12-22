@@ -2,7 +2,7 @@
 DarwinKit is a tool for macOS that tears apart most of the security features that normally would
 protect your machine.
 
-This project is also designed to be a great example of using [Google's build system](https://github.com/bazelbuild/bazel) in bazel, Testing Infrastructure via [googletest](https://github.com/google/googletest), and Fuzzing Infrastructure via [googlefuzztest](https://github.com/google/fuzztest) to showcase the best workflows for Software Engineering, Testing and Vulnerability Research in the world. It is intended to be a marriage of the best of both the Apple and Google ecosystem.
+This project is also designed to be a great example of using [Google's build system](https://github.com/bazelbuild/bazel) in bazel, Google's Testing and Fuzzing Infrastructure via [googletest](https://github.com/google/googletest) and [googlefuzztest](https://github.com/google/fuzztest), and additional fuzzing infra in [LibAFL](https://github.com/AFLplusplus/LibAFL). It is intended to be a marriage of the best of both the Apple and Google ecosystem.
 
 DarwinKit is your Swiss Army knife for macOS. It assists with reverse engineering, static and dynamic analysis as well as fuzzing production code in the macOS kernel and userspace. It works on both
 x86_64 and arm64 machines.
@@ -10,7 +10,7 @@ x86_64 and arm64 machines.
 Fuzzers for macOS are in progress, but aren't complete.
 
 ## Getting Started
-### Instal bazel
+### Install bazel
 ```
 https://bazel.build/install/os-x
 ```

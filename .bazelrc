@@ -33,14 +33,22 @@ build --define absl=1
 
 build:macos --macos_minimum_os=10.15
 
-build:asan              --strip=never
-build:asan              --copt="-Wno-macro-redefined"
-build:asan              --copt="-D_FORTIFY_SOURCE=0"
-build:asan              --copt="-O1"
-build:asan              --copt="-fno-omit-frame-pointer"
-build:asan              --copt="-fsanitize=address"
-build:asan              --copt="-DADDRESS_SANITIZER"
-build:asan              --linkopt="-fsanitize=address"
+build:asan --strip=never
+build:asan --copt="-Wno-macro-redefined"
+build:asan --copt="-D_FORTIFY_SOURCE=0"
+build:asan --copt="-O1"
+build:asan --copt="-fno-omit-frame-pointer"
+build:asan --copt="-fsanitize=address"
+build:asan --copt=-fsanitize=fuzzer
+build:asan --copt=-fsanitize-coverage=trace-pc-guard
+build:asan --copt="-DADDRESS_SANITIZER"
+build:asan --copt=-D_LIBCPP_HAS_NO_ASAN
+build:asan --copt=-g
+build:asan --copt=-fno-optimize-sibling-calls
+build:asan --copt=-fsanitize=address
+build:asan --linkopt="-fsanitize=address"
+
+coverage --action_env=GCOV_PREFIX_STRIP=10
 
 # To create this file, please run:
 #

@@ -16,6 +16,7 @@ config_setting(
 cc_library(
     name = "darwinkit_test",
     hdrs = glob(["darwinkit/*.h"]),
+    copts = ["-fsanitize=address"],
     includes = [
         "darwinkit",
     ],

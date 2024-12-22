@@ -4,3 +4,7 @@
 [submodule "panda"]
 	path = panda
 	url = https://github.com/panda-re/panda
+[submodule "LibAFL"]
+	path = LibAFL
+	url = https://github.com/AFLplusplus/LibAFL
+	update = rebase

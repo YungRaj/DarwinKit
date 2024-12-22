@@ -82,8 +82,6 @@ using HookArray = std::vector<T>;
 
 namespace darwin {
 
-void InstrumentTrampoline();
-
 class Hook {
 public:
     explicit Hook(darwin::Patcher* patcher, enum HookType hooktype);
