@@ -61,6 +61,8 @@ char* GetBuildVersionFromOSVersion(char *osversion);
 
 namespace xnu {
 
+static constexpr xnu::mach::VmAddress kernel_pointer = 0xfffffe0000000000;
+
 char* GetKernelVersion() {
     char* kernel_build_version = new char[256];
     strlcpy(kernel_build_version, version, 256);
@@ -166,7 +168,7 @@ xnu::mach::VmAddress Kernel::FindKernelCache() {
     if (kernel_cache)
         return kernel_cache;
 
-    xnu::mach::VmAddress near = 0xfffffe0000000000 | reinterpret_cast<xnu::mach::VmAddress>(IOLog);
+    xnu::mach::VmAddress near = kernel_pointer | reinterpret_cast<xnu::mach::VmAddress>(IOLog);
 
     Size kaslr_align = 0x4000;
 
@@ -235,7 +237,6 @@ xnu::mach::VmAddress Kernel::FindKernelBase() {
     xnu::mach::VmAddress kc;
 
 #ifdef __arm64__
-
     kc = Kernel::FindKernelCache();
 
     if (!kc)
@@ -256,7 +257,7 @@ xnu::mach::VmAddress Kernel::FindKernelBase() {
                 reinterpret_cast<char*>(fileset_entry_command) + fileset_entry_command->entry_id;
 
             if (strcmp(entry_id, "com.apple.kernel") == 0) {
-                kernel_base = 0xfffffe0000000000 | fileset_entry_command->vmaddr;
+                kernel_base = kernel_pointer | fileset_entry_command->vmaddr;
 
                 return kernel_base;
             }
@@ -300,6 +301,8 @@ xnu::mach::VmAddress Kernel::FindKernelBase() {
 }
 
 Offset Kernel::FindKernelSlide() {
+    static constexpr xnu::mach::VmAddress unslid_base = 0xfffffe0007004000;
+
     xnu::mach::VmAddress base;
 
     xnu::mach::VmAddress text_base;
@@ -309,18 +312,20 @@ Offset Kernel::FindKernelSlide() {
     base = Kernel::FindKernelBase();
 
 #ifdef __arm64__
-
-    if ((base - 0xfffffe0007004000) > 0xFFFFFFFF)
+    if ((base - unslid_base) > 0xFFFFFFFF) {
         panic("kernel base minus unslid base is overflown!");
+    }
 
-    return (Offset)(base - 0xfffffe0007004000);
+    return (Offset)(base - unslid_base);
 
 #endif
 
 #ifdef __x86_64__
+    static constexpr xnu::mach::VmAddress unslid_kernel_collection = 0xffffff8000200000;
 
-    if ((base - 0xffffff8000200000) > 0xFFFFFFFF)
+    if ((base - unslid_kernel_collection) > 0xFFFFFFFF) {
         panic("kernel base minus unslid base is overflown!");
+    }
 
     mh = reinterpret_cast<struct mach_header_64*>(base);
 
@@ -335,7 +340,6 @@ Offset Kernel::FindKernelSlide() {
 
             if (strncmp(segment_command->segname, "__TEXT", strlen("__TEXT")) == 0) {
                 text_base = segment_command->vmaddr;
-
                 break;
             }
         }
@@ -343,7 +347,7 @@ Offset Kernel::FindKernelSlide() {
         q += load_command->cmdsize;
     }
 
-    return text_base - 0xfffffe0007004000;
+    return text_base - unslid_base;
 
 #endif
 }
