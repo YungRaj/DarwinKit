@@ -22,7 +22,7 @@ extern "C" {
 
 #include <IOKit/IOService.h>
 
-#include <Types.h>
+#include <types.h>
 
 #include "api.h"
 #include "api_util.h"

@@ -22,7 +22,7 @@
 #include <mach/mach_types.h>
 #include <mach/vm_types.h>
 
-#include <Types.h>
+#include <types.h>
 
 #include "api_util.h"
 
