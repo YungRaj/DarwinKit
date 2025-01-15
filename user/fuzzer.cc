@@ -438,7 +438,8 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
                 reinterpret_cast<struct unixthread_command*>(load_command);
 
             DARWIN_KIT_LOG("MacRK::LC_UNIXTHREAD\n");
-
+        
+        #ifdef __arm64__
             if (thread_command->flavor == ARM_THREAD_STATE64) {
                 struct arm_thread_state64 {
                     __uint64_t x[29]; /* General purpose registers x0-x28 */
@@ -456,6 +457,7 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
 
                 *entryPoint = state->pc;
             }
+        #endif
         }
 
         q += load_command->cmdsize;
@@ -559,11 +561,11 @@ void Harness::StartKernel() {
 
     GetEntryPointFromKC((xnu::mach::VmAddress)fuzzBinary->base, &entryPoint);
 
-    printf("start = 0x%llx\n", entryPoint);
-
+#ifdef __arm64__
     hypervisor = new darwin::vm::Hypervisor(
         this, (xnu::mach::VmAddress)fuzzBinary->originalBase,
         (xnu::mach::VmAddress)fuzzBinary->base, fuzzBinary->size, entryPoint);
+#endif
 }
 
 void Harness::CallFunctionInKernel(const char* funcname) {

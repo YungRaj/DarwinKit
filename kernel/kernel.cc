@@ -825,7 +825,7 @@ xnu::mach::VmAddress Kernel::VmAllocate(Size size, UInt32 flags, xnu::mach::VmPr
 
     address = 0x1000;
 
-    map = read64(GetSymbolAddressByName("_g_kext_map"));
+    map = Read64(GetSymbolAddressByName("_g_kext_map"));
 
     UInt64 vmEnterArgs[13] = {map,
                               (UInt64)&address,

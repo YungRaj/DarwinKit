@@ -4,12 +4,21 @@ load("@build_bazel_rules_apple//apple:macos.bzl", "macos_dynamic_framework")
 load("@build_bazel_rules_apple//apple:ios.bzl", "ios_static_framework")
 
 config_setting(
-    name = "arm64_cpu",
-    values = {"macos_cpus": "arm64"},
+    name = "arm64",
+    values = {
+        "macos_cpus": "arm64",
+    },
 )
 
 config_setting(
-    name = "x86_64_cpu",
+    name = "arm64e",
+    values = {
+        "macos_cpus": "arm64e",
+    },
+)
+
+config_setting(
+    name = "x86_64",
     values = {"macos_cpus": "x86_64"},
 )
 
@@ -158,7 +167,16 @@ cc_library(
     deps = [":DarwinKit_user_iokit",],
     srcs = glob(["user/*.cc"]) + 
            glob(["darwinkit/*.cc"]) +
-           glob(["arm64/*.s"]) +
+           select({
+            ":arm64": glob([
+                "arm64/*.s"
+            ]),
+            ":arm64e": glob([
+                "arm64/*.s"
+            ]),
+            ":x86_64": glob([
+                # "x86_64/*.s"
+            ])}) +
            glob(["arm64/*.cc"]) +
            glob(["x86_64/*.cc"]),
     hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]) + glob(["arm64/*.h"]) + glob(["x86_64/*.h"]) + glob(["capstone/include/capstone/*.h"]),
@@ -262,7 +280,19 @@ cc_library(
     ],
     srcs = glob(["kernel/*.cc"]) + 
            glob(["darwinkit/*.cc"]) +
-           glob(["arm64/*.s"]) +
+           select({
+            ":arm64": glob([
+                "arm64/*.s"
+            ]),
+            ":arm64e": glob([
+                "arm64/*.s"
+            ]),
+            ":x86_64": glob([
+                # "x86_64/*.s"
+            ]),
+            "//conditions:default": glob([
+                "arm64/*.s"
+            ])}) +
            glob(["arm64/*.cc"]) +
            glob(["x86_64/*.cc"]),
     hdrs = glob(["kernel/*.h"]) + glob(["darwinkit/*.h"]) + glob(["arm64/*.h"]) + glob(["x86_64/*.h"]) + glob(["capstone/include/capstone/*.h"]),

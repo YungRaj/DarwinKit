@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef __arm64__
+
 #include "hypervisor.h"
 
 #include "kernel_macho.h"
@@ -1019,3 +1021,5 @@ void Hypervisor::Destroy() {
 
 }
 }
+
+#endif

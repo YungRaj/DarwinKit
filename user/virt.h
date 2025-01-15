@@ -1,3 +1,4 @@
+#ifdef __arm64__
 #ifndef __VIRT_H_
 #define __VIRT_H_
 
@@ -1395,4 +1396,5 @@ static inline void vfp_set_fpcr(CPUARMState *env, uint32_t val)
 #define PSTATE_MODE_EL1t 4
 #define PSTATE_MODE_EL0t 0
 
+#endif
 #endif

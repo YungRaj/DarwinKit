@@ -26,7 +26,7 @@
 #ifdef __arm64__
 #include <arm64/isa_arm64.h>
 #include <arm64/patch_finder_arm64.h>
-#elif
+#elif __x86_64__
 #include <x86_64/isa_x86_64.h>
 #include <x86_64/patch_finder_x86_64.h>
 #endif
@@ -210,16 +210,15 @@ UInt64 SwiftABI::GetTypeMetadata(struct TypeDescriptor* typeDescriptor) {
     return typeMetadata;
 
 #elif __x86_64__
-
     using namespace arch::x86_64;
 
     cs_insn insn;
 
-    UInt64 mov = arch::x86_64::patchfinder::Step64(macho, accessFunction, add, 0x100, "mov", nullptr);
+    UInt64 mov = arch::x86_64::patchfinder::Step64(macho, accessFunction, 0x100, "mov", nullptr);
 
-    arch::x86_64::disassemble(mov, arch::x86_64::MaxInstruction, &insn);
+    // arch::x86_64::Disassemble(mov, arch::x86_64::MaxInstruction, &insn);
 
-    typeMetadata = insn.detail.x86->operands[1].mem.disp + mov;
+    // typeMetadata = insn.detail.x86->operands[1].mem.disp + mov;
 
     return typeMetadata;
 

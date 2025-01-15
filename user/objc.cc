@@ -711,10 +711,10 @@ Method::Method(ObjC* object, struct _objc_2_method* method) {
 #include <arm64/isa_arm64.h>
 #include <arm64/patch_finder_arm64.h>
 
-#elif
+#elif __x86_64__
 
 #include <x86_64/isa_x86_64.h>
-#include <x86_64/patch_Finder_x86_64.h>
+#include <x86_64/patch_finder_x86_64.h>
 
 #endif
 
@@ -778,9 +778,9 @@ UInt64 FindSelectorsBase(darwin::MachOUserspace* macho) {
 
     UInt64 mov = arch::x86_64::patchfinder::StepBack64(libobjc, add, 0x100, "mov", nullptr);
 
-    arch::x86_64::disassemble(mov, arch::x86_64::MaxInstruction, &insn);
+    // arch::x86_64::Disassemble(mov, arch::x86_64::MaxInstruction, &insn);
 
-    UInt64 selectors = insn.detail.x86->operands[1].mem.disp + mov;
+    // UInt64 selectors = insn.detail.x86->operands[1].mem.disp + mov;
 
     return selectors;
 

@@ -296,6 +296,7 @@ bool KernelMachO::ParseLoadCommands() {
             struct unixthread_command* thread_command =
                 reinterpret_cast<struct unixthread_command*>(load_command);
 
+        #ifdef __arm64__
             if (thread_command->flavor == ARM_THREAD_STATE64) {
                 typedef struct arm64_thread_state {
                     __uint64_t x[29]; /* General purpose registers x0-x28 */
@@ -314,6 +315,7 @@ bool KernelMachO::ParseLoadCommands() {
                 DARWIN_KIT_LOG("DarwinKit::LC_UNIXTHREAD\n");
                 DARWIN_KIT_LOG("DarwinKit::\tEntry Point = 0x%llx\n", state->pc);
             }
+        #endif
 
             break;
         }
@@ -578,6 +580,7 @@ bool KernelCacheMachO::ParseLoadCommands() {
 
             DARWIN_KIT_LOG("DarwinKit::LC_UNIXTHREAD\n");
 
+        #ifdef __arm64__
             if (thread_command->flavor == ARM_THREAD_STATE64) {
                 struct arm_thread_state64 {
                     __uint64_t x[29]; /* General purpose registers x0-x28 */
@@ -593,6 +596,7 @@ bool KernelCacheMachO::ParseLoadCommands() {
 
                 DARWIN_KIT_LOG("DarwinKit::\tstate->pc = 0x%llx\n", state->pc);
             }
+        #endif
 
             break;
         }

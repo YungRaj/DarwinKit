@@ -16,6 +16,8 @@
 
 #pragma once
 
+#ifdef __arm64__
+
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -186,3 +188,5 @@ private:
 
 } // namespace vm
 } // namespace darwin
+
+#endif
