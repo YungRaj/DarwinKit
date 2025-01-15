@@ -18,9 +18,7 @@
 
 #include "kernel.h"
 #include "patcher.h"
-
 #include "arch.h"
-
 #include "vector.h"
 
 #include <types.h>

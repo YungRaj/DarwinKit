@@ -146,9 +146,7 @@ private:
     std::vector<darwin::Plugin*> plugins;
 
     StoredArray<EntitlementCallback> entitlementCallbacks;
-
     StoredArray<BinaryLoadCallback> binaryLoadCallbacks;
-
     StoredArray<KextLoadCallback> kextLoadCallbacks;
 };
 } // namespace darwin

@@ -1,6 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-FUZZTEST_COMMIT = "8d81145f5569231084de1a2484b89d10d6118c6b"
+FUZZTEST_COMMIT = "b86e98ff1149313e43333d1017c3a87baa6721c5"
 
 http_archive(
     name = "com_google_fuzztest",
