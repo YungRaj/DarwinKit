@@ -331,6 +331,205 @@ void MachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms, char* st
 void MachO::ParseLinkedit() {}
 
 bool MachO::ParseLoadCommands() {
+    struct mach_header_64* mh = GetMachHeader();
+
+    Size file_size;
+
+    size = GetSize();
+
+    file_size = size;
+
+    UInt8* q = (UInt8*)mh + sizeof(struct mach_header_64);
+
+    UInt32 current_offset = sizeof(struct mach_header_64);
+
+    for (UInt32 i = 0; i < mh->ncmds; i++) {
+        struct load_command* load_cmd = (struct load_command*)(*this)[current_offset];
+
+        UInt32 cmdtype = load_cmd->cmd;
+        UInt32 cmdsize = load_cmd->cmdsize;
+
+        if (cmdsize > mh->sizeofcmds - ((UIntPtr)load_cmd - (UIntPtr)(mh + 1)))
+            return false;
+
+        switch (cmdtype) {
+            case LC_LOAD_DYLIB: {
+                ;
+                struct dylib_command* dylib_command = (struct dylib_command*)load_cmd;
+                struct dylib dylib = dylib_command->dylib;
+
+                break;
+            }
+
+            case LC_SEGMENT_64: {
+                ;
+                struct segment_command_64* segment_command = (struct segment_command_64*)load_cmd;
+
+                UInt32 nsects = segment_command->nsects;
+                UInt32 sect_offset = current_offset + sizeof(struct segment_command_64);
+
+                if (segment_command->fileoff > size ||
+                    segment_command->filesize > size - segment_command->fileoff)
+                    return false;
+
+                int j = 0;
+
+                if (nsects * sizeof(struct section_64) + sizeof(struct segment_command_64) > cmdsize)
+                    return false;
+
+                Segment* segment = new Segment(segment_command);
+
+                for (j = 0; j < nsects; j++) {
+                    struct section_64* section = (struct section_64*)(*this)[sect_offset];
+
+                    if (section->offset > size || section->size > size - section->offset) {
+                        return false;
+                    }
+
+                    sect_offset += sizeof(struct section_64);
+                }
+
+                segments.push_back(segment);
+
+                break;
+            }
+
+            case LC_SYMTAB: {
+                ;
+                struct symtab_command* symtab_command = (struct symtab_command*)load_cmd;
+
+                if (symtab_command->stroff > size || symtab_command->symoff > size ||
+                    symtab_command->nsyms >
+                        (size - symtab_command->symoff) / sizeof(struct nlist_64))
+                    return false;
+
+                struct nlist_64* symtab = (struct nlist_64*)(*this)[symtab_command->symoff];
+                UInt32 nsyms = symtab_command->nsyms;
+
+                char* strtab = (char*)(*this)[symtab_command->stroff];
+                UInt32 strsize = symtab_command->strsize;
+
+                if (nsyms > 0)
+                    ParseSymbolTable(symtab, nsyms, strtab, strsize);
+
+                break;
+            }
+
+            case LC_DYSYMTAB: {
+                ;
+                struct dysymtab_command* dysymtab_command = (struct dysymtab_command*)load_cmd;
+
+                if (dysymtab_command->extreloff > size ||
+                    dysymtab_command->nextrel >
+                        (size - dysymtab_command->extreloff) / sizeof(struct relocation_info))
+                    return false;
+
+                break;
+            }
+
+            case LC_UUID: {
+                ;
+                struct uuid_command* uuid_command = (struct uuid_command*)load_cmd;
+
+                if (uuid_command->cmdsize != sizeof(struct uuid_command))
+                    return false;
+
+                break;
+            }
+
+            case LC_FUNCTION_STARTS: {
+                ;
+                struct linkedit_data_command* linkedit = (struct linkedit_data_command*)load_cmd;
+
+                UInt32 dataoff = linkedit->dataoff;
+                UInt32 datasize = linkedit->datasize;
+
+                break;
+            }
+
+            case LC_MAIN: {
+                ;
+                struct entry_point_command* ep = (struct entry_point_command*)load_cmd;
+
+                entry_point = base + ep->entryoff;
+
+                break;
+            }
+
+            case LC_UNIXTHREAD: {
+                ;
+                struct unixthread_command* thread_command = (struct unixthread_command*)load_cmd;
+
+                break;
+            }
+
+            case LC_DYLD_INFO: {
+                ;
+                struct dyld_info_command* dyld_info_command = (struct dyld_info_command*)load_cmd;
+
+                UInt32 rebase_off = dyld_info_command->rebase_off;
+                UInt32 rebase_size = dyld_info_command->rebase_size;
+
+                UInt32 bind_off = dyld_info_command->bind_off;
+                UInt32 bind_size = dyld_info_command->bind_size;
+
+                UInt32 weak_bind_off = dyld_info_command->weak_bind_off;
+                UInt32 weak_bind_size = dyld_info_command->weak_bind_size;
+
+                UInt32 lazy_bind_off = dyld_info_command->lazy_bind_off;
+                UInt32 lazy_bind_size = dyld_info_command->lazy_bind_size;
+
+                UInt32 export_off = dyld_info_command->export_off;
+                UInt32 export_size = dyld_info_command->export_size;
+
+                break;
+            }
+
+            case LC_DYLD_INFO_ONLY: {
+                ;
+                struct dyld_info_command* dyld_info_command = (struct dyld_info_command*)load_cmd;
+
+                UInt32 rebase_off = dyld_info_command->rebase_off;
+                UInt32 rebase_size = dyld_info_command->rebase_size;
+
+                UInt32 bind_off = dyld_info_command->bind_off;
+                UInt32 bind_size = dyld_info_command->bind_size;
+
+                UInt32 weak_bind_off = dyld_info_command->weak_bind_off;
+                UInt32 weak_bind_size = dyld_info_command->weak_bind_size;
+
+                UInt32 lazy_bind_off = dyld_info_command->lazy_bind_off;
+                UInt32 lazy_bind_size = dyld_info_command->lazy_bind_size;
+
+                UInt32 export_off = dyld_info_command->export_off;
+                UInt32 export_size = dyld_info_command->export_size;
+
+                break;
+            }
+
+            case LC_CODE_SIGNATURE: {
+                struct linkedit_data_command* linkedit = (struct linkedit_data_command*)load_cmd;
+
+                UInt32 dataoff = linkedit->dataoff;
+                UInt32 datasize = linkedit->datasize;
+
+                break;
+            }
+
+            case LC_DATA_IN_CODE: {
+                ;
+                struct linkedit_data_command* linkedit = (struct linkedit_data_command*)load_cmd;
+
+                UInt32 dataoff = linkedit->dataoff;
+                UInt32 datasize = linkedit->datasize;
+
+                break;
+            }
+        }
+
+        current_offset += cmdsize;
+    }
+
     return true;
 }
 
@@ -352,7 +551,6 @@ void MachO::ParseFatHeader() {
         cpusubtype = OSSwapBigToHostInt32(arch->cpusubtype);
 
         offset = OSSwapBigToHostInt32(arch->offset);
-
 #ifdef __x86_64__
 #define NATIVE_CPU_TYPE CPU_TYPE_X86_64
 #endif
@@ -376,16 +574,18 @@ void MachO::ParseFatHeader() {
 void MachO::ParseHeader() {
     xnu::macho::Header64* mh = GetMachHeader();
 
-    UInt32 magic = mh->magic;
+    if(mh != nullptr) {
+        UInt32 magic = mh->magic;
 
-    if (magic == FAT_CIGAM) {
+        if (magic == FAT_CIGAM) {
 
-    } else if (magic == MH_MAGIC_64) {
-        GetAslrSlide();
+        } else if (magic == MH_MAGIC_64) {
+            GetAslrSlide();
 
-        size = GetSize();
+            size = GetSize();
 
-        ParseLoadCommands();
+            ParseLoadCommands();
+        }
     }
 }
 

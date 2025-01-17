@@ -33,6 +33,7 @@ cc_library(
 
 cc_test(
     name = "macho_test",
+    data = glob(["tests/testdata/*"]),
     srcs = [
         "tests/macho_test.cc",
         "darwinkit/macho.cc",
