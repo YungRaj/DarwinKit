@@ -1,6 +1,0 @@
-module DarwinPrivate.kern [system] {
-  module cs_blobs {
-    header "kern/cs_blobs.h"
-    export *
-  }
-}

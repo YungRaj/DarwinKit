@@ -1,6 +1,0 @@
-module firehose [system] {
-  umbrella header "private.h"
-
-  export *
-  module * { export * }
-}

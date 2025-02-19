@@ -265,8 +265,6 @@ struct uuid_command {
     uint8_t uuid[16];
 };
 
-#ifdef __USER__
-
 struct dylib {
     char* name;
     uint32_t timestamp;
@@ -385,8 +383,6 @@ struct dyld_chained_import {
 };
 
 enum dyld_image_mode { dyld_image_adding = 0, dyld_image_removing = 1 };
-
-#endif
 
 struct dyld_image_info {
     const struct mach_header* imageLoadAddress;
