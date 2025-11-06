@@ -47,7 +47,6 @@ cc_test(
         "-I./capstone/include",
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
-        "-fsanitize=address"
     ],
     deps = [
         ":darwinkit_test",
