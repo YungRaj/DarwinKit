@@ -1,7 +1,7 @@
-load("@build_bazel_rules_apple//apple:macos.bzl", "macos_kernel_extension")
-load("@build_bazel_rules_apple//apple:macos.bzl", "macos_command_line_application")
-load("@build_bazel_rules_apple//apple:macos.bzl", "macos_dynamic_framework")
-load("@build_bazel_rules_apple//apple:ios.bzl", "ios_static_framework")
+load("@rules_apple//apple:macos.bzl", "macos_kernel_extension")
+load("@rules_apple//apple:macos.bzl", "macos_command_line_application")
+load("@rules_apple//apple:macos.bzl", "macos_dynamic_framework")
+load("@rules_apple//apple:ios.bzl", "ios_static_framework")
 
 config_setting(
     name = "arm64",
@@ -51,9 +51,9 @@ cc_test(
     ],
     deps = [
         ":darwinkit_test",
-        "@com_google_googletest//:gtest",
-        "@com_google_fuzztest//fuzztest",
-        "@com_google_fuzztest//fuzztest:fuzztest_gtest_main",
+        "@googletest//:gtest",
+        "@fuzztest//fuzztest",
+        "@fuzztest//fuzztest:fuzztest_gtest_main",
     ],
 )
 
@@ -171,13 +171,13 @@ cc_library(
            select({
             ":arm64": glob([
                 "arm64/*.s"
-            ]),
+            ], allow_empty = True),
             ":arm64e": glob([
                 "arm64/*.s"
-            ]),
+            ], allow_empty = True),
             ":x86_64": glob([
                 # "x86_64/*.s"
-            ])}) +
+            ], allow_empty = True)}) +
            glob(["arm64/*.cc"]) +
            glob(["x86_64/*.cc"]),
     hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]) + glob(["arm64/*.h"]) + glob(["x86_64/*.h"]) + glob(["capstone/include/capstone/*.h"]),
@@ -284,13 +284,13 @@ cc_library(
            select({
             ":arm64": glob([
                 "arm64/*.s"
-            ]),
+            ], allow_empty = True),
             ":arm64e": glob([
                 "arm64/*.s"
-            ]),
+            ], allow_empty = True),
             ":x86_64": glob([
                 # "x86_64/*.s"
-            ]),
+            ], allow_empty = True),
             "//conditions:default": glob([
                 "arm64/*.s"
             ])}) +

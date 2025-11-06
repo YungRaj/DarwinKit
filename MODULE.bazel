@@ -1,10 +1,51 @@
 ###############################################################################
-# Bazel now uses Bzlmod by default to manage external dependencies.
-# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
-#
-# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
+# Declare the main module at the top of the file
 ###############################################################################
 
-# Choose the most recent version available at
-# https://registry.bazel.build/modules/googletest
-bazel_dep(name = "googletest", version = "1.15.2")
+# The `module` function must be the first one declared, and only called once.
+module(
+    name = "darwinkit",  # Use your project name here
+    version = "1.0",   # Add your version if applicable
+)
+
+###############################################################################
+# External Dependencies using bazel_dep
+###############################################################################
+
+# Direct dependencies
+bazel_dep(name = "rules_swift", version = "2.4.0")
+bazel_dep(name = "rules_apple", version = "4.0.0")
+
+###############################################################################
+# Dependencies that were previously http_archive'd
+###############################################################################
+
+bazel_dep(name = "fuzztest", version = "20250805.0")
+
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2")
+
+################################################################################
+# Transitive dependencies
+################################################################################
+
+# Convert external dependencies using bazel_dep and ensure you use registered versions
+bazel_dep(name = "re2", version = "2025-11-05")
+
+bazel_dep(name = "abseil-cpp", version = "20250814.1")
+
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+
+bazel_dep(name = "riegeli", version = "0.0.0-20250822-9f2744d")
+
+bazel_dep(name = "brotli", version = "1.1.0")
+
+bazel_dep(name = "snappy", version = "1.2.2")
+
+bazel_dep(name = "highwayhash", version = "0.0.0-20240305-5ad3bf8")
+
+bazel_dep(name = "zstd", version = "1.5.7")
+
+
+###############################################################################
+# End of MODULE.bazel
+###############################################################################

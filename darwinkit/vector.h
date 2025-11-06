@@ -136,7 +136,7 @@ public:
     }
 
     T operator[](int index) {
-        return this->get(index);
+        return this->at(index);
     }
 
     T at(int index) {
