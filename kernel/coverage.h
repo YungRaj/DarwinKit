@@ -18,19 +18,13 @@
 
 #include <stdint.h>
 
-#ifdef __KERNEL__
+#ifdef __cplusplus
 extern "C" {
-    void sanitizer_cov_trace_pc(uint16_t kext, uintptr_t address);
-    void sanitizer_cov_trace_lr(uint16_t kext);
-}
 #endif
 
-namespace debug {
+void sanitizer_cov_trace_pc(uint16_t kext, uintptr_t address);
+void sanitizer_cov_trace_lr(uint16_t kext);
 
-class Coverage {
-public:
-
-private:
-};
-
+#ifdef __cplusplus
 }
+#endif
