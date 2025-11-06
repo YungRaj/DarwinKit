@@ -4,6 +4,8 @@
 #define xstr(s) str(s)
 #define REPEAT_COUNT_THUNK 120000
 
+extern "C" {
+
 void instrument_thunks() {
     asm volatile (
         ".rept " xstr(REPEAT_COUNT_THUNK) "\n"  // Repeat the following block many times
@@ -106,5 +108,7 @@ void sanitizer_cov_trace_pc(uint16_t kext, uintptr_t address) {
 }
 
 void sanitizer_cov_trace_lr(uint16_t kext) {
+
+}
 
 }
