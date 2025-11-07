@@ -23,6 +23,8 @@
 
 #include "kernel_macho.h"
 
+#include "pac.h"
+
 extern "C" {
 #include "kern.h"
 
@@ -1472,7 +1474,7 @@ Symbol* Kernel::GetSymbolByAddress(xnu::mach::VmAddress address) {
     return symbol;
 }
 
-xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
+xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign) {
     xnu::mach::VmAddress symbolAddress = 0;
 
     symbolAddress = macho->GetSymbolAddressByName(symbolname);
@@ -1482,6 +1484,12 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
             symbolAddress = kernelDebugKit->GetKDKSymbolAddressByName(symbolname);
         }
     }
+
+#ifdef __arm64e__
+    if(sign) {
+        symbolAddress = pacSignPointerWithAKey(symbolAddress);
+    }
+#endif
 
     return symbolAddress;
 }

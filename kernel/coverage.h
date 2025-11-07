@@ -16,14 +16,25 @@
 
 #pragma once
 
+#include "types.h"
+
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void sanitizer_cov_trace_pc(uint16_t kext, uintptr_t address);
-void sanitizer_cov_trace_lr(uint16_t kext);
+#define KCOV_COVERAGE_BITMAP_SIZE 64 * 1024
+
+extern UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(uint64_t)];
+
+UInt8* sanitizer_cov_get_bitmap();
+
+void sanitizer_cov_enable_coverage();
+void sanitizer_cov_disable_coverage();
+
+void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address);
+void sanitizer_cov_trace_lr(UInt16 kext);
 
 #ifdef __cplusplus
 }

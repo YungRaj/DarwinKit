@@ -22,6 +22,8 @@
 #include "kernel.h"
 #include "kernel_patcher.h"
 
+#include "coverage.h"
+
 #include "task.h"
 
 #include "section.h"
@@ -1095,6 +1097,14 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
         break;
     case kIOKernelDarwinKitMapSharedMemory:
         break;
+    case kIOKernelDarwinKitEnableCoverage: {
+        sanitizer_cov_enable_coverage();
+        break;
+    }
+    case kIOKernelDarwinKitDisableCoverage: {
+        sanitizer_cov_disable_coverage();
+        break;
+    }
 
     default:
         result = IOUserClient::externalMethod(selector, arguments, nullptr, target, reference);

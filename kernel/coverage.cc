@@ -1,10 +1,28 @@
 #include "coverage.h"
+#include "task.h"
+
+#include <mach/mach_types.h>
+
+#include <kern/thread.h>
+#include <kern/task.h>
+
+#include <sys/proc.h>
 
 #define str(s) #s
 #define xstr(s) str(s)
 #define REPEAT_COUNT_THUNK 120000
 
 extern "C" {
+
+extern task_t current_task();
+extern thread_t current_thread();
+
+UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)];
+
+UInt64 curr_location = 0;
+UInt64 prev_location = 0;
+
+Bool collect_coverage = false;
 
 void instrument_thunks() {
     asm volatile (
@@ -103,12 +121,38 @@ void pop_regs() {
     );
 }
 
-void sanitizer_cov_trace_pc(uint16_t kext, uintptr_t address) {
-
+UInt8* sanitizer_cov_get_bitmap() {
+    return (UInt8*) coverage_bitmap;
 }
 
-void sanitizer_cov_trace_lr(uint16_t kext) {
+void sanitizer_cov_enable_coverage() {
+    collect_coverage = true;
+}
 
+void sanitizer_cov_disable_coverage() {
+    collect_coverage = false;
+    memset(coverage_bitmap, 0, KCOV_COVERAGE_BITMAP_SIZE);
+}
+
+void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
+    if (collect_coverage) {
+        task_t t = current_task();
+        thread_t tr = current_thread();
+        /* Kernel-only coverage tracking using a bitmap */
+        if (Task::GetPid(t) == 0) {
+            UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
+            curr_location = index;
+
+            /* AFL-style edge tracking */
+            UInt64 edge = curr_location ^ prev_location;
+
+            coverage_bitmap[edge]++;
+            prev_location = curr_location >> 1;
+        }
+    }
+}
+
+void sanitizer_cov_trace_lr(UInt16 kext) {
 }
 
 }

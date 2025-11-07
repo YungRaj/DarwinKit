@@ -52,6 +52,8 @@ public:
 
     static xnu::mach::Port GetTaskPort(Kernel* kernel, int pid);
 
+    static pid_t GetPid(task_t task);
+
     static Task* GetTaskByName(Kernel* kernel, char* name);
 
     static proc_t FindProcByPid(Kernel* kernel, int pid);
@@ -157,7 +159,7 @@ public:
     virtual Symbol* GetSymbolByName(char* symname);
     virtual Symbol* GetSymbolByAddress(xnu::mach::VmAddress address);
 
-    virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
+    virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname, bool sign = false);
 
 protected:
     xnu::Kernel* kernel;

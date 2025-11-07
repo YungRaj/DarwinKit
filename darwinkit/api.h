@@ -68,6 +68,9 @@ enum kIOKernelDarwinKitOperation {
     kIOKernelDarwinKitCopyOut,
     kIOKernelDarwinKitCreateSharedMemory,
     kIOKernelDarwinKitMapSharedMemory,
+    kIOKernelDarwinKitEnableCoverage,
+    kIOKernelDarwinKitDisableCoverage,
+    kIOKernelDarwinKitStartHarness,
 };
 
 #define xStringify(a) Stringify(a)
