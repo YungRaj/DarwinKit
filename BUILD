@@ -107,6 +107,7 @@ genrule(
         make clean
         ./make.sh osx-kernel clean
         export CAPSTONE_ARCHS="x86 aarch64"
+        echo "Building for ARCH=$$ARCH"
         ./make.sh osx-kernel
         cd ..
         mv capstone/libcapstone.a libcapstone_osx_kernel_x86_64.a
@@ -118,6 +119,7 @@ genrule(
         make clean
         ./make.sh osx-kernel clean
         export CAPSTONE_ARCHS="x86 aarch64"
+        echo "Building for ARCH=$$ARCH"
         ./make.sh osx-kernel
         cd ..
         cp capstone/libcapstone.a libcapstone_osx_kernel_arm64.a
@@ -125,6 +127,8 @@ genrule(
     """,
     tags = ["no-sandbox"],
 )
+
+
 
 cc_library(
     name = "capstone_fat_static_kernel",
@@ -342,8 +346,14 @@ genrule(
 	rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
 	rustup install nightly
         rustup default nightly
-	rustup run nightly cargo build -Zbuild-std=core,alloc --target aarch64-apple-darwin -v
-	cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a $(OUTS)
+	rustup run nightly cargo build -Zbuild-std=core,alloc --target arm64e-kernel.json -v
+	cp target/arm64e-kernel/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer.a
+	mkdir -p tmp
+	cd tmp
+	llvm-ar x ../libafl_libfuzzer.a
+	ar rcs ../$(OUTS) *.o
+	cd ..
+	rm -R tmp
     """,
     tags = ["no-sandbox"],
 )
@@ -352,18 +362,16 @@ cc_library(
     name = "libafl_fuzzer_no_std",
     srcs = [":libafl_fuzzer_no_std_genrule"],
     linkstatic = True,
-    alwayslink = True,
+    alwayslink = True, 
 )
 
 macos_kernel_extension(
     name = "DarwinKit",
     deps =
-        [":DarwinKit_kext"],
+        [":DarwinKit_kext",],
     resources = [],
     additional_contents = {},
-    additional_linker_inputs = [
-	":libafl_fuzzer_no_std",
-    ],
+    additional_linker_inputs = [":libafl_fuzzer_no_std"],
     bundle_id = "com.YungRaj.DarwinKit",
     bundle_id_suffix = "_",
     bundle_name = "DarwinKit",

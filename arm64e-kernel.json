@@ -1,0 +1,20 @@
+{
+  "llvm-target": "arm64e-apple-macosx11.0.0",
+  "arch": "aarch64",
+  "os": "macos",
+  "linker-flavor": "ld",
+  "linker": "clang",
+  "executables": false,
+  "relocation-model": "static",
+  "no-default-libraries": true,
+  "pre-link-args": {
+    "ld": ["-arch", "arm64e.kernel"]
+  },
+  "panic-strategy": "abort",
+  "code-model": "small",
+  "features": "+neon,+fp-armv8",
+  "target-pointer-width": 64,
+  "data-layout": "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32",
+  "debuginfo-kind": "dwarf",
+  "emit-debug-gdb-scripts": false
+}
