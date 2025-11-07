@@ -225,7 +225,7 @@ public:
     virtual Symbol* GetSymbolByName(char* symbolname);
     virtual Symbol* GetSymbolByAddress(xnu::mach::VmAddress address);
 
-    virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
+    virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname, bool sign = false);
 
 protected:
     KDK* kernelDebugKit;
