@@ -276,7 +276,9 @@ cc_library(
 cc_library(
     name = "DarwinKit_kext",
     deps = [
-        ":DarwinKit_kext_library", ":capstone_fat_static_kernel",
+        ":DarwinKit_kext_library",
+	":capstone_fat_static_kernel",
+	":libafl_fuzzer_no_std",
     ],
     srcs = glob(["kernel/*.cc"]) + 
            glob(["darwinkit/*.cc"]) +
@@ -331,6 +333,28 @@ cc_library(
     alwayslink = True,
 )
 
+genrule(
+    name = "libafl_fuzzer_no_std_genrule",
+    srcs = ["kernel/libafl_fuzzer.rs"],
+    outs = ["liblibafl_fuzzer_no_std_lib.a"],
+    cmd = """
+	export RUSTUP_TOOLCHAIN=nightly
+	rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
+	rustup install nightly
+        rustup default nightly
+	rustup run nightly cargo build -Zbuild-std=core,alloc --target aarch64-apple-darwin -v
+	cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a $(OUTS)
+    """,
+    tags = ["no-sandbox"],
+)
+
+cc_library(
+    name = "libafl_fuzzer_no_std",
+    srcs = [":libafl_fuzzer_no_std_genrule"],
+    linkstatic = True,
+    alwayslink = True,
+)
+
 macos_kernel_extension(
     name = "DarwinKit",
     deps =
@@ -338,6 +362,7 @@ macos_kernel_extension(
     resources = [],
     additional_contents = {},
     additional_linker_inputs = [
+	":libafl_fuzzer_no_std",
     ],
     bundle_id = "com.YungRaj.DarwinKit",
     bundle_id_suffix = "_",
