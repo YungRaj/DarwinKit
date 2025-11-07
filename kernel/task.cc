@@ -254,11 +254,8 @@ xnu::mach::VmAddress Task::VmAllocate(Size size) {
 
 xnu::mach::VmAddress Task::VmAllocate(Size size, UInt32 flags, vm_prot_t prot) {
     kern_return_t ret;
-
     xnu::mach::VmAddress address = 0;
-
     vm_map_t map = GetMap();
-
     UInt64 vmEnterArgs[13] = {reinterpret_cast<UInt64>(map),
                               (UInt64)&address,
                               size,
@@ -272,11 +269,9 @@ xnu::mach::VmAddress Task::VmAllocate(Size size, UInt32 flags, vm_prot_t prot) {
                               (UInt64)VM_INHERIT_DEFAULT};
 
     ret = static_cast<kern_return_t>(Call("_vm_map_enter", vmEnterArgs, 13));
-
     if (ret != KERN_SUCCESS) {
         address = 0;
     }
-
     return address;
 }
 
@@ -302,49 +297,41 @@ bool Task::Read(xnu::mach::VmAddress address, void* data, Size size) {
 
 UInt8 Task::Read8(xnu::mach::VmAddress address) {
     UInt8 value;
-
     bool success =
         task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
-
-    if (!success)
+    if (!success) {
         return 0;
-
+    }
     return value;
 }
 
 UInt16 Task::Read16(xnu::mach::VmAddress address) {
     UInt16 value;
-
     bool success =
         task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
-
-    if (!success)
+    if (!success) {
         return 0;
-
+    }
     return value;
 }
 
 UInt32 Task::Read32(xnu::mach::VmAddress address) {
     UInt32 value;
-
     bool success =
         task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
-
-    if (!success)
+    if (!success) {
         return 0;
-
+    }
     return value;
 }
 
 UInt64 Task::Read64(xnu::mach::VmAddress address) {
     UInt64 value;
-
     bool success =
         task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
-
-    if (!success)
+    if (!success) {
         return 0;
-
+    }
     return value;
 }
 
