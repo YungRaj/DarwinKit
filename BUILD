@@ -63,9 +63,12 @@ genrule(
     cmd = """
         cd capstone
         export ARCH=x86_64
-        export CFLAGS="-target $$ARCH-apple-macos"
-        export CXXFLAGS="-target $$ARCH-apple-macos"
-        export LDFLAGS="-target $$ARCH-apple-macos"
+        export SDKROOT=$$(xcrun --sdk macosx --show-sdk-path)
+        export CC="$$(xcrun --sdk macosx --find clang)"
+        export CXX="$$(xcrun --sdk macosx --find clang++)"
+        export CFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
+        export CXXFLAGS="$$CFLAGS"
+        export LDFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
         make clean
         export CAPSTONE_ARCHS="x86 aarch64"
         ./make.sh mac-universal-no
@@ -73,9 +76,12 @@ genrule(
         cp capstone/libcapstone.a libcapstone_x86_64_universal.a
         cd capstone
         export ARCH=arm64
-        export CFLAGS="-target $$ARCH-apple-macos"
-        export CXXFLAGS="-target $$ARCH-apple-macos"
-        export LDFLAGS="-target $$ARCH-apple-macos"
+        export SDKROOT=$$(xcrun --sdk macosx --show-sdk-path)
+        export CC="$$(xcrun --sdk macosx --find clang)"
+        export CXX="$$(xcrun --sdk macosx --find clang++)"
+        export CFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
+        export CXXFLAGS="$$CFLAGS"
+        export LDFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
         make clean
         export CAPSTONE_ARCHS="x86 aarch64"
         ./make.sh mac-universal-no
@@ -101,9 +107,12 @@ genrule(
     cmd = """
         cd capstone
         export ARCH=x86_64
-        export CFLAGS="-target $$ARCH-apple-macos"
-        export CXXFLAGS="-target $$ARCH-apple-macos"
-        export LDFLAGS="-target $$ARCH-apple-macos"
+        export SDKROOT=$$(xcrun --sdk macosx --show-sdk-path)
+        export CC="$$(xcrun --sdk macosx --find clang)"
+        export CXX="$$(xcrun --sdk macosx --find clang++)"
+        export CFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
+        export CXXFLAGS="$$CFLAGS"
+        export LDFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
         make clean
         ./make.sh osx-kernel clean
         export CAPSTONE_ARCHS="x86 aarch64"
@@ -113,9 +122,12 @@ genrule(
         mv capstone/libcapstone.a libcapstone_osx_kernel_x86_64.a
         cd capstone
         export ARCH=arm64e
-        export CFLAGS="-target $$ARCH-apple-macos"
-        export CXXFLAGS="-target $$ARCH-apple-macos"
-        export LDFLAGS="-target $$ARCH-apple-macos"
+        export SDKROOT=$$(xcrun --sdk macosx --show-sdk-path)
+        export CC="$$(xcrun --sdk macosx --find clang)"
+        export CXX="$$(xcrun --sdk macosx --find clang++)"
+        export CFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
+        export CXXFLAGS="$$CFLAGS"
+        export LDFLAGS="-isysroot $$SDKROOT -target $$ARCH-apple-macos"
         make clean
         ./make.sh osx-kernel clean
         export CAPSTONE_ARCHS="x86 aarch64"
@@ -127,8 +139,6 @@ genrule(
     """,
     tags = ["no-sandbox"],
 )
-
-
 
 cc_library(
     name = "capstone_fat_static_kernel",
