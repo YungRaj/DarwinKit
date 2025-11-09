@@ -17,6 +17,7 @@
 #include "kernel_macho.h"
 
 extern "C" {
+#include <assert.h>
 #include <fcntl.h>
 };
 
