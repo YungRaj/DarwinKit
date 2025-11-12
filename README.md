@@ -9,6 +9,10 @@ x86_64 and arm64 machines.
 
 Fuzzers for macOS are in progress, but aren't complete.
 
+Right now the DarwinKit kernel extension compiles with a `no_std` `LibAFL` that is meant for fuzzing code in the kernel from within the kernel. This approach avoids the need to have a guest to host hypercall interface. It is possible to leverage a hypercall interface over mmio, but qemu must be used. `Virtualization.framework` is also possible, but requires building a complex guest to host interface over serial ports and/or sockets.
+
+When using qemu, you can use Longhorn's fork of qemu which adds vmapple support for qemu. It currently supports macOS vmapple VMs up to macOS 12, and he was able to get recent macOS versions working, however these changes will not be upstreamed until the qemu 10.2 release. https://github.com/mediouni-m/qemu
+
 ## Getting Started
 ### Install bazel
 ```
