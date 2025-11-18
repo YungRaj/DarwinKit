@@ -20,13 +20,13 @@
 #include <stdint.h>
 
 template <typename T>
-static void emptyDeleter(T t) {
-    /* Does nothing here because we don't wanna destroy the T object */
-    /* We just wanna destroy the Pair */
+static void EmptyDeleter(T t) {
+    // Does nothing here because we don't wanna destroy the T object
+    // We just wanna destroy the Pair
 }
 
-template <typename T, typename Y, void (*deleterT)(T) = emptyDeleter<T>,
-          void (*deleterY)(Y) = emptyDeleter<Y>>
+template <typename T, typename Y, void (*DeleterT)(T) = EmptyDeleter<T>,
+          void (*DeleterY)(Y) = EmptyDeleter<Y>>
 class Pair {
 public:
     T first;
@@ -35,15 +35,15 @@ public:
     Pair(T first, Y second) : first(first), second(second) {}
 
     ~Pair() {
-        deleter(this);
+        Deleter(this);
     }
 
     static Pair<T, Y>* create(T first, Y second) {
         return new Pair(first, second);
     }
 
-    static void deleter(Pair<T, Y>* pair) {
-        deleterT(pair->first);
-        deleterY(pair->second);
+    static void Deleter(Pair<T, Y>* pair) {
+        DeleterT(pair->first);
+        DeleterY(pair->second);
     }
 };

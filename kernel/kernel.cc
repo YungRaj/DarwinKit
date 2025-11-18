@@ -1487,7 +1487,7 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign)
 
 #ifdef __arm64e__
     if(sign) {
-        symbolAddress = pacSignPointerWithAKey(symbolAddress);
+        symbolAddress = PacSignPointerWithAKey(symbolAddress);
     }
 #endif
 

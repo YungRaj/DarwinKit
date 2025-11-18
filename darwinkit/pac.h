@@ -40,12 +40,12 @@ void StripPointerAuthenticationCode(UInt64 pointer);
 } // namespace arm64
 }; // namespace arch
 
-#define pacSignPointerWithAKey(ptr) pac::signPointerWithAKey(ptr)
-#define pacSignPointerWithBKey(ptr) pac::signPointerWithBKey(ptr);
+#define PacSignPointerWithAKey(ptr) arch::arm64::pac::signPointerWithAKey(ptr)
+#define PacSignPointerWithBKey(ptr) arch::arm64::pac::signPointerWithBKey(ptr);
 
 #else
 
-#define pacSignPointerWithAKey(ptr) ptr
-#define pacSignPointerWithBKey(ptr) ptr
+#define PacSignPointerWithAKey(ptr) ptr
+#define PacSignPointerWithBKey(ptr) ptr
 
 #endif
