@@ -103,3 +103,7 @@ void task_vm_deallocate(mach_port_t task, mach_vm_address_t address, size_t size
 bool task_vm_protect(mach_port_t task, mach_vm_address_t address, size_t size, vm_prot_t prot);
 
 uint64_t virtual_to_physical(mach_port_t task, mach_vm_address_t vaddr);
+
+void kcov_enable_coverage();
+void kcov_disable_coverage();
+void kcov_begin_fuzzing();

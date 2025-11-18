@@ -65,7 +65,7 @@ pub extern "C" fn external_current_millis() -> u64 {
 /// # Panics
 /// Will panic once the fuzzer finds the correct conditions.
 #[no_mangle]
-pub extern "C" fn main(_argc: isize, _argv: *const *const u8) -> isize {
+pub extern "C" fn libafl_start_darwin_kit_fuzzer(_argc: isize, _argv: *const *const u8) -> isize {
     // The closure that we want to fuzz
     let mut harness = |input: &BytesInput| {
         let target = input.target_bytes();

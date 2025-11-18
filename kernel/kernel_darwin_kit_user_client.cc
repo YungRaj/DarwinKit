@@ -31,6 +31,8 @@
 
 #include "log.h"
 
+#include "libafl_fuzzer.h"
+
 #include <mach/vm_types.h>
 
 extern "C" {
@@ -1104,6 +1106,11 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
     case kIOKernelDarwinKitDisableCoverage: {
         sanitizer_cov_disable_coverage();
         break;
+    }
+    case kIOKernelDarwinKitStartHarness: {
+        libafl_start_darwin_kit_fuzzer(0, (char**) 0);
+
+        break;     
     }
 
     default:
