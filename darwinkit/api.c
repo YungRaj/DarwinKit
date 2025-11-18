@@ -15,6 +15,7 @@
  */
 
 #include "api.h"
+#include "log.h"
 
 #define SS (sizeof(size_t))
 #define ALIGNMENT (sizeof(size_t)-1)
@@ -185,4 +186,13 @@ void *memmem(const void *h0, size_t k, const void *n0, size_t l)
 	if (l==4) return fourbyte_memmem(h, k, n);
 
 	return twoway_memmem(h, h+k, n, l);
+}
+
+#include <stdarg.h>
+
+void darwin_kit_log(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    DARWIN_KIT_LOG_VA(fmt, args);
+    va_end(args);
 }

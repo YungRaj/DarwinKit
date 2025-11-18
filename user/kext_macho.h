@@ -18,6 +18,7 @@
 
 #include <types.h>
 
+#include "api_util.h"
 #include "macho.h"
 
 class MachO;

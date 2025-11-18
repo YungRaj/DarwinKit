@@ -18,6 +18,8 @@
 
 #include <types.h>
 
+#include "api_util.h"
+
 #ifdef __arm64__
 
 namespace xnu {

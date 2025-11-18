@@ -1,7 +1,5 @@
 #pragma once
 
-#include "api_util.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,12 +45,7 @@ static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
 extern "C" {
 #endif
 
-static inline void darwin_kit_log(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    DARWIN_KIT_LOG_VA(fmt, args);
-    va_end(args);
-}
+void darwin_kit_log(const char *fmt, ...);
 
 #ifdef __cplusplus
 }
