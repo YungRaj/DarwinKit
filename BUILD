@@ -365,11 +365,8 @@ genrule(
         cd ..
         rm -R tmp
 	cargo clean
-	rustup target add x86_64-apple-darwin
-        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
-        rustup install nightly-x86_64-apple-darwin --force-non-host
-        rustup run nightly-x86_64-apple-darwin cargo build --no-default-features --release -Zbuild-std=core,alloc --target x86_64-kernel.json -v
-	cp target/x86_64-kernel/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
+	cargo build --target x86_64-apple-darwin --no-default-features --release -Zbuild-std=core,alloc -v
+	cp target/x86_64-apple-darwin/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
         mkdir -p tmp
         cd tmp
         llvm-ar x ../libafl_libfuzzer_x86_64.a
