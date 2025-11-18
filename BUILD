@@ -351,19 +351,19 @@ genrule(
     name = "libafl_fuzzer_no_std_genrule",
     srcs = ["kernel/libafl_fuzzer.rs"],
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
-    cmd = """
-	export RUSTUP_TOOLCHAIN=nightly
-	rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
-	rustup install nightly
+    cmd = """  
+        export RUSTUP_TOOLCHAIN=nightly
+        rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
+        rustup install nightly 
         rustup default nightly
-	rustup run nightly cargo build -Zbuild-std=core,alloc --target arm64e-kernel.json -v
-	cp target/arm64e-kernel/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer.a
-	mkdir -p tmp
-	cd tmp
-	llvm-ar x ../libafl_libfuzzer.a
-	ar rcs ../$(OUTS) *.o
-	cd ..
-	rm -R tmp
+        rustup run nightly cargo build --no-default-features --release -Zbuild-std=core,alloc --target arm64e-kernel.json -v
+        cp target/arm64e-kernel/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer.a
+        mkdir -p tmp
+        cd tmp
+        llvm-ar x ../libafl_libfuzzer.a
+        ar rcs ../$(OUTS) *.o
+        cd ..
+        rm -R tmp
     """,
     tags = ["no-sandbox"],
 )
@@ -372,7 +372,6 @@ cc_library(
     name = "libafl_fuzzer_no_std",
     srcs = [":libafl_fuzzer_no_std_genrule"],
     linkstatic = True,
-    alwayslink = True, 
 )
 
 macos_kernel_extension(
@@ -381,7 +380,7 @@ macos_kernel_extension(
         [":DarwinKit_kext",],
     resources = [],
     additional_contents = {},
-    additional_linker_inputs = [":libafl_fuzzer_no_std"],
+    additional_linker_inputs = [],
     bundle_id = "com.YungRaj.DarwinKit",
     bundle_id_suffix = "_",
     bundle_name = "DarwinKit",

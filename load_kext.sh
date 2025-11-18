@@ -9,7 +9,9 @@ else
 	exit 1
 fi
 
-rm -R DarwinKit.kext
+if [ -d "DarwinKit.kext" ]; then
+	sudo rm -R DarwinKit.kext
+fi
 
 bazel clean
 
