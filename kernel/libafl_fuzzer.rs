@@ -114,7 +114,7 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(_argc: isize, _argv: *const *co
     .unwrap();
 
     // The Monitor trait define how the fuzzer stats are reported to the user
-    let monitor = SimpleMonitor::new(|_s| {
+    let monitor = SimpleMonitor::new(|s| {
         // TODO: Print `s` here, if your target permits it.
         #[cfg(any(windows, unix))]
         unsafe {

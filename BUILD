@@ -353,17 +353,31 @@ genrule(
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
+	rustup target add aarch64-apple-darwin
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
-        rustup install nightly 
-        rustup default nightly
-        rustup run nightly cargo build --no-default-features --release -Zbuild-std=core,alloc --target arm64e-kernel.json -v
-        cp target/arm64e-kernel/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer.a
+        rustup install nightly-aarch64-apple-darwin --force-non-host
+        rustup run nightly-aarch64-apple-darwin cargo build --no-default-features --release -Zbuild-std=core,alloc --target arm64e-kernel.json -v
+        cp target/arm64e-kernel/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_arm64e.a
         mkdir -p tmp
         cd tmp
-        llvm-ar x ../libafl_libfuzzer.a
-        ar rcs ../$(OUTS) *.o
+        llvm-ar x ../libafl_libfuzzer_arm64e.a
+        ar rcs ../liblibafl_fuzzer_no_std_lib_arm64e.a *.o
         cd ..
         rm -R tmp
+	cargo clean
+	rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+        rustup install nightly-x86_64-apple-darwin --force-non-host
+        rustup run nightly-x86_64-apple-darwin cargo build --no-default-features --release -Zbuild-std=core,alloc --target x86_64-kernel.json -v
+	cp target/x86_64-kernel/release/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
+        mkdir -p tmp
+        cd tmp
+        llvm-ar x ../libafl_libfuzzer_x86_64.a
+        ar rcs ../liblibafl_fuzzer_no_std_lib_x86_64.a *.o
+        cd ..
+        rm -R tmp
+	cargo clean
+        lipo -create -output $(OUTS) liblibafl_fuzzer_no_std_lib_x86_64.a liblibafl_fuzzer_no_std_lib_arm64e.a
     """,
     tags = ["no-sandbox"],
 )

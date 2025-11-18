@@ -1,6 +1,6 @@
 {
-  "llvm-target": "arm64e-apple-macosx",
-  "arch": "aarch64",
+  "llvm-target": "x86_64-apple-macosx",
+  "arch": "x86_64",
   "os": "macos",
   "linker-flavor": "darwin",
   "linker": "clang",
@@ -12,14 +12,12 @@
   "relocation-model": "static",
   "no-default-libraries": true,
   "pre-link-args": {
-    "ld": ["-arch", "arm64e.kernel"],
-    "darwin": ["-arch", "arm64e"]
+    "darwin": ["-arch", "x86_64"]
   },
   "panic-strategy": "abort",
   "code-model": "small",
-  "features": "+neon,+fp-armv8",
   "target-pointer-width": 64,
-  "data-layout": "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32",
+  "data-layout": "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128",
   "debuginfo-kind": "dwarf",
   "emit-debug-gdb-scripts": false
 }
