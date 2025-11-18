@@ -61,6 +61,11 @@ pub extern "C" fn external_current_millis() -> u64 {
     1000
 }
 
+/// Provides the macOS kernel os_log function to Rust in `no_std` environment
+extern "C" {
+    pub fn darwin_kit_log(fmt: *const core::ffi::c_char, ...);
+}
+
 /// The main of this program.
 /// # Panics
 /// Will panic once the fuzzer finds the correct conditions.
@@ -115,7 +120,7 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(_argc: isize, _argv: *const *co
         #[cfg(any(windows, unix))]
         unsafe {
             let s = CString::new(s).unwrap();
-            printf(c"%s\n".as_ptr().cast(), s.as_ptr());
+            darwin_kit_log(c"%s\n".as_ptr().cast(), s.as_ptr());
         }
     });
 

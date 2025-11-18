@@ -1,37 +1,59 @@
-/*
- * Copyright (c) YungRaj
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #pragma once
 
 #include "api_util.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
+
 #include "api.h"
+
+#ifdef __cplusplus
 }
+#endif
 
 #ifdef __KERNEL__
 
 #include <os/log.h>
+#include <stdarg.h>
+#include <sys/systm.h>
 
-#define DARWIN_KIT_LOG(...) os_log(OS_LOG_DEFAULT, __VA_ARGS__)
+// Kernel: must log with a constant format string
+static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
+    char buffer[256];
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    os_log(OS_LOG_DEFAULT, "%s", buffer);
+}
 
-#endif
+#define DARWIN_KIT_LOG(fmt, ...) os_log(OS_LOG_DEFAULT, fmt, ##__VA_ARGS__)
+
+#endif // __KERNEL__
+
 
 #ifdef __USER__
 
+#include <stdio.h>
+#include <stdarg.h>
+
+static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
+    vprintf(fmt, args);
+}
+
 #define DARWIN_KIT_LOG printf
 
+#endif // __USER__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline void darwin_kit_log(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    DARWIN_KIT_LOG_VA(fmt, args);
+    va_end(args);
+}
+
+#ifdef __cplusplus
+}
 #endif
