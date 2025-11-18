@@ -24,6 +24,7 @@ UInt64 prev_location = 0;
 
 Bool collect_coverage = false;
 
+#ifdef __arm64__
 void instrument_thunks() {
     asm volatile (
         ".rept " xstr(REPEAT_COUNT_THUNK) "\n"  // Repeat the following block many times
@@ -120,6 +121,8 @@ void pop_regs() {
         "ret\n"
     );
 }
+
+#endif
 
 UInt8* sanitizer_cov_get_bitmap() {
     return (UInt8*) coverage_bitmap;
