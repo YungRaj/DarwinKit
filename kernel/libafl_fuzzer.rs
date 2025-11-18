@@ -2,6 +2,8 @@
 // Embedded targets: build with no_main
 #![cfg_attr(not(any(windows)), no_main)]
 
+mod allocator;
+
 #[cfg(any(windows, unix))]
 extern crate alloc;
 #[cfg(any(windows, unix))]
@@ -27,10 +29,6 @@ use libafl::{
 use libafl_bolts::{nonnull_raw_mut, nonzero, rands::StdRand, tuples::tuple_list, AsSlice};
 #[cfg(any(windows, unix))]
 use libc::{abort, printf};
-use static_alloc::Bump;
-
-#[global_allocator]
-static A: Bump<[u8; 512 * 1024 * 1024]> = Bump::uninit();
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -62,6 +60,7 @@ pub extern "C" fn external_current_millis() -> u64 {
 }
 
 /// Provides the macOS kernel os_log function to Rust in `no_std` environment
+#[no_mangle]
 extern "C" {
     pub fn darwin_kit_log(fmt: *const core::ffi::c_char, ...);
 }

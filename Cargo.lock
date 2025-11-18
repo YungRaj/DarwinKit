@@ -15,12 +15,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "alloc-traits"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b2d54853319fd101b8dd81de382bcbf3e03410a64d8928bbee85a3e7dcde483"
-
-[[package]]
 name = "arbitrary-int"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -189,7 +183,6 @@ dependencies = [
  "libafl_bolts",
  "libc",
  "log",
- "static-alloc",
 ]
 
 [[package]]
@@ -329,15 +322,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "static-alloc"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e1e06c73b06b04d730f68ecb5f805e86b8d509cf80072a28128160025fbf928"
-dependencies = [
- "alloc-traits",
 ]
 
 [[package]]
