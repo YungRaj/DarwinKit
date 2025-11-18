@@ -44,7 +44,7 @@ union Jump MakeJump(mach_vm_address_t to, mach_vm_address_t from) {
     mach_vm_address_t diff = (max - min);
 
     if (diff > INT32_MAX) {
-        DARWIN_KIT_LOG("MacRK::arch::x86_64::makeJump() encoding too large!\n");
+        DARWIN_KIT_LOG("DarwinKit::arch::x86_64::makeJump() encoding too large!\n");
     }
 
     imm = static_cast<int32_t>(diff);
@@ -76,7 +76,7 @@ union FunctionCall MakeCall(mach_vm_address_t to, mach_vm_address_t from) {
     mach_vm_address_t diff = (max - min);
 
     if (diff > INT32_MAX) {
-        DARWIN_KIT_LOG("MacRK::arch::x86_64::makeCall() encoding too large!\n");
+        DARWIN_KIT_LOG("DarwinKit::arch::x86_64::makeCall() encoding too large!\n");
     }
 
     imm = static_cast<int32_t>(diff);

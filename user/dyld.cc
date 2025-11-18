@@ -142,7 +142,7 @@ void Dyld::GetImageInfos() {
             all_image_info_addr = dyld_info.all_image_info_addr;
             all_image_info_size = dyld_info.all_image_info_size;
         } else {
-            DARWIN_KIT_LOG("MacRK::could not find all_image_info for task! %d\n", kr);
+            DARWIN_KIT_LOG("DarwinKit::could not find all_image_info for task! %d\n", kr);
         }
     }
 }

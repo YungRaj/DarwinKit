@@ -50,7 +50,7 @@ bool Init() {
         cs_err err = cs_option(0, CS_OPT_MEM, reinterpret_cast<size_t>(&setup));
 
         if (err != CS_ERR_OK) {
-            DARWIN_KIT_LOG("MacRK::Disassembler::init() failed 1!\n");
+            DARWIN_KIT_LOG("DarwinKit::Disassembler::init() failed 1!\n");
 
             return false;
         }
@@ -63,7 +63,7 @@ bool Init() {
     cs_err err = cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle_arm64);
 
     if (err != CS_ERR_OK) {
-        DARWIN_KIT_LOG("MacRK::Disassembler::init() failed! 2 err = %d\n", err);
+        DARWIN_KIT_LOG("DarwinKit::Disassembler::init() failed! 2 err = %d\n", err);
 
         return false;
     }
@@ -74,13 +74,13 @@ bool Init() {
         err = cs_option(handle_arm64, CS_OPT_DETAIL, CS_OPT_ON);
 
         if (err != CS_ERR_OK) {
-            DARWIN_KIT_LOG("MacRK::Disassembler::init() failed! 3\n");
+            DARWIN_KIT_LOG("DarwinKit::Disassembler::init() failed! 3\n");
 
             return false;
         }
     }
 
-    DARWIN_KIT_LOG("MacRK::Disassembler::init() success!\n");
+    DARWIN_KIT_LOG("DarwinKit::Disassembler::init() success!\n");
 
     return true;
 }
@@ -232,7 +232,7 @@ xnu::mach::VmAddress DisassembleNthInstruction(xnu::mach::VmAddress address, arm
     cs_insn* result = nullptr;
 
     if (!address) {
-        DARWIN_KIT_LOG("MacRK::Disassembler::disassembleNthInstruction() address = 0!\n");
+        DARWIN_KIT_LOG("DarwinKit::Disassembler::disassembleNthInstruction() address = 0!\n");
 
         return 0;
     }
@@ -273,7 +273,7 @@ xnu::mach::VmAddress DisassembleNthInstruction(xnu::mach::VmAddress address, arm
         offset += disasm_size;
     }
 
-    DARWIN_KIT_LOG("MacRK::Disassembler::disasm size = 0!!\n");
+    DARWIN_KIT_LOG("DarwinKit::Disassembler::disasm size = 0!!\n");
 
     return 0;
 }

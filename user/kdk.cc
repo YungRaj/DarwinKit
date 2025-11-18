@@ -45,7 +45,7 @@ public:
         ReadKDKKernelFromPath(path, &buffer);
 
         if (!buffer) {
-            DARWIN_KIT_LOG("MacRK::KDK could not be read from disk at path %s\n", path);
+            DARWIN_KIT_LOG("DarwinKit::KDK could not be read from disk at path %s\n", path);
 
         } else {
             header = reinterpret_cast<struct mach_header_64*>(buffer);
@@ -117,7 +117,7 @@ public:
             symbolTable->AddSymbol(symbol);
         }
 
-        DARWIN_KIT_LOG("MacRK::KDKKernelMachO::%u syms!\n", nsyms);
+        DARWIN_KIT_LOG("DarwinKit::KDKKernelMachO::%u syms!\n", nsyms);
     }
 
 private:
@@ -353,10 +353,10 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
 
     if (!buildVersion || !kernelVersion) {
         if (!buildVersion)
-            DARWIN_KIT_LOG("MacRK::macOS Build Version not found!");
+            DARWIN_KIT_LOG("DarwinKit::macOS Build Version not found!");
 
         if (!kernelVersion)
-            DARWIN_KIT_LOG("MacRK::macOS Kernel Version not found!");
+            DARWIN_KIT_LOG("DarwinKit::macOS Kernel Version not found!");
 
         return nullptr;
     }
@@ -370,7 +370,7 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
 
-        DARWIN_KIT_LOG("MacRK::Failed to find KDK with buildVersion %s and kernelVersion %s",
+        DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
                    buildVersion, kernelVersion);
 
         return nullptr;
@@ -391,10 +391,10 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
 
     if (!buildVersion || !kernelVersion) {
         if (!buildVersion)
-            DARWIN_KIT_LOG("MacRK::macOS Build Version not found!");
+            DARWIN_KIT_LOG("DarwinKit::macOS Build Version not found!");
 
         if (!kernelVersion)
-            DARWIN_KIT_LOG("MacRK::macOS Kernel Version not found!");
+            DARWIN_KIT_LOG("DarwinKit::macOS Kernel Version not found!");
 
         return nullptr;
     }
@@ -409,7 +409,7 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
 
-        DARWIN_KIT_LOG("MacRK::Failed to find KDK with buildVersion %s and kernelVersion %s",
+        DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
                    buildVersion, kernelVersion);
 
         return nullptr;

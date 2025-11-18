@@ -117,7 +117,7 @@ xnu::mach::VmAddress Task::FindProcByPid(Kernel* kernel, int pid) {
         return current_proc;
     }
 
-    DARWIN_KIT_LOG("MacRK::could not find proc for pid = %d\n", pid);
+    DARWIN_KIT_LOG("DarwinKit::could not find proc for pid = %d\n", pid);
 
     assert(false);
 
@@ -151,7 +151,7 @@ xnu::mach::VmAddress Task::FindProcByName(Kernel* kernel, char* name) {
         return current_proc;
     }
 
-    DARWIN_KIT_LOG("MacRK::could not find proc for name = %s\n", name);
+    DARWIN_KIT_LOG("DarwinKit::could not find proc for name = %s\n", name);
 
     assert(false);
 

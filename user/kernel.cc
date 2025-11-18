@@ -27,7 +27,7 @@ const char* GetKernelVersion() {
 
     strlcpy(kernelBuildVersion, kernelInfo.version, 256);
 
-    DARWIN_KIT_LOG("MacRK::macOS kernel version = %s\n", kernelInfo.version);
+    DARWIN_KIT_LOG("DarwinKit::macOS kernel version = %s\n", kernelInfo.version);
 
     return kernelBuildVersion;
 }
@@ -42,7 +42,7 @@ const char* GetOSBuildVersion() {
     mib[1] = KERN_OSVERSION;
 
     if (sysctl(mib, 2, buildVersion, &len, nullptr, 0) == 0) {
-        DARWIN_KIT_LOG("MacRK::macOS OS build version = %s\n", buildVersion);
+        DARWIN_KIT_LOG("DarwinKit::macOS OS build version = %s\n", buildVersion);
     } else {
         return nullptr;
     }

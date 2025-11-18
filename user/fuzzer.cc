@@ -437,7 +437,7 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
             struct unixthread_command* thread_command =
                 reinterpret_cast<struct unixthread_command*>(load_command);
 
-            DARWIN_KIT_LOG("MacRK::LC_UNIXTHREAD\n");
+            DARWIN_KIT_LOG("DarwinKit::LC_UNIXTHREAD\n");
         
         #ifdef __arm64__
             if (thread_command->flavor == ARM_THREAD_STATE64) {
@@ -453,7 +453,7 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
 
                 state = (struct arm_thread_state64*)(thread_command + 1);
 
-                DARWIN_KIT_LOG("MacRK::\tstate->pc = 0x%llx\n", state->pc);
+                DARWIN_KIT_LOG("DarwinKit::\tstate->pc = 0x%llx\n", state->pc);
 
                 *entryPoint = state->pc;
             }
@@ -484,7 +484,7 @@ void Harness::GetKernelFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress* ker
                 *kernelBase = fileset_entry_command->vmaddr;
                 *kernelFileOffset = fileset_entry_command->fileoff;
 
-                DARWIN_KIT_LOG("MacRK::Kernel found in kernelcache 0x%llx!\n", *kernelBase);
+                DARWIN_KIT_LOG("DarwinKit::Kernel found in kernelcache 0x%llx!\n", *kernelBase);
 
                 return;
             }
@@ -569,7 +569,7 @@ void Harness::StartKernel() {
 }
 
 void Harness::CallFunctionInKernel(const char* funcname) {
-    printf("MacRK::Calling function %s in XNU kernel at address = 0x%llx\n", funcname);
+    printf("DarwinKit::Calling function %s in XNU kernel at address = 0x%llx\n", funcname);
 
 #ifdef __arm64__
 

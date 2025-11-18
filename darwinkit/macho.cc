@@ -322,10 +322,10 @@ void MachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms, char* st
 
         symbolTable->AddSymbol(symbol);
 
-        DARWIN_KIT_LOG("MacRK::Symbol %s 0x%llx\n", name, address);
+        DARWIN_KIT_LOG("DarwinKit::Symbol %s 0x%llx\n", name, address);
     }
 
-    DARWIN_KIT_LOG("MacRK::MachO::%u syms!\n", nsyms);
+    DARWIN_KIT_LOG("DarwinKit::MachO::%u syms!\n", nsyms);
 }
 
 void MachO::ParseLinkedit() {}
