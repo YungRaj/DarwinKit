@@ -53,18 +53,28 @@ fn signals_set(idx: usize) {
     unsafe { SIGNALS[idx] = 1 };
 }
 
-/// Provide custom time in `no_std` environment
-/// Use a time provider of your choice
-#[no_mangle]
-pub extern "C" fn external_current_millis() -> u64 {
-    // TODO: use "real" time here
-    1000
-}
-
 /// Provides the macOS kernel os_log function to Rust in `no_std` environment
 #[no_mangle]
 extern "C" {
     pub fn darwin_kit_log(fmt: *const core::ffi::c_char, ...);
+}
+
+/// Provides the macOS kernel time in millsecs to Rust in `no_std` environment
+#[no_mangle]
+extern "C" {
+    pub fn clock_get_system_microtime(secs: *mut core::ffi::c_ulong, microsecs: *mut core::ffi::c_ulong);
+}
+
+/// Provide custom time in `no_std` environment
+/// Use a time provider of your choice
+#[no_mangle]
+pub extern "C" fn external_current_millis() -> u64 {
+    let mut secs: core::ffi::c_ulong = 0;
+    let mut microsecs: core::ffi::c_ulong = 0;
+    unsafe {
+        clock_get_system_microtime(&mut secs, &mut microsecs);
+    }
+    microsecs
 }
 
 const COVERAGE_MAP_SIZE: usize = 65536;
