@@ -26,6 +26,15 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
 bazel clean --expunge
 ```
+### Toolchains
+#### LLVM
+```
+brew install llvm
+```
+#### Rust
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
 ### Building the kext
 ```sh
 bazel build --macos_cpus=arm64 :DarwinKit
