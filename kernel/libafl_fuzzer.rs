@@ -30,16 +30,10 @@ use libafl::{
 };
 use libafl_bolts::{nonnull_raw_mut, nonzero, rands::StdRand, tuples::tuple_list, AsSlice};
 #[cfg(any(windows, unix))]
-use libc::{abort, printf};
 
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    #[cfg(unix)]
-    unsafe {
-        abort();
-    }
-    #[cfg(not(unix))]
     loop {
         // On embedded, there's not much left to do.
     }
