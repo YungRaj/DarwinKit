@@ -82,7 +82,7 @@ const COVERAGE_MAP_SIZE: usize = 65536;
 /// # Panics
 /// Will panic once the fuzzer finds the correct conditions.
 #[no_mangle]
-pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const u8) -> isize {
+pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi::c_uchar) -> isize {
     // The closure that we want to fuzz
     let mut harness = |input: &BytesInput| {
         let target = input.target_bytes();

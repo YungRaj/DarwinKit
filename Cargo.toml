@@ -14,8 +14,8 @@ panic = "abort"
 panic = "abort"
 lto = true
 codegen-units = 1
-opt-level = "s"
-debug = false
+opt-level = 3
+debug = true
 
 [dependencies]
 libafl = { default-features = false, path = "LibAFL/crates/libafl" }
