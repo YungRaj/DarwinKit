@@ -45,12 +45,11 @@ fn panic(_info: &PanicInfo) -> ! {
     }
 }
 
-/// Coverage map with explicit assignments due to the lack of instrumentation
-static mut SIGNALS: [u8; 16] = [0; 16];
-
-/// Assign a signal to the signals map
-fn signals_set(idx: usize) {
-    unsafe { SIGNALS[idx] = 1 };
+/// The DarwinKit LibAFL fuzzer entry point so that the fuzz harness can e.g. fetch symbols
+/// and call the appropriate functions that are meant for fuzzing
+#[no_mangle]
+extern "C" {
+    pub fn LibAFLFuzzerTestOneInput(data: *const core::ffi::c_uchar, size: usize) -> u64;
 }
 
 /// Provides the macOS kernel os_log function to Rust in `no_std` environment
@@ -88,16 +87,11 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const u8) -> isi
     let mut harness = |input: &BytesInput| {
         let target = input.target_bytes();
         let buf = target.as_slice();
-        signals_set(0);
-        if !buf.is_empty() && buf[0] == b'a' {
-            signals_set(1);
-            if buf.len() > 1 && buf[1] == b'b' {
-                signals_set(2);
-                #[expect(clippy::manual_assert)]
-                if buf.len() > 2 && buf[2] == b'c' {
-                    panic!("=)");
-                }
-            }
+        unsafe {
+            LibAFLFuzzerTestOneInput(
+                buf.as_ptr() as *const core::ffi::c_uchar,
+                buf.len() as usize,
+            );
         }
         ExitKind::Ok
     };
