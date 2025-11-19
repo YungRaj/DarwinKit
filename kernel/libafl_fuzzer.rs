@@ -11,6 +11,8 @@ use alloc::ffi::CString;
 #[cfg(not(any(windows)))]
 use core::panic::PanicInfo;
 
+use core::ptr::NonNull;
+
 use libafl::{
     corpus::InMemoryCorpus,
     events::SimpleEventManager,
@@ -65,11 +67,13 @@ extern "C" {
     pub fn darwin_kit_log(fmt: *const core::ffi::c_char, ...);
 }
 
+const COVERAGE_MAP_SIZE: usize = 65536;
+
 /// The main of this program.
 /// # Panics
 /// Will panic once the fuzzer finds the correct conditions.
 #[no_mangle]
-pub extern "C" fn libafl_start_darwin_kit_fuzzer(_argc: isize, _argv: *const *const u8) -> isize {
+pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const u8) -> isize {
     // The closure that we want to fuzz
     let mut harness = |input: &BytesInput| {
         let target = input.target_bytes();
@@ -88,8 +92,12 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(_argc: isize, _argv: *const *co
         ExitKind::Ok
     };
 
+    let map_ptr = NonNull::new(coverage_map as *mut u8)
+        .expect("coverage_map is null")
+        .cast::<[u8; COVERAGE_MAP_SIZE]>();
+
     // Create an observation channel using the signals map
-    let observer = unsafe { ConstMapObserver::from_mut_ptr("signals", nonnull_raw_mut!(SIGNALS)) };
+    let observer = unsafe { ConstMapObserver::from_mut_ptr("signals", map_ptr) };
     // Feedback to rate the interestingness of an input
     let mut feedback = MaxMapFeedback::new(&observer);
 

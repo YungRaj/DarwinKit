@@ -1108,7 +1108,7 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
         break;
     }
     case kIOKernelDarwinKitStartHarness: {
-        libafl_start_darwin_kit_fuzzer(0, (char**) 0);
+        libafl_start_darwin_kit_fuzzer((char*) sanitizer_cov_get_bitmap());
 
         break;     
     }
