@@ -262,8 +262,6 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
 }
 
 void Kernel::Fuzz() {
-    kcov_enable_coverage();
-    kcov_disable_coverage();
     kcov_begin_fuzzing();
 }
 

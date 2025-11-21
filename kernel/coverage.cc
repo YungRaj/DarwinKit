@@ -142,16 +142,14 @@ void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
         task_t t = current_task();
         thread_t tr = current_thread();
         /* Kernel-only coverage tracking using a bitmap */
-        if (Task::GetPid(t) == 0) {
-            UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
-            curr_location = index;
+        UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
+        curr_location = index;
 
-            /* AFL-style edge tracking */
-            UInt64 edge = curr_location ^ prev_location;
+        /* AFL-style edge tracking */
+        UInt64 edge = curr_location ^ prev_location;
 
-            coverage_bitmap[edge]++;
-            prev_location = curr_location >> 1;
-        }
+        coverage_bitmap[edge]++;
+        prev_location = curr_location >> 1;
     }
 }
 
