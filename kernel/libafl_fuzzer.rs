@@ -125,7 +125,7 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi:
         #[cfg(any(windows, unix))]
         unsafe {
             let s = CString::new(s).unwrap();
-            darwin_kit_log(c"%s\n".as_ptr().cast(), s.as_ptr());
+            darwin_kit_log(c"DarwinKit::LibAFL::%s\n".as_ptr().cast(), s.as_ptr());
         }
     });
 
