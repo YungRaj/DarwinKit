@@ -168,7 +168,6 @@ mach_msg_type_number_t stateCount = ARM_THREAD_STATE64_COUNT;
 static uint64_t ropcall(mach_vm_address_t function, char* argMap, uint64_t* arg1, uint64_t* arg2,
                         uint64_t* arg3, uint64_t* arg4) {
     kern_return_t kret;
-
 #ifndef __arm64e__
     state.__pc = (uint64_t)ptrauth_sign_unauthenticated(
         (void*)function, ptrauth_key_process_independent_code, ptrauth_string_discriminator("pc"));
@@ -176,7 +175,6 @@ static uint64_t ropcall(mach_vm_address_t function, char* argMap, uint64_t* arg1
     thread_convert_thread_state(remote_thread, THREAD_CONVERT_THREAD_STATE_FROM_SELF,
                                 ARM_THREAD_STATE64, reinterpret_cast<thread_state_t>(&state),
                                 stateCount, reinterpret_cast<thread_state_t>(&state), &stateCount);
-
     state.__lr = gadget_address;
     state.__sp = ((remote_stack + STACK_SIZE) - (STACK_SIZE / 4));
     state.__fp = state.__sp;
@@ -193,117 +191,82 @@ static uint64_t ropcall(mach_vm_address_t function, char* argMap, uint64_t* arg1
         (void*)ptrauth_sign_unauthenticated((void*)((remote_stack + STACK_SIZE) - (STACK_SIZE / 4)),
                                             ptrauth_key_asda, ptrauth_string_discriminator("fp"));
     ;
-
     thread_convert_thread_state(remote_thread, THREAD_CONVERT_THREAD_STATE_FROM_SELF,
                                 ARM_THREAD_STATE64, reinterpret_cast<thread_state_t>(&state),
                                 stateCount, reinterpret_cast<thread_state_t>(&state), &stateCount);
 #endif
-
     char* local_fake_stack = (char*)malloc((size_t)STACK_SIZE);
-
     char* argp = (char*)argMap;
-
     char* stack_ptr = local_fake_stack;
 
     uint64_t paramLen = 0;
-
     for (int param = 0; param <= 4; param++) {
-        if (!(*argp))
+        if (!(*argp)) {
             break;
-
-        switch (*argp) {
-        case 's':;
-
-            int num_digits;
-
-            char tmp_buf[6];
-
-            argp++;
-
-            num_digits = 0;
-
-            while (*argp >= '0' && *argp <= '9') {
-                if (++num_digits == 6) {
-                    fprintf(stderr, "String too long, param=%d\n", param);
-
-                    return 0;
-                }
-
-                tmp_buf[num_digits - 1] = *(argp++);
-            }
-
-            tmp_buf[num_digits] = 0;
-
-            paramLen = strtoull(tmp_buf, nullptr, 10);
-
-            uint64_t* argPtr;
-
-            if (param == 0)
-                argPtr = arg1;
-            if (param == 1)
-                argPtr = arg2;
-            if (param == 2)
-                argPtr = arg3;
-            if (param == 3)
-                argPtr = arg4;
-
-            memcpy(stack_ptr, argPtr, paramLen);
-
-            state.__x[param] = (uint64_t)remote_stack + (stack_ptr - local_fake_stack);
-            stack_ptr += 16;
-            stack_ptr += paramLen;
-            stack_ptr = (char*)align64((uint64_t)stack_ptr);
-
-            break;
-
-        case 'u':;
-
-            state.__x[param] = (param == 0)   ? (uint64_t)arg1
-                               : (param == 1) ? (uint64_t)arg2
-                               : (param == 2) ? (uint64_t)arg3
-                                              : (uint64_t)arg4;
-
-            argp++;
-
-            break;
-
-        default:;
-
-            fprintf(stderr, "Unknown argument type: '%c'\n", *argp);
-
-            exit(-1);
         }
+        switch (*argp) {
+            case 's':
+                int num_digits;
+                char tmp_buf[6];
+                argp++;
+                num_digits = 0;
+                while (*argp >= '0' && *argp <= '9') {
+                    if (++num_digits == 6) {
+                        fprintf(stderr, "String too long, param=%d\n", param);
+                        return 0;
+                    }
+                    tmp_buf[num_digits - 1] = *(argp++);
+                }
+                tmp_buf[num_digits] = 0;
+                paramLen = strtoull(tmp_buf, nullptr, 10);
+                uint64_t* argPtr;
+                if (param == 0) {
+                    argPtr = arg1;
+                }
+                if (param == 1) {
+                    argPtr = arg2;
+                } if (param == 2) {
+                    argPtr = arg3;
+                } if (param == 3) {
+                    argPtr = arg4;
+                }
+                memcpy(stack_ptr, argPtr, paramLen);
+                state.__x[param] = (uint64_t)remote_stack + (stack_ptr - local_fake_stack);
+                stack_ptr += 16;
+                stack_ptr += paramLen;
+                stack_ptr = (char*)align64((uint64_t)stack_ptr);
+                break;
+            case 'u':
+                state.__x[param] = (param == 0)   ? (uint64_t)arg1
+                                : (param == 1) ? (uint64_t)arg2
+                                : (param == 2) ? (uint64_t)arg3
+                                                : (uint64_t)arg4;
+
+                argp++;
+                break;
+            default:
+                fprintf(stderr, "Unknown argument type: '%c'\n", *argp);
+                exit(-1);
+            }
     }
-
     kret = vm_write(task->GetTaskPort(), remote_stack, (vm_address_t)local_fake_stack, STACK_SIZE);
-
     free(local_fake_stack);
-
     if (kret != KERN_SUCCESS) {
         fprintf(stderr, "Unable to copy fake stack to target process! %s\n",
                 mach_error_string(kret));
-
         exit(-1);
     }
-
     printf("Calling function at %p...\n", (void*)function);
-
     kret = thread_set_state(remote_thread, ARM_THREAD_STATE64, (thread_state_t)&state,
                             ARM_THREAD_STATE64_COUNT);
-
     if (kret != KERN_SUCCESS) {
         fprintf(stderr, "Could not set thread state! %s\n", mach_error_string(kret));
-
         exit(-1);
     }
-
     thread_resume(remote_thread);
-
     while (1) {
         usleep(250000);
-
         thread_get_state(remote_thread, ARM_THREAD_STATE64, (thread_state_t)&state, &stateCount);
-
 #ifdef __arm64e__
         if (ptrauth_strip(state.__opaque_pc, ptrauth_key_process_independent_code) ==
             (void*)gadget_address)
@@ -312,78 +275,54 @@ static uint64_t ropcall(mach_vm_address_t function, char* argMap, uint64_t* arg1
 #endif
         {
             printf("Returned from function!\n");
-
             thread_suspend(remote_thread);
-
             break;
         }
     }
-
     return (uint64_t)state.__x[0];
 }
 
 static void* find_gadget(const char* gadget, int gadget_len) {
     kern_return_t kr;
-
-    vm_size_t size = 0;
-
-    size = 65536;
+    vm_size_t size = 65536;
 
     char* buf = (char*)malloc(size);
-
     char* orig_buf = buf;
-
     if (!buf) {
         fprintf(stderr, "Error allocating memory!\n");
-
         return nullptr;
     }
-
     kr = vm_read_overwrite(task->GetTaskPort(), dlopen, size, (vm_address_t)buf, &size);
-
     if (kr != KERN_SUCCESS) {
         fprintf(stderr, "Could not read RX pages!\n");
-
         free(orig_buf);
-
         return nullptr;
     }
-
     while (buf < orig_buf + size) {
         char* ptr = (char*)memmem((const void*)buf, (size_t)size - (size_t)(buf - orig_buf),
                                   (const void*)gadget, (size_t)gadget_len);
-
         if (ptr) {
             vm_size_t offset = (vm_size_t)(ptr - orig_buf);
-
             vm_address_t gadget_addr_real = dlopen + offset;
-
             if (((uint64_t)gadget_addr_real % 8) == 0) {
                 free(orig_buf);
-
                 return (void*)gadget_addr_real;
             } else {
                 buf = ptr + gadget_len;
             }
         }
     }
-
     free(orig_buf);
-
     return nullptr;
 }
 
-int injectLibrary(char* dylib) {
+int inject_library(char* dylib) {
     kern_return_t kr;
-
     int err;
 
     libDyld = task->GetDyld()->CacheDumpImage("libdyld.dylib");
-
     dlopen = libDyld->GetSymbolAddressByName("_dlopen") + libDyld->GetAslrSlide();
-
     dlerror = libDyld->GetSymbolAddressByName("_dlerror") + libDyld->GetAslrSlide();
-
     libSystemPthread = task->GetDyld()->CacheDumpImage("libsystem_pthread.dylib");
 
     pthread_create_from_mach_thread =
@@ -395,252 +334,186 @@ int injectLibrary(char* dylib) {
 
     if ((kr = thread_create(task->GetTaskPort(), &remote_thread)) != KERN_SUCCESS) {
         fprintf(stderr, "Could not create new thread in task!\n");
-
         return -1;
     }
-
     gadget_address = reinterpret_cast<mach_vm_address_t>(find_gadget(ROP_ret, 4));
-
     if (!gadget_address) {
         fprintf(stderr, "Failed to find gadget address!\n");
 
         return 0;
     }
-
     fprintf(stdout, "Found gadget at 0x%llx\n", gadget_address);
-
     kr = vm_allocate(task->GetTaskPort(), &remote_stack, STACK_SIZE, VM_FLAGS_ANYWHERE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to allocate memory! %s\n", mach_error_string(kr));
 
         return -1;
     }
-
     kr = vm_protect(task->GetTaskPort(), remote_stack, STACK_SIZE, FALSE,
                     VM_PROT_READ | VM_PROT_WRITE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to protect memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
-
     kr = vm_allocate(task->GetTaskPort(), (vm_address_t*)&remote_data, 16192, VM_FLAGS_ANYWHERE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to allocate memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
 
     kr = vm_protect(task->GetTaskPort(), remote_data, 16192, FALSE, VM_PROT_READ | VM_PROT_WRITE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to protect memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
 
     kr = vm_allocate(task->GetTaskPort(), (vm_address_t*)&remote_code, 16192, VM_FLAGS_ANYWHERE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to allocate memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
 
     kr = vm_protect(task->GetTaskPort(), remote_code, 16192, FALSE, VM_PROT_READ | VM_PROT_WRITE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to protect memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
-
     bool lib = false;
     bool libaddr = false;
 
     char* injected_code = reinterpret_cast<char*>(malloc(sizeof(injectedCode)));
-
     memcpy(injected_code, injectedCode, sizeof(injectedCode));
-
     for (uint32_t i = 0; i < sizeof(injectedCode); i++) {
         char* zeros =
             "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
         char* ones = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-
         char* library = dylib;
-
-        if (lib && libaddr)
+        if (lib && libaddr) {
             break;
-
+        }
         if (!lib && memcmp(&injectedCode[i], zeros, 20) == 0) {
             lib = true;
-
             strlcpy(&injected_code[i], library, strlen(library) + 1);
-
             i += strlen(library);
         }
-
         if (!libaddr && memcmp(&injectedCode[i], ones, sizeof(uint64_t)) == 0) {
             libaddr = true;
-
             memcpy(&injected_code[i], &dlopen, sizeof(uint64_t));
             memcpy(&injected_code[i] + sizeof(uint64_t), &dlerror, sizeof(uint64_t));
-
             i += sizeof(uint64_t);
         }
     }
-
     kr = vm_write(task->GetTaskPort(), remote_code, (vm_address_t)injected_code,
                   sizeof(injectedCode));
-
     if (kr != KERN_SUCCESS) {
         printf("Could not write injected code to remote code!\n");
-
         return -1;
     }
-
     kr = vm_protect(task->GetTaskPort(), remote_code, 16192, FALSE, VM_PROT_READ | VM_PROT_EXECUTE);
-
     if (kr != KERN_SUCCESS) {
         printf("Unable to protect memory! %s\n", mach_error_string(kr));
-
         return -1;
     }
-
     mach_vm_address_t pthread = remote_stack;
-
 #ifdef __arm64e__
     state.__opaque_pc =
         ptrauth_sign_unauthenticated((void*)remote_code, ptrauth_key_process_independent_code, 0);
-
     remote_code = reinterpret_cast<mach_vm_address_t>(state.__opaque_pc);
 #endif
-
     ropcall(pthread_create_from_mach_thread, (char*)"uuuu", (uint64_t*)pthread, nullptr,
             (uint64_t*)remote_code, nullptr);
-
     sleep(5);
 
     thread_suspend(remote_thread);
-
     thread_terminate(remote_thread);
 
     vm_deallocate(task->GetTaskPort(), remote_stack, STACK_SIZE);
-
     free(injected_code);
 
     memset(&state, 0x0, sizeof(state));
-
     return 0;
 }
 
 static struct option long_options[] = {{"pid", required_argument, 0, 'p'},
-                                       {"wait_for_process", required_argument, 0, 'w'}};
+                                       {"wait_for_process", required_argument, 0, 'w'},
+                                       {"fuzz", no_argument, 0, 'f'}};
 
 void print_usage() {
     printf("darwin_inject -p <pid> -w <process_name> /path/to/dynamic/library.dylib\n");
-
     exit(-1);
 }
 
 #include "fuzzer.h"
 
 int main(int argc, char** argv) {
-    // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
+    bool fuzz = false;
     int err;
-
     char* wait_for_process_name = nullptr;
-
     char* process_name;
-
     int pid = -1;
-
     int c;
 
     kernel = new Kernel();
-
     printf("Kernel base = 0x%llx slide = 0x%llx\n", kernel->GetBase(), kernel->GetSlide());
 
-    /*
-    task = new Task(kernel, 614);
+    // Example - running code in the macOS kernel in userspace
+    // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
 
-    mach_vm_address_t ASD = task->GetDyld()->GetImageLoadedAt("AppStoreDaemon", nullptr);
+    // Example - dumping a library from a kext
+    // task = new Task(kernel, 614);
+    // mach_vm_address_t ASD = task->GetDyld()->GetImageLoadedAt("AppStoreDaemon", nullptr);
+    // printf("AppStoreDaemon loaded at 0x%llx\n", ASD);
+    // MachO *AppStoreDaemon = task->GetDyld()->CacheDumpImage("AppStoreDaemon");
 
-    printf("AppStoreDaemon loaded at 0x%llx\n", ASD);
-
-    MachO *AppStoreDaemon = task->GetDyld()->CacheDumpImage("AppStoreDaemon");
-
-    return 0;
-
-    MachOUserspace *AS = new
-    MachOUserspace("/Users/ilhanraja/Downloads/Files/Work/AppStore.app/Contents/MacOS/AppStore_");
-
-    return 0;
-    */
-
-    /*
-    using namespace debug;
-
-    Dwarf<xnu::KernelMachO*>
-    dwarf("/Library/Developer/KDKs/KDK_13.6_22G120.kdk/System/Library/Kernels/kernel.release.t8112.dSYM/Contents/Resources/DWARF/kernel.release.t8112");
-
-
-    return 0;
-    */
-
+    // Example - parsing the Dwarf segments on a kernel
+    // using namespace debug;
+    // Dwarf<xnu::KernelMachO*>
+    // dwarf("/Library/Developer/KDKs/KDK_13.6_22G120.kdk/System/Library/Kernels/kernel.release.t8112.dSYM/Contents/Resources/DWARF/kernel.release.t8112");
     while (1) {
         int option_index = 0;
-
-        c = getopt_long(argc, argv, "p:w:", long_options, &option_index);
-
-        if (c == -1)
+        c = getopt_long(argc, argv, "p:w:f", long_options, &option_index);
+        if (c == -1) {
             break;
-
+        }
         switch (c) {
         case 'p':
             pid = atoi(optarg);
-
             break;
         case 'w':
             wait_for_process_name = optarg;
-
             break;
-
+        case 'f':
+            fuzz = true;
+            break;
         default:
             break;
         }
     }
 
+    if (fuzz) {
+        kernel->Fuzz();
+    }
     if (pid <= 0) {
         print_usage();
     }
-
     if (pid) {
         task = new Task(kernel, pid);
     }
-
     if (!task) {
         print_usage();
     }
 
     int argi = optind;
-
     printf("PID = %d task = 0x%llx proc = 0x%llx\n", task->GetPid(), task->GetTask(),
            task->GetProc());
-
     while (argi < argc) {
         char* library = argv[argi];
-
         mach_vm_address_t libraryLoadedAt = task->GetDyld()->GetImageLoadedAt(library, nullptr);
 
         if (!libraryLoadedAt) {
             if (wait_for_process_name) {
                 /*
                 es_client_t *client = nullptr;
-
                 ensure(es_new_client(&client, ^(es_client_t *client, const es_message_t *message)
                 {
                     switch (message->event_type)
@@ -686,26 +559,20 @@ int main(int argc, char** argv) {
                 ES_RETURN_SUCCESS);
 
                 dispatch_main();
-
                 */
             } else {
-                err = injectLibrary(library);
-
+                err = inject_library(library);
                 if (err != 0) {
                     return err;
                 }
-
                 libraryLoadedAt = task->GetDyld()->GetImageLoadedAt(library, nullptr);
             }
         }
-
         printf("%s loaded at 0x%llx\n", library, libraryLoadedAt);
 
         argi++;
     }
-
     delete task;
-
     delete kernel;
 
     return err;

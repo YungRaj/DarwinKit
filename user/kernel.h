@@ -115,6 +115,8 @@ public:
 
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
 
+    void Fuzz();
+
 private:
     darwin::MachOUserspace* macho;
 

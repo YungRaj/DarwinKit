@@ -10,7 +10,7 @@
 
 #define str(s) #s
 #define xstr(s) str(s)
-#define REPEAT_COUNT_THUNK 120000
+#define REPEAT_COUNT_THUNK 750000
 
 extern "C" {
 
