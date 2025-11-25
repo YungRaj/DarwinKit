@@ -25,9 +25,7 @@
 #include <types.h>
 
 #include "api_util.h"
-
 #include "kernel_darwin_kit.h"
-
 #include "kernel.h"
 
 namespace darwin {
@@ -67,6 +65,8 @@ class IOKernelDarwinKitUserClient : public IOUserClient {
 
     virtual void free();
 
+    virtual clientMemoryForType(UInt32 type, IOOptionBits *options, IOMemoryDescriptor **memory) override;
+
     virtual IOExternalMethod* getExternalMethodForIndex(UInt32 index);
     virtual IOExternalTrap* getExternalTrapForIndex(UInt32 index);
 
@@ -89,13 +89,16 @@ private:
     IOKernelDarwinKitService* darwinkitService;
 
     task_t clientTask;
-
     task_t kernelTask;
 
     xnu::Kernel* kernel;
+
+    IOMemoryDescriptor *coverageMap = nullptr;
 
     void initDarwinKit();
 
     UInt8* mapBufferFromClientTask(xnu::mach::VmAddress uaddr, Size size, IOOptionBits options,
                                    IOMemoryDescriptor** desc, IOMemoryMap** mapping);
+
+    IOMemoryDescriptor* mapCoverageBitmap();
 };

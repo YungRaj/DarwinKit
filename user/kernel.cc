@@ -261,6 +261,10 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
     return get_kernel_symbol(symbolname);
 }
 
+UInt8* Kernel::GetCoverageMap() {
+    return kcov_get_coverage_map();
+}
+
 void Kernel::Fuzz() {
     kcov_begin_fuzzing();
 }

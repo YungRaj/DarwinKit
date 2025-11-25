@@ -17,6 +17,10 @@ extern "C" {
 extern task_t current_task();
 extern thread_t current_thread();
 
+bool fuzz_from_userspace = true;
+
+Int32 current_pid = 0;
+
 UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)];
 
 UInt64 curr_location = 0;
@@ -153,7 +157,6 @@ void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
     }
 }
 
-void sanitizer_cov_trace_lr(UInt16 kext) {
-}
+void sanitizer_cov_trace_lr(UInt16 kext) {}
 
 }

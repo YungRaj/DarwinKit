@@ -570,3 +570,18 @@ void kcov_begin_fuzzing() {
 	uint32_t outputCnt = 0;
 	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitStartHarness, input, 0, 0, 0, output, &outputCnt, 0, 0);
 }
+
+uint8_t* kcov_get_coverage_map() {
+	uintptr_t user_addr = 0;
+	size_t user_size = 0;
+	IOConnectMapMemory(
+    	connection,
+		0,
+		mach_task_self(),
+		&user_addr,
+		&user_size,
+		kIOMapAnywhere
+	);
+	uint8_t *coverage_map = (uint8_t*)user_addr;
+	return coverage_map;
+}

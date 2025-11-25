@@ -115,6 +115,8 @@ public:
 
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
 
+    virtual UInt8* GetCoverageMap();
+
     void Fuzz();
 
 private:
