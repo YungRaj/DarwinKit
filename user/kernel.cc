@@ -258,13 +258,18 @@ UInt8* Kernel::GetCoverageMap() {
     return kcov_get_coverage_map();
 }
 
-void Kernel::FuzzInKernel() {
-    kcov_begin_fuzzing();
-}
-
-void Kernel::FuzzFromUserspace() {
-    UInt8 *coverage_map = kcov_get_coverage_map();
-    // libafl_start_darwin_kit_fuzzer(coverage_map);
+void Kernel::Fuzz(enum FuzzContext context) {
+    switch (context) {
+        case kLibAFLFuzzFromUserspace: {
+            UInt8 *coverage_map = GetCoverageMap();
+            // libafl_start_darwin_kit_fuzzer(coverage_map);
+            break;
+        }
+        case kLibAFLFuzzInKernel: {
+            kcov_begin_fuzzing();
+            break;
+        }
+    }
 }
 
 }

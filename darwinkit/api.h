@@ -30,6 +30,11 @@
 
 #include <machine/limits.h>
 
+enum FuzzContext {
+    kLibAFLFuzzFromUserspace,
+    kLibAFLFuzzInKernel,
+};
+
 enum kIOKernelDarwinKitOperation {
     kIOKernelDarwinKitHookKernelFunction,
     kIOKernelDarwinKitAddBreakpoint,

@@ -62,6 +62,10 @@
 #include "pac.h"
 #include "task.h"
 
+extern "C" {
+#include "api.h"
+}
+
 #include <arm64/patch_finder_arm64.h>
 
 using namespace std;
@@ -498,9 +502,9 @@ int main(int argc, char** argv) {
     }
 
     if (fuzz && from_kernel) {
-        kernel->FuzzInKernel();
+        kernel->Fuzz(kLibAFLFuzzInKernel);
     } else if (fuzz && from_user) {
-        kernel->FuzzFromUserspace();
+        kernel->Fuzz(kLibAFLFuzzFromUserspace);
     }
     if (pid <= 0) {
         print_usage();

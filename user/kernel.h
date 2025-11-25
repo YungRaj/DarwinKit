@@ -29,6 +29,7 @@
 #include "disassembler.h"
 
 extern "C" {
+#include "api.h"
 #include "kern_user.h"
 }
 
@@ -117,8 +118,7 @@ public:
 
     virtual UInt8* GetCoverageMap();
 
-    void FuzzInKernel();
-    void FuzzFromUserspace();
+    void Fuzz(enum FuzzContext context);
 
 private:
     darwin::MachOUserspace* macho;
