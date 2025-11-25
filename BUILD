@@ -220,7 +220,7 @@ cc_library(
 )
 
 macos_command_line_application(
-    name = "DarwinKit_inject",
+    name = "darwinkit_tool",
     deps = [":DarwinKit_user", ":capstone_fat_static_universal"],
     codesignopts = ["--entitlements", "entitlements.xml"],
     minimum_os_version = "11.0",

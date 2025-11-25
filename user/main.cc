@@ -436,17 +436,20 @@ int inject_library(char* dylib) {
 
 static struct option long_options[] = {{"pid", required_argument, 0, 'p'},
                                        {"wait_for_process", required_argument, 0, 'w'},
-                                       {"fuzz", no_argument, 0, 'f'}};
+                                       {"fuzz", no_argument, 0, 'f'},
+                                       {"kernel", no_argument, 0, 'k'},
+                                       {"user", no_argument, 0, 'u'}};
 
 void print_usage() {
-    printf("darwin_inject -p <pid> -w <process_name> /path/to/dynamic/library.dylib\n");
+    printf("darwinkit_tool -p <pid> -w <process_name> /path/to/dynamic/library.dylib\n");
+    printf("               -f -k\n");
     exit(-1);
 }
 
 #include "fuzzer.h"
 
 int main(int argc, char** argv) {
-    bool fuzz = false;
+    bool fuzz, from_kernel, from_user = false;
     int err;
     char* wait_for_process_name = nullptr;
     char* process_name;
@@ -454,7 +457,6 @@ int main(int argc, char** argv) {
     int c;
 
     kernel = new Kernel();
-    printf("Kernel base = 0x%llx slide = 0x%llx\n", kernel->GetBase(), kernel->GetSlide());
 
     // Example - running code in the macOS kernel in userspace
     // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
@@ -471,7 +473,7 @@ int main(int argc, char** argv) {
     // dwarf("/Library/Developer/KDKs/KDK_13.6_22G120.kdk/System/Library/Kernels/kernel.release.t8112.dSYM/Contents/Resources/DWARF/kernel.release.t8112");
     while (1) {
         int option_index = 0;
-        c = getopt_long(argc, argv, "p:w:f", long_options, &option_index);
+        c = getopt_long(argc, argv, "p:w:fku", long_options, &option_index);
         if (c == -1) {
             break;
         }
@@ -485,13 +487,20 @@ int main(int argc, char** argv) {
         case 'f':
             fuzz = true;
             break;
+        case 'k':
+            from_kernel = true;
+            break;
+        case 'u':
+            from_user = true;
         default:
             break;
         }
     }
 
-    if (fuzz) {
-        kernel->Fuzz();
+    if (fuzz && from_kernel) {
+        kernel->FuzzInKernel();
+    } else if (fuzz && from_user) {
+        kernel->FuzzFromUserspace();
     }
     if (pid <= 0) {
         print_usage();
@@ -502,6 +511,8 @@ int main(int argc, char** argv) {
     if (!task) {
         print_usage();
     }
+
+    printf("Kernel base = 0x%llx slide = 0x%llx\n", kernel->GetBase(), kernel->GetSlide());
 
     int argi = optind;
     printf("PID = %d task = 0x%llx proc = 0x%llx\n", task->GetPid(), task->GetTask(),

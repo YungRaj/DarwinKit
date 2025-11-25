@@ -16,6 +16,8 @@
 
 #include "kernel.h"
 
+#include "libafl_fuzzer.h"
+
 namespace xnu {
 
 const char* GetKernelVersion() {
@@ -228,24 +230,15 @@ bool Kernel::SetBreakpoint(xnu::mach::VmAddress address, xnu::mach::VmAddress br
 
 char* Kernel::ReadString(xnu::mach::VmAddress address) {
     char* s;
-
     int index = 0;
-
     char c;
-
     do {
         c = static_cast<char>(Read8(address + index));
-
         index++;
-
     } while (c);
-
     s = new char[index + 1];
-
     Read(address, reinterpret_cast<void*>(s), index);
-
     s[index] = '\0';
-
     return s;
 }
 
@@ -261,8 +254,17 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
     return get_kernel_symbol(symbolname);
 }
 
-void Kernel::Fuzz() {
+UInt8* Kernel::GetCoverageMap() {
+    return kcov_get_coverage_map();
+}
+
+void Kernel::FuzzInKernel() {
     kcov_begin_fuzzing();
+}
+
+void Kernel::FuzzFromUserspace() {
+    UInt8 *coverage_map = kcov_get_coverage_map();
+    // libafl_start_darwin_kit_fuzzer(coverage_map);
 }
 
 }

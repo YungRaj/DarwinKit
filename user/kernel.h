@@ -115,7 +115,10 @@ public:
 
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
 
-    void Fuzz();
+    virtual UInt8* GetCoverageMap();
+
+    void FuzzInKernel();
+    void FuzzFromUserspace();
 
 private:
     darwin::MachOUserspace* macho;

@@ -24,79 +24,57 @@ namespace darwin {
 
 bool Payload::ReadBytes(UInt8* bytes, Size sz) {
     bool success;
-
     success = ReadBytes(current_offset, bytes, sz);
-
     return success;
 }
 
 bool Payload::ReadBytes(Offset offset, UInt8* bytes, Size sz) {
     bool success;
-
     xnu::mach::VmAddress addr = address + offset;
-
     success = GetTask()->Read(addr, (void*)bytes, sz);
-
     return success;
 }
 
 bool Payload::WriteBytes(UInt8* bytes, Size sz) {
     bool success;
-
     success = WriteBytes(current_offset, bytes, sz);
-
     if (success) {
         current_offset += sz;
     }
-
     return success;
 }
 
 bool Payload::WriteBytes(Offset offset, UInt8* bytes, Size sz) {
     bool success;
-
     xnu::mach::VmAddress addr = address + offset;
-
     success = GetTask()->Write(addr, (void*)bytes, sz);
-
 #ifdef __KERNEL__
-
     if (addr >= (xnu::mach::VmAddress)Kernel::GetExecutableMemory() &&
         addr < (xnu::mach::VmAddress)Kernel::GetExecutableMemory() +
                       Kernel::GetExecutableMemorySize()) {
         Kernel::SetExecutableMemoryOffset(Kernel::GetExecutableMemoryOffset() + sz);
     }
-
 #endif
-
     return success;
 }
 
 bool Payload::Prepare() {
     bool success;
-
     xnu::mach::VmAddress tramp;
-
     Task* task = GetTask();
-
 #if defined(__x86_64__) || (defined(__arm64__) && defined(__USER__))
-
     tramp =
         task->VmAllocate(Payload::expectedSize, VM_FLAGS_ANYWHERE, VM_PROT_READ | VM_PROT_EXECUTE);
-
     if (!tramp) {
         return false;
     }
-
 /*#elif defined(__arm64__) && defined(__KERNEL__)*/
 #else
 
     tramp = Kernel::GetExecutableMemory() + Kernel::GetExecutableMemoryOffset();
 
 #endif
-
     address = tramp;
-
     return true;
 }
 

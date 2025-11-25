@@ -26,6 +26,7 @@ extern "C" {
 
 #define KCOV_COVERAGE_BITMAP_SIZE 64 * 1024
 
+extern Int32 current_pid;
 extern UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(uint64_t)];
 
 UInt8* sanitizer_cov_get_bitmap();

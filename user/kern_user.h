@@ -107,3 +107,4 @@ uint64_t virtual_to_physical(mach_port_t task, mach_vm_address_t vaddr);
 void kcov_enable_coverage();
 void kcov_disable_coverage();
 void kcov_begin_fuzzing();
+uint8_t* kcov_get_coverage_map();

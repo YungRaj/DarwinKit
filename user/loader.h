@@ -24,7 +24,7 @@
 
 #include "arch.h"
 
-#include "fuzzer.h"
+#include "emu_fuzzer.h"
 
 class MachO;
 class Symbol;

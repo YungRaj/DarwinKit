@@ -49,11 +49,11 @@ bazel build --macos_cpus=x86_64 :DarwinKit
 ```
 ### Build the userspace command line tool
 ```sh
-bazel build --macos_cpus=arm64 :DarwinKit_inject
+bazel build --macos_cpus=arm64 :darwinkit_tool
 ```
 or
 ```sh
-bazel build --macos_cpus=x86_64 :DarwinKit_inject
+bazel build --macos_cpus=x86_64 :darwinkit_tool
 ```
 ### Building the userspace tooling (as a library)
 ```sh

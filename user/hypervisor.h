@@ -31,7 +31,7 @@
 
 #include <iboot.h>
 
-#include "fuzzer.h"
+#include "emu_fuzzer.h"
 
 #include "virt.h"
 
