@@ -21,7 +21,7 @@ bool fuzz_from_userspace = true;
 
 Int32 current_pid = 0;
 
-UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)];
+alignas(16 * 1024) UInt64 coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)];
 
 UInt64 curr_location = 0;
 UInt64 prev_location = 0;

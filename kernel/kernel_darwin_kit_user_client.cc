@@ -22,14 +22,14 @@
 #include "kernel.h"
 #include "kernel_patcher.h"
 
-#include "coverage.h"
-
 #include "task.h"
 
 #include "section.h"
 #include "segment.h"
 
 #include "log.h"
+
+#include "coverage.h"
 
 #include "libafl_fuzzer.h"
 
@@ -179,17 +179,12 @@ fail:
 }
 
 IOMemoryDescriptor* IOKernelDarwinKitUserClient::mapCoverageBitmap() {
-    UInt64 coverage_map_page = ((UInt64)coverage_bitmap) & ~(page_size - 1);
     size_t size = KCOV_COVERAGE_BITMAP_SIZE;
     if (size % page_size != 0) {
         size = ((size / page_size) + 1) * page_size;
     }
     IOMemoryDescriptor* map = IOMemoryDescriptor::withPhysicalAddress(
-#ifdef __arm64__
-        ml_static_vtop(coverage_map_page),
-#elif __x86_64__
         kernel->VirtualToPhysical((UInt64) coverage_bitmap),
-#endif
         size,
         kIODirectionNone
     );
