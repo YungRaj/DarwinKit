@@ -52,15 +52,23 @@ static GLOBAL: MiMalloc = MiMalloc;
 
 const COVERAGE_MAP_SIZE: usize = 65536;
 
-/// The actual fuzzer
-#[expect(clippy::too_many_lines)]
-pub extern "C" fn libafl_start_darwin_kit_fuzzer(kernel_coverage_map: *const core::ffi::c_uchar) -> Result<(), Error> {
+#[no_mangle]
+pub extern "C" fn libafl_start_darwin_kit_fuzzer(kernel_coverage_map: *const core::ffi::c_uchar) -> isize {
     env_logger::init();
     color_backtrace::install();
     let options = parse_args();
 
     log::info!("Frida fuzzer starting up.");
+    match fuzz(&options, kernel_coverage_map) {
+        Ok(()) | Err(Error::ShuttingDown) => println!("\nFinished fuzzing. Good bye."),
+        Err(e) => panic!("Error during fuzzing: {e:?}"),
+    }
+    0
+}
 
+/// The actual fuzzer
+#[expect(clippy::too_many_lines)]
+fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar) -> Result<(), Error> {
     // 'While the stats are state, they are usually used in the broker - which is likely never restarted
     let monitor = MultiMonitor::new(|s| println!("{s}"));
 

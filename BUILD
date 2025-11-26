@@ -221,10 +221,13 @@ cc_library(
 
 macos_command_line_application(
     name = "darwinkit_tool",
-    deps = [":DarwinKit_user", ":capstone_fat_static_universal"],
+    deps = [
+        ":DarwinKit_user",
+        ":libafl_fuzzer_frida",
+    ],
     codesignopts = ["--entitlements", "entitlements.xml"],
     minimum_os_version = "11.0",
-    linkopts = []
+    linkopts = ["-lresolv"]
 )
 
 objc_library(
@@ -282,6 +285,8 @@ cc_library(
     ],
     linkopts = [
         "-framework", "IOKit",
+        "-Wl,-sectalign,__DATA,__cov,0x4000",
+        "-Wl,-order_file,cov.order",
     ],
     visibility = ["//visibility:public"],
     alwayslink = True,
@@ -291,8 +296,8 @@ cc_library(
     name = "DarwinKit_kext",
     deps = [
         ":DarwinKit_kext_library",
-	":capstone_fat_static_kernel",
-	":libafl_fuzzer_no_std",
+        ":capstone_fat_static_kernel",
+        ":libafl_fuzzer_no_std",
     ],
     srcs = glob(["kernel/*.cc"]) + 
            glob(["darwinkit/*.cc"]) +
@@ -349,7 +354,7 @@ cc_library(
 
 genrule(
     name = "libafl_fuzzer_no_std_genrule",
-    srcs = ["fuzz/kernel/libafl_fuzzer.rs"],
+    srcs = ["fuzz/kernel/libafl_fuzzer.rs", "fuzz/kernel/allocator.rs", "fuzz/kernel/Cargo.toml"],
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
@@ -383,7 +388,7 @@ genrule(
 
 genrule(
     name = "libafl_fuzzer_frida_genrule",
-    srcs = ["fuzz/user/libafl_fuzzer.rs"],
+    srcs = ["fuzz/user/libafl_fuzzer.rs", "fuzz/user/Cargo.toml"],
     outs = ["liblibafl_fuzzer_frida_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
@@ -392,22 +397,10 @@ genrule(
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
         rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
-        cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a libafl_frida_arm64.a
-        mkdir -p tmp
-        cd tmp
-        llvm-ar x ../libafl_frida_arm64.a
-        ar rcs ../liblibafl_fuzzer_frida_lib_arm64.a *.o
-        cd ..
-        rm -R tmp
+        cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_arm64.a
         cargo clean
         cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
-        cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a libafl_frida_x86_64.a
-        mkdir -p tmp
-        cd tmp
-        llvm-ar x ../libafl_frida_x86_64.a
-        ar rcs ../liblibafl_fuzzer_frida_lib_x86_64.a *.o
-        cd ..
-        rm -R tmp
+        cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
 	    cargo clean
         lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
     """,

@@ -234,7 +234,7 @@ dependencies = [
 [[package]]
 name = "build_id2"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "ahash",
  "rustversion",
@@ -429,9 +429,9 @@ dependencies = [
 [[package]]
 name = "core_affinity2"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libc",
  "rustversion",
  "serde",
@@ -633,7 +633,21 @@ name = "exceptional"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libc",
+ "log",
+ "num_enum",
+ "rustversion",
+ "windows 0.62.2",
+ "windows-core",
+]
+
+[[package]]
+name = "exceptional"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libc",
  "log",
  "nix",
@@ -647,6 +661,15 @@ dependencies = [
 name = "fast_rands"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+dependencies = [
+ "rustversion",
+ "serde",
+]
+
+[[package]]
+name = "fast_rands"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "rand_core",
  "rustversion",
@@ -712,8 +735,7 @@ dependencies = [
 [[package]]
 name = "frida-build"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1130977e34153e6f9d12af60978e885ac05138f4099cda56e007fa503a277890"
+source = "git+https://github.com/frida/frida-rust#5f0193b225b5311c30866f8198463ff9217bc9b2"
 dependencies = [
  "reqwest",
  "tar",
@@ -723,9 +745,9 @@ dependencies = [
 [[package]]
 name = "frida-gum"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ffc9e7bc0924305e3b79ef5082db154f0d675c0a43b977c3180faf3e023f16d"
+source = "git+https://github.com/frida/frida-rust#5f0193b225b5311c30866f8198463ff9217bc9b2"
 dependencies = [
+ "bitflags",
  "cstr_core",
  "frida-gum-sys",
  "libc",
@@ -739,8 +761,7 @@ dependencies = [
 [[package]]
 name = "frida-gum-sys"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "722f070f55fc4f826c1e8679e082600d9dd13e79e4873bd58338694a1217d168"
+source = "git+https://github.com/frida/frida-rust#5f0193b225b5311c30866f8198463ff9217bc9b2"
 dependencies = [
  "bindgen 0.71.1",
  "cc",
@@ -754,8 +775,8 @@ dependencies = [
  "color-backtrace 0.6.1",
  "env_logger",
  "frida-gum",
- "libafl",
- "libafl_bolts",
+ "libafl 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "libafl_bolts 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libafl_frida",
  "libafl_targets",
  "libloading",
@@ -1204,6 +1225,35 @@ source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74f
 dependencies = [
  "ahash",
  "arbitrary-int 2.0.0",
+ "bitbybit",
+ "const_format",
+ "const_panic",
+ "hashbrown",
+ "libafl_bolts 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libc",
+ "libm",
+ "ll_mp 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "log",
+ "meminterval",
+ "no_std_time 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "num-traits",
+ "postcard",
+ "rustversion",
+ "serde",
+ "tuple_list",
+ "tuple_list_ex 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "winapi",
+ "windows 0.62.2",
+]
+
+[[package]]
+name = "libafl"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "ahash",
+ "arbitrary-int 2.0.0",
  "backtrace",
  "bincode",
  "bitbybit",
@@ -1212,16 +1262,16 @@ dependencies = [
  "fastbloom",
  "fs2",
  "hashbrown",
- "libafl_bolts",
- "libafl_core",
+ "libafl_bolts 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libafl_derive",
  "libc",
  "libm",
- "ll_mp",
+ "ll_mp 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "log",
  "meminterval",
  "nix",
- "no_std_time",
+ "no_std_time 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "num-traits",
  "postcard",
  "regex",
@@ -1230,7 +1280,7 @@ dependencies = [
  "serde_json",
  "serial_test",
  "tuple_list",
- "tuple_list_ex",
+ "tuple_list_ex 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "typed-builder",
  "uuid",
  "wait-timeout",
@@ -1244,36 +1294,68 @@ version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
  "ahash",
+ "erased-serde",
+ "exceptional 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "fast_rands 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "hashbrown",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libc",
+ "ll_mp 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "log",
+ "mach2 0.6.0",
+ "no_std_time 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "num_enum",
+ "ownedref 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "postcard",
+ "rustversion",
+ "serde",
+ "serde_anymap 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "shmem_providers 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "static_assertions",
+ "tuple_list",
+ "tuple_list_ex 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "typeid",
+ "winapi",
+ "windows 0.62.2",
+ "windows-result",
+]
+
+[[package]]
+name = "libafl_bolts"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "ahash",
  "backtrace",
  "build_id2",
  "clap",
  "core_affinity2",
  "erased-serde",
- "exceptional",
- "fast_rands",
+ "exceptional 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "fast_rands 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "hashbrown",
  "hostname",
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libafl_derive",
  "libc",
- "ll_mp",
+ "ll_mp 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "log",
  "mach2 0.6.0",
  "minibsod",
  "miniz_oxide",
  "nix",
- "no_std_time",
+ "no_std_time 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "num_enum",
- "ownedref",
+ "ownedref 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "postcard",
  "rustversion",
  "serde",
- "serde_anymap",
+ "serde_anymap 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "serial_test",
- "shmem_providers",
+ "shmem_providers 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "static_assertions",
  "tuple_list",
- "tuple_list_ex",
+ "tuple_list_ex 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "typeid",
  "uds",
  "wide",
@@ -1288,6 +1370,17 @@ name = "libafl_core"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
+ "postcard",
+ "rustversion",
+ "serde",
+ "windows-result",
+]
+
+[[package]]
+name = "libafl_core"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
  "backtrace",
  "nix",
  "postcard",
@@ -1299,7 +1392,7 @@ dependencies = [
 [[package]]
 name = "libafl_derive"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1309,7 +1402,7 @@ dependencies = [
 [[package]]
 name = "libafl_frida"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "ahash",
  "backtrace",
@@ -1321,8 +1414,8 @@ dependencies = [
  "frida-gum-sys",
  "hashbrown",
  "iced-x86",
- "libafl",
- "libafl_bolts",
+ "libafl 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "libafl_bolts 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libafl_targets",
  "libc",
  "log",
@@ -1345,8 +1438,8 @@ dependencies = [
 name = "libafl_fuzzer_no_std_kernel"
 version = "0.15.4"
 dependencies = [
- "libafl",
- "libafl_bolts",
+ "libafl 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libafl_bolts 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
  "libc",
  "log",
 ]
@@ -1354,23 +1447,23 @@ dependencies = [
 [[package]]
 name = "libafl_targets"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "bindgen 0.72.1",
  "cc",
- "fast_rands",
+ "fast_rands 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "hashbrown",
- "libafl",
- "libafl_bolts",
- "libafl_core",
+ "libafl 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "libafl_bolts 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libc",
  "log",
  "nix",
- "ownedref",
+ "ownedref 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "rangemap",
  "rustversion",
  "serde",
- "shmem_providers",
+ "shmem_providers 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
 ]
 
 [[package]]
@@ -1433,18 +1526,34 @@ name = "ll_mp"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
- "exceptional",
+ "exceptional 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "log",
+ "no_std_time 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "postcard",
+ "rustversion",
+ "serde",
+ "shmem_providers 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "tuple_list",
+]
+
+[[package]]
+name = "ll_mp"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "exceptional 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "hostname",
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "log",
  "miniz_oxide",
  "nix",
- "no_std_time",
+ "no_std_time 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "postcard",
  "rustversion",
  "serde",
  "serial_test",
- "shmem_providers",
+ "shmem_providers 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "tuple_list",
 ]
 
@@ -1550,9 +1659,9 @@ dependencies = [
 [[package]]
 name = "minibsod"
 version = "0.16.0"
-source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
- "exceptional",
+ "exceptional 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libc",
  "mach2 0.6.0",
  "rustversion",
@@ -1631,6 +1740,14 @@ dependencies = [
 name = "no_std_time"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
+name = "no_std_time"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
 dependencies = [
  "rustversion",
 ]
@@ -1764,7 +1881,17 @@ name = "ownedref"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "rustversion",
+ "serde",
+]
+
+[[package]]
+name = "ownedref"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "rustversion",
  "serde",
 ]
@@ -2238,10 +2365,25 @@ version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
  "ahash",
+ "erased-serde",
+ "hashbrown",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "postcard",
+ "rustversion",
+ "serde",
+ "static_assertions",
+]
+
+[[package]]
+name = "serde_anymap"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "ahash",
  "ctor",
  "erased-serde",
  "hashbrown",
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "postcard",
  "rustversion",
  "serde",
@@ -2328,9 +2470,25 @@ name = "shmem_providers"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
- "fast_rands",
+ "fast_rands 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
  "hashbrown",
- "libafl_core",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "libc",
+ "log",
+ "postcard",
+ "rustversion",
+ "serde",
+ "windows 0.62.2",
+]
+
+[[package]]
+name = "shmem_providers"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "fast_rands 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "hashbrown",
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "libc",
  "log",
  "nix",
@@ -2658,9 +2816,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-core"
-version = "0.1.34"
+version = "0.1.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9d12581f227e93f094d3af2ae690a574abb8a2b9b7a96e7cfe9647b2b617678"
+checksum = "7a04e24fab5c89c6a36eb8558c9656f30d81de51dfa4d3b45f26b21d61fa0a6c"
 dependencies = [
  "once_cell",
 ]
@@ -2682,8 +2840,21 @@ name = "tuple_list_ex"
 version = "0.16.0"
 source = "git+https://github.com/AFLplusplus/LibAFL.git?branch=main#47ca3389f74fbc3d396a213f3b59490b74924bc2"
 dependencies = [
- "libafl_core",
- "ownedref",
+ "libafl_core 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "ownedref 0.16.0 (git+https://github.com/AFLplusplus/LibAFL.git?branch=main)",
+ "rustversion",
+ "serde",
+ "tuple_list",
+ "typeid",
+]
+
+[[package]]
+name = "tuple_list_ex"
+version = "0.16.0"
+source = "git+https://github.com/RajYung/LibAFL.git?branch=main#03399c8f10d0be2c38999191fae957a34acd244f"
+dependencies = [
+ "libafl_core 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
+ "ownedref 0.16.0 (git+https://github.com/RajYung/LibAFL.git?branch=main)",
  "rustversion",
  "serde",
  "tuple_list",

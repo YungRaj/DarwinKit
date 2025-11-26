@@ -262,7 +262,7 @@ void Kernel::Fuzz(enum FuzzContext context) {
     switch (context) {
         case kLibAFLFuzzFromUserspace: {
             UInt8 *coverage_map = GetCoverageMap();
-            // libafl_start_darwin_kit_fuzzer(coverage_map);
+            libafl_start_darwin_kit_fuzzer(coverage_map);
             break;
         }
         case kLibAFLFuzzInKernel: {

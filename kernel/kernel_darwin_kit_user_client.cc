@@ -183,8 +183,8 @@ IOMemoryDescriptor* IOKernelDarwinKitUserClient::mapCoverageBitmap() {
     if (size % page_size != 0) {
         size = ((size / page_size) + 1) * page_size;
     }
-    IOMemoryDescriptor* map = IOMemoryDescriptor::withPhysicalAddress(
-        kernel->VirtualToPhysical((UInt64) coverage_bitmap),
+    IOMemoryDescriptor* map = IOMemoryDescriptor::withAddress(
+        (void*) coverage_bitmap,
         size,
         kIODirectionNone
     );
