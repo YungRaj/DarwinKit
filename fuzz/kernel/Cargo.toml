@@ -1,0 +1,31 @@
+[package]
+name = "libafl_fuzzer_no_std_kernel"
+version = "0.15.4"
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+edition = "2021"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+opt-level = 3
+debug = true
+
+[dependencies]
+libafl = { default-features = false, git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main" }
+libafl_bolts = { default-features = false, git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main" }
+log = { version = "0.4.22", features = ["release_max_level_info"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.159"
+
+[lib]
+name = "libafl_fuzzer_no_std_lib"
+crate-type = ["staticlib"]
+path = "libafl_fuzzer.rs"

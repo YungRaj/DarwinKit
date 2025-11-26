@@ -349,14 +349,16 @@ cc_library(
 
 genrule(
     name = "libafl_fuzzer_no_std_genrule",
-    srcs = ["kernel/libafl_fuzzer.rs"],
+    srcs = ["fuzz/kernel/libafl_fuzzer.rs"],
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
-	rustup target add aarch64-apple-darwin
+        export RUSTFLAGS="-C panic=abort"
+        cargo clean
+	    rustup target add aarch64-apple-darwin
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
-        rustup run nightly-aarch64-apple-darwin cargo build -Zbuild-std=core,alloc --target arm64e-kernel.json -v
+        rustup run nightly-aarch64-apple-darwin cargo build -Zbuild-std=core,alloc --target fuzz/kernel/arm64e-kernel.json --manifest-path fuzz/kernel/Cargo.toml -v
         cp target/arm64e-kernel/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_arm64e.a
         mkdir -p tmp
         cd tmp
@@ -364,17 +366,50 @@ genrule(
         ar rcs ../liblibafl_fuzzer_no_std_lib_arm64e.a *.o
         cd ..
         rm -R tmp
-	cargo clean
-	cargo build --target x86_64-apple-darwin -Zbuild-std=core,alloc -v
-	cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
+        cargo clean
+        cargo build --target x86_64-apple-darwin -Zbuild-std=core,alloc --manifest-path fuzz/kernel/Cargo.toml -v
+        cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
         mkdir -p tmp
         cd tmp
         llvm-ar x ../libafl_libfuzzer_x86_64.a
         ar rcs ../liblibafl_fuzzer_no_std_lib_x86_64.a *.o
         cd ..
         rm -R tmp
-	cargo clean
+	    cargo clean
         lipo -create -output $(OUTS) liblibafl_fuzzer_no_std_lib_x86_64.a liblibafl_fuzzer_no_std_lib_arm64e.a
+    """,
+    tags = ["no-sandbox"],
+)
+
+genrule(
+    name = "libafl_fuzzer_frida_genrule",
+    srcs = ["fuzz/user/libafl_fuzzer.rs"],
+    outs = ["liblibafl_fuzzer_frida_lib.a"],
+    cmd = """  
+        export RUSTUP_TOOLCHAIN=nightly
+        cargo clean
+	    rustup target add aarch64-apple-darwin
+        rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
+        rustup install nightly-aarch64-apple-darwin --force-non-host
+        rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
+        cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a libafl_frida_arm64.a
+        mkdir -p tmp
+        cd tmp
+        llvm-ar x ../libafl_frida_arm64.a
+        ar rcs ../liblibafl_fuzzer_frida_lib_arm64.a *.o
+        cd ..
+        rm -R tmp
+        cargo clean
+        cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
+        cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a libafl_frida_x86_64.a
+        mkdir -p tmp
+        cd tmp
+        llvm-ar x ../libafl_frida_x86_64.a
+        ar rcs ../liblibafl_fuzzer_frida_lib_x86_64.a *.o
+        cd ..
+        rm -R tmp
+	    cargo clean
+        lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
     """,
     tags = ["no-sandbox"],
 )
@@ -382,6 +417,13 @@ genrule(
 cc_library(
     name = "libafl_fuzzer_no_std",
     srcs = [":libafl_fuzzer_no_std_genrule"],
+    linkstatic = True,
+    alwayslink = True,
+)
+
+cc_library(
+    name = "libafl_fuzzer_frida",
+    srcs = [":libafl_fuzzer_frida_genrule"],
     linkstatic = True,
     alwayslink = True,
 )

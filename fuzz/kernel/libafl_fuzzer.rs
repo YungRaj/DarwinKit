@@ -95,7 +95,7 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi:
         .cast::<[u8; COVERAGE_MAP_SIZE]>();
 
     // Create an observation channel using the signals map
-    let observer = unsafe { ConstMapObserver::from_mut_ptr("signals", map_ptr) };
+    let observer = unsafe { ConstMapObserver::from_mut_ptr("edges", map_ptr) };
     // Feedback to rate the interestingness of an input
     let mut feedback = MaxMapFeedback::new(&observer);
 
