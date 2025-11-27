@@ -57,6 +57,7 @@ using KmodInfo = kmod_info_t;
 
 using KmodStartFunc = kmod_start_func_t;
 using KmodStopFunc = kmod_stop_func_t;
+using VmAddress = vm_address_t;
 
 namespace mach {
 using VmMap = vm_map_t;
@@ -65,7 +66,7 @@ using VmAddress = mach_vm_address_t;
 using VmProtection = vm_prot_t;
 
 using Port = mach_port_t;
-}; // namespace Mach
+}; // namespace mach
 
 namespace macho {
 using Header64 = struct mach_header_64;

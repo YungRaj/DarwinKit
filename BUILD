@@ -213,6 +213,8 @@ cc_library(
     linkopts = [
         "-framework", "IOKit",
         "-framework", "Hypervisor",
+        "-lEndpointSecurity",
+        "-lbsm",
     ],
     visibility = ["//visibility:public"],
     alwayslink = True,
