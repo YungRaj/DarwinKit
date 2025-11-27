@@ -213,6 +213,8 @@ cc_library(
     linkopts = [
         "-framework", "IOKit",
         "-framework", "Hypervisor",
+        "-lEndpointSecurity",
+        "-lbsm",
     ],
     visibility = ["//visibility:public"],
     alwayslink = True,
@@ -372,6 +374,9 @@ genrule(
         cd ..
         rm -R tmp
         cargo clean
+        rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain x86_64-apple-darwin
+        rustup install x86_64-apple-darwin --force-non-host
         cargo build --target x86_64-apple-darwin -Zbuild-std=core,alloc --manifest-path fuzz/kernel/Cargo.toml -v
         cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
         mkdir -p tmp
@@ -399,6 +404,9 @@ genrule(
         rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
         cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_arm64.a
         cargo clean
+        rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain x86_64-apple-darwin
+        rustup install x86_64-apple-darwin --force-non-host
         cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
         cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
 	    cargo clean
