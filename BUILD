@@ -361,8 +361,9 @@ genrule(
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
         export RUSTFLAGS="-C panic=abort"
-        cargo clean
-	    rustup target add aarch64-apple-darwin
+        rustup default nightly
+	cargo clean
+	rustup target add aarch64-apple-darwin
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
         rustup run nightly-aarch64-apple-darwin cargo build -Zbuild-std=core,alloc --target fuzz/kernel/arm64e-kernel.json --manifest-path fuzz/kernel/Cargo.toml -v
@@ -374,6 +375,9 @@ genrule(
         cd ..
         rm -R tmp
         cargo clean
+        rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+        rustup install nightly-x86_64-apple-darwin --force-non-host
         cargo build --target x86_64-apple-darwin -Zbuild-std=core,alloc --manifest-path fuzz/kernel/Cargo.toml -v
         cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_no_std_lib.a libafl_libfuzzer_x86_64.a
         mkdir -p tmp
@@ -382,7 +386,7 @@ genrule(
         ar rcs ../liblibafl_fuzzer_no_std_lib_x86_64.a *.o
         cd ..
         rm -R tmp
-	    cargo clean
+	cargo clean
         lipo -create -output $(OUTS) liblibafl_fuzzer_no_std_lib_x86_64.a liblibafl_fuzzer_no_std_lib_arm64e.a
     """,
     tags = ["no-sandbox"],
@@ -395,15 +399,19 @@ genrule(
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
         cargo clean
-	    rustup target add aarch64-apple-darwin
+	rustup default nightly
+	rustup target add aarch64-apple-darwin
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
         rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
         cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_arm64.a
         cargo clean
+        rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+        rustup install nightly-x86_64-apple-darwin --force-non-host
         cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
         cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
-	    cargo clean
+	cargo clean
         lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
     """,
     tags = ["no-sandbox"],

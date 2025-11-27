@@ -56,7 +56,7 @@ static struct option long_options[] = {{"pid", required_argument, 0, 'p'},
 void print_usage() {
     printf("darwinkit_tool -p <pid> -w <process_name> /path/to/dynamic/library.dylib\n");
     printf("               -f -k\n");
-    printf("               -f u\n");
+    printf("               -f -u\n");
     exit(-1);
 }
 
