@@ -21,7 +21,7 @@ use libafl::{
     },
     observers::{CanTrack, ConstMapObserver, HitcountsMapObserver, StdMapObserver, TimeObserver},
     schedulers::{IndexesLenTimeMinimizerScheduler, QueueScheduler},
-    stages::{IfElseStage, ShadowTracingStage, StdMutationalStage},
+    stages::{CalibrationStage, IfElseStage, ShadowTracingStage, StdMutationalStage},
     state::{HasCorpus, StdState},
     Error, HasMetadata,
 };
@@ -132,7 +132,7 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
             .cast::<[u8; COVERAGE_MAP_SIZE]>();
 
         // Create an observation channel using the signals map
-        let observer = unsafe { ConstMapObserver::from_mut_ptr("edges_kernel", map_ptr) };
+        let kernel_edges_observer = unsafe { ConstMapObserver::from_mut_ptr("edges_kernel", map_ptr) };
 
         // Create an observation channel using the coverage map
         let edges_observer = HitcountsMapObserver::new(unsafe {
@@ -153,7 +153,7 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
         // This one is composed by two Feedbacks in OR
         let mut feedback = feedback_or!(
             // XNU Kernel coverage maximization map feedback
-            MaxMapFeedback::new(&observer),
+            MaxMapFeedback::new(&kernel_edges_observer),
             // New frida maximization map feedback linked to the edges observer and the feedback state
             MaxMapFeedback::new(&edges_observer),
             // Time feedback, this one does not need a feedback state
@@ -165,6 +165,26 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
             CrashFeedback::new(),
             AsanErrorsFeedback::new(&asan_observer),
             TimeoutFeedback::new(),
+        );
+
+        let tracing = ShadowTracingStage::new();
+
+        // Setup a randomic Input2State stage
+        let i2s = StdMutationalStage::new(HavocScheduledMutator::new(tuple_list!(
+            I2SRandReplace::new()
+        )));
+
+        // Setup a basic mutator with a mutational stage
+        let mutator = HavocScheduledMutator::new(havoc_mutations().merge(tokens_mutations()));
+
+        let mut stages = tuple_list!(
+            CalibrationStage::new(&feedback.first),
+            IfElseStage::new(
+                |_, _, _, _| Ok(is_cmplog(&options, &client_description)),
+                tuple_list!(tracing, i2s),
+                tuple_list!()
+            ),
+            StdMutationalStage::new(mutator)
         );
 
         // If not restarting, create a State from scratch
@@ -184,9 +204,6 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
         });
 
         println!("We're a client, let's fuzz :)");
-
-        // Setup a basic mutator with a mutational stage
-        let mutator = HavocScheduledMutator::new(havoc_mutations().merge(tokens_mutations()));
 
         // A minimization+queue policy to get testcasess from the corpus
         let scheduler =
@@ -220,13 +237,6 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
 
         let mut executor = ShadowExecutor::new(executor, tuple_list!(cmplog_observer));
 
-        let tracing = ShadowTracingStage::new();
-
-        // Setup a randomic Input2State stage
-        let i2s = StdMutationalStage::new(HavocScheduledMutator::new(tuple_list!(
-            I2SRandReplace::new()
-        )));
-
         // In case the corpus is empty (on first run), reset
         if state.must_load_initial_inputs() {
             state
@@ -243,15 +253,6 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
                 });
             println!("We imported {} inputs from disk.", state.corpus().count());
         }
-
-        let mut stages = tuple_list!(
-            IfElseStage::new(
-                |_, _, _, _| Ok(is_cmplog(&options, &client_description)),
-                tuple_list!(tracing, i2s),
-                tuple_list!()
-            ),
-            StdMutationalStage::new(mutator)
-        );
 
         fuzzer.fuzz_loop(&mut stages, &mut executor, &mut state, &mut mgr)?;
 

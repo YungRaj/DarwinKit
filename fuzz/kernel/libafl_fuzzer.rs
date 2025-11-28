@@ -25,7 +25,7 @@ use libafl::{
     mutators::{havoc_mutations::havoc_mutations, scheduled::HavocScheduledMutator},
     observers::ConstMapObserver,
     schedulers::QueueScheduler,
-    stages::mutational::StdMutationalStage,
+    stages::{CalibrationStage, mutational::StdMutationalStage},
     state::StdState,
 };
 use libafl_bolts::{nonnull_raw_mut, nonzero, rands::StdRand, tuples::tuple_list, AsSlice};
@@ -99,6 +99,8 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi:
     // Feedback to rate the interestingness of an input
     let mut feedback = MaxMapFeedback::new(&observer);
 
+    let calibration = CalibrationStage::new(&feedback);
+
     // A feedback to choose if an input is a solution or not
     let mut objective = CrashFeedback::new();
 
@@ -159,7 +161,7 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi:
 
     // Setup a mutational stage with a basic bytes mutator
     let mutator = HavocScheduledMutator::new(havoc_mutations());
-    let mut stages = tuple_list!(StdMutationalStage::new(mutator));
+    let mut stages = tuple_list!(calibration, StdMutationalStage::new(mutator));
 
     fuzzer
         .fuzz_loop(&mut stages, &mut executor, &mut state, &mut mgr)
@@ -167,4 +169,3 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(coverage_map: *const core::ffi:
 
     0
 }
-
