@@ -33,7 +33,6 @@ void Patcher::RouteFunction(Hook* hook) {
 bool Patcher::IsFunctionHooked(xnu::mach::VmAddress address) {
     for (int i = 0; i < GetHooks().size(); i++) {
         Hook* hook = GetHooks().at(i);
-
         if (hook->GetHookType() == kHookTypeInstrumentFunction ||
             hook->GetHookType() == kHookTypeReplaceFunction) {
             if (hook->GetFrom() == address) {
@@ -41,33 +40,28 @@ bool Patcher::IsFunctionHooked(xnu::mach::VmAddress address) {
             }
         }
     }
-
     return false;
 }
 
 bool Patcher::IsBreakpointAtInstruction(xnu::mach::VmAddress address) {
     for (int i = 0; i < GetHooks().size(); i++) {
         Hook* hook = GetHooks().at(i);
-
         if (hook->GetHookType() == kHookTypeBreakpoint) {
             if (hook->GetFrom() == address) {
                 return true;
             }
         }
     }
-
     return false;
 }
 
 Hook* Patcher::HookForFunction(xnu::mach::VmAddress address) {
     Hook* hook = nullptr;
-
-    if (!IsFunctionHooked(address))
+    if (!IsFunctionHooked(address)) {
         return nullptr;
-
+    }
     for (int i = 0; i < GetHooks().size(); i++) {
         Hook* h = GetHooks().at(i);
-
         if (h->GetHookType() == kHookTypeInstrumentFunction ||
             h->GetHookType() == kHookTypeReplaceFunction) {
             if (hook->GetFrom() == address) {
@@ -75,32 +69,27 @@ Hook* Patcher::HookForFunction(xnu::mach::VmAddress address) {
             }
         }
     }
-
     return hook;
 }
 
 Hook* Patcher::BreakpointForAddress(xnu::mach::VmAddress address) {
     Hook* hook = nullptr;
-
-    if (!IsBreakpointAtInstruction(address))
+    if (!IsBreakpointAtInstruction(address)) {
         return nullptr;
-
+    }
     for (int i = 0; i < GetHooks().size(); i++) {
         Hook* h = GetHooks().at(i);
-
         if (h->GetHookType() == kHookTypeBreakpoint) {
             if (hook->GetFrom() == address) {
                 hook = h;
             }
         }
     }
-
     return hook;
 }
 
 void Patcher::InstallHook(Hook* hook, xnu::mach::VmAddress hooked) {
     hook->HookFunction(hooked);
-
     if (std::find(hooks.begin(), hooks.end(), hook) != hooks.end()) {
         hooks.push_back(hook);
     }
@@ -108,9 +97,7 @@ void Patcher::InstallHook(Hook* hook, xnu::mach::VmAddress hooked) {
 
 void Patcher::RemoveHook(Hook* hook) {
     hook->UninstallHook();
-
     hooks.erase(std::remove(hooks.begin(), hooks.end(), hook), hooks.end());
-
     delete hook;
 }
 

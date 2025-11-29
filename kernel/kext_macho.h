@@ -18,7 +18,6 @@
 
 #include <mach/kmod.h>
 #include <mach/mach_types.h>
-
 #include <types.h>
 
 #include "macho.h"

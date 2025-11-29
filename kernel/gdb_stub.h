@@ -17,7 +17,6 @@
 #pragma once
 
 #include <types.h>
-
 #include <arch.h>
 #include <vector.h>
 

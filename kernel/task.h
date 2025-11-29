@@ -16,6 +16,14 @@
 
 #pragma once
 
+extern "C" {
+#include <libkern/libkern.h>
+
+#include <kern/host.h>
+#include <mach/mach_types.h>
+#include <sys/sysctl.h>
+}
+
 #include <types.h>
 
 #include "disassembler.h"
@@ -25,14 +33,6 @@
 #include "segment.h"
 
 #include "process.h"
-
-extern "C" {
-#include <libkern/libkern.h>
-
-#include <kern/host.h>
-#include <mach/mach_types.h>
-#include <sys/sysctl.h>
-}
 
 typedef void* pmap_t;
 

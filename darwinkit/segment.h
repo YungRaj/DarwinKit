@@ -90,7 +90,6 @@ public:
                 return section;
             }
         }
-
         return nullptr;
     }
 

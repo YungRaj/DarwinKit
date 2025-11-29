@@ -19,74 +19,59 @@
 namespace arch {
 Architecture* InitArchitecture() {
     static Architecture* architecture = nullptr;
-
     if (!architecture) {
         architecture = new Architecture();
     }
-
     return architecture;
 }
 
 bool Architecture::SetInterrupts(bool enable) {
     bool success = false;
-
     switch (current_architecture) {
     case ARCH_x86_64:
         success = x86_64::SetInterrupts(enable);
-
         break;
     case ARCH_arm64:
         success = arm64::SetInterrupts(enable);
-
         break;
     default:
         break;
     }
-
     return success;
 }
 
 bool Architecture::SetWPBit(bool enable) {
     bool success = false;
-
     switch (current_architecture) {
     case ARCH_x86_64:
         success = x86_64::SetWPBit(enable);
-
         break;
     case ARCH_arm64:
         success = arm64::SetWPBit(enable);
-
         break;
     default:
         break;
     }
-
     return success;
 }
 
 bool Architecture::SetNXBit(bool enable) {
     bool success = false;
-
     switch (current_architecture) {
     case ARCH_x86_64:
         success = x86_64::SetNXBit(enable);
-
         break;
     case ARCH_arm64:
         success = arm64::SetNXBit(enable);
-
         break;
     default:
         break;
     }
-
     return success;
 }
 
 bool Architecture::SetPaging(bool enable) {
     bool success = false;
-
     switch (current_architecture) {
     case ARCH_x86_64:
         break;
@@ -95,7 +80,6 @@ bool Architecture::SetPaging(bool enable) {
     default:
         break;
     }
-
     return success;
 }
 } // namespace arch

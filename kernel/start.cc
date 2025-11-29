@@ -39,46 +39,36 @@ darwin::DarwinKit* darwinkit_get_darwinkit() {
 
 kern_return_t darwinkit_start(IOKernelDarwinKitService* service, Kernel* kernel, Kext** kext) {
     kern_return_t ret = kIOReturnSuccess;
-
     darwinkit = new darwin::DarwinKit(kernel);
-
     if (!darwinkit) {
         ret = kIOReturnUnsupported;
     }
-
     *kext = darwinkit->GetKextByIdentifier("com.YungRaj.DarwinKit");
-
     if (!*kext) {
         DARWIN_KIT_LOG("DarwinKit::darwinkit_start() cannot find com.YungRaj.DarwinKit kext!\n");
     } else {
         DARWIN_KIT_LOG("DarwinKit::darwinkit_start() found com.YungRaj.DarwinKit kext!\n");
     }
-
     return ret;
 }
 
 kern_return_t darwinkit_stop(IOKernelDarwinKitService* service, Kernel* kernel, Kext** kext) {
     kern_return_t ret = kIOReturnSuccess;
-
     if (darwinkit) {
         delete darwinkit;
-
         darwinkit = nullptr;
     }
-
     return ret;
 }
 
 extern "C" {
 kern_return_t kern_start(kmod_info_t* ki, void* data) {
     DARWIN_KIT_LOG("DarwinKit::kmod_start()!\n");
-
     return KERN_SUCCESS;
 }
 
 kern_return_t kern_stop(kmod_info_t* ki, void* data) {
     DARWIN_KIT_LOG("DarwinKit::kmod_stop()!\n");
-
     return KERN_SUCCESS;
 }
 

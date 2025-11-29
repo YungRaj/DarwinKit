@@ -18,10 +18,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #include <mach/kmod.h>
 #include <mach/mach_types.h>
-
 #include <types.h>
 
 #include "kext_macho.h"
@@ -102,11 +100,8 @@ private:
     xnu::KmodInfo* kmod_info;
 
     void* kext;
-
     xnu::mach::VmAddress address;
-
     Size size;
-
     char* identifier;
 };
 

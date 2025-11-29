@@ -85,7 +85,6 @@ char* swift_demangle(char* mangled) {
 Symbol* SymbolTable::GetSymbolByName(char* symname) {
     for (int32_t i = 0; i < symbolTable.size(); i++) {
         Symbol* symbol = symbolTable.at(i);
-
         if (strcmp(symbol->GetName(), symname) == 0) {
             return symbol;
         }
@@ -97,7 +96,6 @@ Symbol* SymbolTable::GetSymbolByName(char* symname) {
 Symbol* SymbolTable::GetSymbolByAddress(xnu::mach::VmAddress address) {
     for (int32_t i = 0; i < symbolTable.size(); i++) {
         Symbol* symbol = symbolTable.at(i);
-
         if (symbol->GetAddress() == address) {
             return symbol;
         }
@@ -109,7 +107,6 @@ Symbol* SymbolTable::GetSymbolByAddress(xnu::mach::VmAddress address) {
 Symbol* SymbolTable::GetSymbolByOffset(Offset offset) {
     for (int32_t i = 0; i < symbolTable.size(); i++) {
         Symbol* symbol = symbolTable.at(i);
-
         if (symbol->GetOffset() == offset) {
             return symbol;
         }
