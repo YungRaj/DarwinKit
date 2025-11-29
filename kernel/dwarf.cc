@@ -149,11 +149,8 @@ char* DWTagToString(enum DW_TAG tag) {
     case DW_TAG::hi_user:
         return "hi_user";
     }
-
     char* ret = new char[1024];
-
     snprintf(ret, 1024, "unknown 0x%x", static_cast<UInt32>(tag));
-
     return ret;
 }
 
@@ -348,11 +345,8 @@ char* DWAttrToString(enum DW_AT attr) {
     case DW_AT::call_line:
         return "call_line";
     }
-
     char* ret = new char[1024];
-
     snprintf(ret, 1024, "unknown 0x%x", static_cast<UInt32>(attr));
-
     return ret;
 }
 
@@ -409,11 +403,8 @@ char* DWFormToString(enum DW_FORM form) {
     case DW_FORM::sdata:
         return "ref_sdata";
     }
-
     char* ret = new char[1024];
-
     snprintf(ret, 1024, "unknown 0x%x", static_cast<UInt32>(form));
-
     return ret;
 }
 
@@ -470,149 +461,107 @@ Size DWFormSize(enum DW_FORM form) {
     case DW_FORM::ref_sig8:
         return 8;
     }
-
     return 0;
 }
 
 char* SourceLineFlagsToString(struct LTSourceLine* sourceLine) {
     char* buffer = new char[1024];
-
     snprintf(buffer, 1024, "%s %s %s %s %s", sourceLine->state.statement > 0 ? "is_stmt" : "",
              sourceLine->state.basic_block > 0 ? "basic_block" : "",
              sourceLine->state.end_sequence > 0 ? "end_sequence" : "",
              sourceLine->state.prologue_end > 0 ? "prologue_end" : "",
              sourceLine->state.epilogue_begin > 0 ? "epilogue_begin" : "");
-
     return buffer;
 }
 
 UInt64 debug::GetStringSize(UInt8* p) {
     UInt8* s = p;
-
     UInt64 size = 0;
-
     while (*s++) {
         size++;
     }
-
     return size;
 }
 
 UInt64 debug::ReadUleb128(UInt8* p, UInt8* end) {
     UInt64 result = 0;
-
     int bit = 0;
-
     do {
         if (p == end) {
             DARWIN_KIT_LOG("malformed uleb128\n");
-
             break;
         }
-
         UInt64 slice = *p & 0x7F;
-
         if (bit > 63) {
             DARWIN_KIT_LOG("uleb128 too big for uint64\n");
-
             break;
         } else {
             result |= (slice << bit);
-
             bit += 7;
         }
-
     } while (*p++ & 0x80);
-
     return result;
 }
 
 UInt64 debug::ReadUleb128(UInt8* p, UInt8* end, UInt32* idx) {
     UInt64 result = 0;
-
     int bit = 0;
-
     do {
         if (p == end) {
             DARWIN_KIT_LOG("malformed uleb128\n");
-
             break;
         }
-
         UInt64 slice = *p & 0x7F;
-
         if (bit > 63) {
             DARWIN_KIT_LOG("uleb128 too big for uint64\n");
-
             break;
         } else {
             result |= (slice << bit);
-
             bit += 7;
         }
-
         *idx = *idx + 1;
-
     } while (*p++ & 0x80);
-
     return result;
 }
 
 int64_t debug::ReadSleb128(UInt8* p, UInt8* end) {
     int64_t result = 0;
-
     int bit = 0;
-
     UInt8 byte = 0;
-
     do {
         if (p == end) {
             DARWIN_KIT_LOG("malformed sleb128\n");
-
             break;
         }
-
         byte = *p++;
-
         result |= (((int64_t)(byte & 0x7f)) << bit);
-
         bit += 7;
     } while (byte & 0x80);
     // sign extend negative numbers
-
-    if (((byte & 0x40) != 0) && (bit < 64))
+    if (((byte & 0x40) != 0) && (bit < 64)) {
         result |= (~0ULL) << bit;
-
+    }
     return result;
 }
 
 int64_t debug::ReadSleb128(UInt8* p, UInt8* end, UInt32* idx) {
     int64_t result = 0;
-
     int bit = 0;
-
     UInt8 byte = 0;
-
     do {
         if (p == end) {
             DARWIN_KIT_LOG("malformed sleb128\n");
-
             break;
         }
-
         byte = *p++;
-
         *idx = *idx + 1;
-
         result |= (((int64_t)(byte & 0x7f)) << bit);
-
         bit += 7;
     } while (byte & 0x80);
     // sign extend negative numbers
-
-    if (((byte & 0x40) != 0) && (bit < 64))
+    if (((byte & 0x40) != 0) && (bit < 64)) {
         result |= (~0ULL) << bit;
-
+    }
     return result;
 }
 
@@ -638,12 +587,10 @@ DIE::DIE(Dwarf* dwarf, UInt64 code, char* name, enum DW_TAG tag, enum DW_CHILDRE
 struct AttrAbbrev* DIE::GetAttribute(enum DW_AT attr) {
     for (int i = 0; i < abbreviationTable.size(); i++) {
         struct AttrAbbrev* ab = abbreviationTable.at(i);
-
         if (attr == ab->attr_spec.name) {
             return ab;
         }
     }
-
     return nullptr;
 }
 
@@ -653,22 +600,20 @@ DwarfDIE::DwarfDIE(Dwarf* dwarf, CompilationUnit* unit, DIE* die, DwarfDIE* pare
 struct Attribute* DwarfDIE::GetAttribute(enum DW_AT attr) {
     for (int i = 0; i < attributes.size(); i++) {
         struct Attribute* attribute = attributes.at(i);
-
-        if (attribute->abbreviation.attr_spec.name == attr)
+        if (attribute->abbreviation.attr_spec.name == attr) {
             return attribute;
+        }
     }
-
     return nullptr;
 }
 
 UInt64 DwarfDIE::GetAttributeValue(enum DW_AT attr) {
     for (int i = 0; i < attributes.size(); i++) {
         struct Attribute* attribute = attributes.at(i);
-
-        if (attribute->abbreviation.attr_spec.name == attr)
+        if (attribute->abbreviation.attr_spec.name == attr) {
             return attribute->value;
+        }
     }
-
     return 0;
 }
 
@@ -729,552 +674,375 @@ void Dwarf::PopulateDebugSymbols() {
 
 void Dwarf::ParseDebugAbbrev() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_info = __debug_info;
     Section* debug_abbrev = __debug_abbrev;
     Section* debug_str = __debug_str;
-
     UInt8* debug_abbrev_begin = (*macho)[debug_abbrev->GetOffset()];
     UInt8* debug_abbrev_end = (*macho)[debug_abbrev->GetOffset() + debug_abbrev->GetSize()];
-
     UInt8* debug_str_begin = (*macho)[debug_str->GetOffset()];
     UInt8* debug_str_end = (*macho)[debug_str->GetOffset() + debug_str->GetSize()];
-
     Size debug_abbrev_size = debug_abbrev->GetSize();
-
     UInt32 debug_abbrev_offset = 0;
-
     std::vector<DIE*> stack;
-
     UInt64 code = 0;
-
     enum DW_TAG tag = static_cast<enum DW_TAG>(0);
-
     while (debug_abbrev_offset < debug_abbrev->GetSize() - sizeof(UInt32)) {
         if (code == 0 && static_cast<UInt32>(tag) == 0) {
             code = debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end,
                                       &debug_abbrev_offset);
-
             tag = static_cast<enum DW_TAG>(debug::ReadUleb128(
                 debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end, &debug_abbrev_offset));
-
             if (tag == DW_TAG::compile_unit) {
                 enum DW_CHILDREN children = static_cast<enum DW_CHILDREN>(
                     debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end,
                                        &debug_abbrev_offset));
-
                 char* name = DWTagToString(tag);
-
                 DIE* die = new DIE(this, code, name, tag, children);
-
                 stack.push_back(die);
-
                 dies.push_back(die);
-
                 DARWIN_KIT_LOG("\n\n[%llu] DW_TAG = %s children = %u\n", code, name,
                            static_cast<UInt32>(children));
             }
-
         } else {
             UInt64 value;
-
             enum DW_AT attr = static_cast<enum DW_AT>(debug::ReadUleb128(
                 debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end, &debug_abbrev_offset));
-
             enum DW_FORM form = static_cast<enum DW_FORM>(debug::ReadUleb128(
                 debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end, &debug_abbrev_offset));
-
             if (static_cast<int>(attr) == 0 && static_cast<int>(form) == 0) {
                 UInt32 tmp = debug_abbrev_offset;
-
                 code = debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset,
                                           debug_abbrev_end, &debug_abbrev_offset);
-
                 while (!code) {
                     tmp = debug_abbrev_offset;
-
                     code = debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset,
                                               debug_abbrev_end, &debug_abbrev_offset);
                 }
-
                 tag = static_cast<enum DW_TAG>(
                     debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset, debug_abbrev_end,
                                        &debug_abbrev_offset));
-
                 if (tag == DW_TAG::compile_unit) {
                     tag = static_cast<enum DW_TAG>(0);
                     code = 0;
-
                     debug_abbrev_offset = tmp;
-
                     continue;
                 } else {
                     enum DW_CHILDREN children = static_cast<enum DW_CHILDREN>(
                         debug::ReadUleb128(debug_abbrev_begin + debug_abbrev_offset,
                                            debug_abbrev_end, &debug_abbrev_offset));
-
                     char* name = DWTagToString(tag);
-
                     DIE* die = new DIE(this, code, name, tag, children);
-
                     DARWIN_KIT_LOG("\n\n[%llu] DW_TAG = %s children = %u\n", code, name,
                                static_cast<UInt32>(children));
-
                     stack.push_back(die);
-
                     dies.push_back(die);
                 }
-
             } else {
                 DARWIN_KIT_LOG("\tDW_AT = %s 0x%x DW_FORM = %s\n", DWAttrToString(attr),
                            static_cast<UInt32>(attr), DWFormToString(form));
-
                 DIE* die = stack.at(stack.size() - 1);
-
                 struct AttrAbbrev* ab = new AttrAbbrev;
-
                 ab->tag = die->GetTag();
                 ab->children = die->GetHasChildren();
                 ab->code = die->GetCode();
-
                 ab->attr_spec.name = attr;
                 ab->attr_spec.form = form;
-
                 die->AddAbbreviation(ab);
             }
         }
     }
-
     DARWIN_KIT_LOG("\n\n");
 }
 
 DIE* Dwarf::GetDebugInfoEntryByCode(UInt64 code) {
     for (int i = 0; i < dies.size(); i++) {
         DIE* die = dies.at(i);
-
         if (die->GetCode() == code) {
             return die;
         }
     }
-
     return nullptr;
 }
 
 void Dwarf::ParseDebugInfo() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_info = __debug_info;
     Section* debug_abbrev = __debug_abbrev;
     Section* debug_str = __debug_str;
-
     UInt8* debug_info_begin = (*macho)[debug_info->GetOffset()];
     UInt8* debug_info_end = (*macho)[debug_info->GetOffset() + debug_info->GetSize()];
-
     UInt8* debug_abbrev_begin = (*macho)[debug_abbrev->GetOffset()];
     UInt8* debug_abbrev_end = (*macho)[debug_abbrev->GetOffset() + debug_abbrev->GetSize()];
-
     UInt8* debug_str_begin = (*macho)[debug_str->GetOffset()];
     UInt8* debug_str_end = (*macho)[debug_str->GetOffset() + debug_str->GetSize()];
-
     Size debug_info_size = debug_info->GetSize();
     Size debug_abbrev_size = debug_abbrev->GetSize();
-
     UInt32 debug_info_offset = 0;
     UInt32 debug_abbrev_offset = 0;
-
     struct CompilationUnit* compilationUnit = nullptr;
     struct CompileUnitHeader* header = nullptr;
-
     std::vector<DwarfDIE*> stack;
-
     UInt32 next_unit = 0;
     UInt32 consecutive_zeroes = 0;
-
     while (debug_info_offset < debug_info->GetSize() - sizeof(UInt32)) {
         UInt64 value;
-
         bool new_compile_unit = false;
-
         if (header == nullptr) {
             header =
                 reinterpret_cast<struct CompileUnitHeader*>(debug_info_begin + debug_info_offset);
-
             debug_info_offset += sizeof(struct CompileUnitHeader);
-
             new_compile_unit = true;
         }
-
         UInt64 code = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                          &debug_info_offset);
-
         if (code == 0) {
             stack.erase(stack.end() - 1);
-
             if (stack.size() == 0) {
                 header = nullptr;
             }
-
             continue;
         }
-
         DIE* die = GetDebugInfoEntryByCode(code);
-
         DwarfDIE* parent = stack.size() > 0 ? stack.at(stack.size() - 1) : nullptr;
-
         DwarfDIE* dwarfDIE = new DwarfDIE(this, compilationUnit, die, parent);
-
         if (new_compile_unit) {
             compilationUnit = new CompilationUnit(this, header, die);
-
             compilationUnits.push_back(compilationUnit);
-
             new_compile_unit = false;
         }
-
         for (int i = 0; i < stack.size(); i++) {
             DARWIN_KIT_LOG("\t");
         }
-
         DARWIN_KIT_LOG("DW_TAG = %s depth = %zu\n", DWTagToString(die->GetTag()), stack.size());
-
         UInt64 die_code = die->GetCode();
-
         UInt32 attributes_count = die->GetAttributesCount();
-
         for (int i = 0; i < attributes_count; i++) {
             struct Attribute* attribute = new Attribute;
-
             struct AttrAbbrev* ab = die->GetAttribute(i);
-
             DW_AT attr = ab->attr_spec.name;
             DW_FORM form = ab->attr_spec.form;
-
             DW_TAG tag = ab->tag;
             DW_CHILDREN ch = ab->children;
-
             attribute->abbreviation.attr_spec.name = attr;
             attribute->abbreviation.attr_spec.form = form;
             attribute->abbreviation.tag = tag;
             attribute->abbreviation.children = ch;
-
             if (form == DW_FORM::flag_present) {
                 continue;
             } else if (form == DW_FORM::block) {
                 value = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 continue;
             } else if (form == DW_FORM::block1) {
                 value = *reinterpret_cast<UInt8*>(debug_info_begin + debug_info_offset);
-
                 debug_info_offset += sizeof(UInt8);
-
                 debug_info_offset += value;
-
                 continue;
             } else if (form == DW_FORM::block2) {
                 value = *reinterpret_cast<UInt16*>(debug_info_begin + debug_info_offset);
-
                 debug_info_offset += sizeof(UInt16);
-
                 debug_info_offset += value;
-
                 continue;
             } else if (form == DW_FORM::block4) {
                 value = *reinterpret_cast<UInt32*>(debug_info_begin + debug_info_offset);
-
                 debug_info_offset += sizeof(UInt32);
-
                 debug_info_offset += value;
-
                 continue;
             } else if (form == DW_FORM::indirect) {
                 value = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 continue;
             } else if (form == DW_FORM::ref_udata) {
                 value = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 continue;
             } else if (form == DW_FORM::udata) {
                 value = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 continue;
             } else if (form == DW_FORM::sdata) {
                 value = debug::ReadSleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 continue;
             } else if (form == DW_FORM::string) {
                 UInt64 string_size = GetStringSize(debug_info_begin + debug_info_offset);
-
                 debug_info_offset += string_size;
-
                 continue;
             } else if (form == DW_FORM::exprloc) {
                 value = debug::ReadUleb128(debug_info_begin + debug_info_offset, debug_info_end,
                                            &debug_info_offset);
-
                 debug_info_offset += value;
-
                 continue;
             } else {
                 Size form_size = DWFormSize(form);
-
                 switch (form_size) {
                 case 0:
                     break;
                 case 1:
                     value = *reinterpret_cast<UInt8*>(debug_info_begin + debug_info_offset);
-
                     break;
                 case 2:
                     value = *reinterpret_cast<UInt16*>(debug_info_begin + debug_info_offset);
-
                     break;
                 case 4:
                     value = *reinterpret_cast<UInt32*>(debug_info_begin + debug_info_offset);
-
                     break;
                 case 8:
                     value = *reinterpret_cast<UInt64*>(debug_info_begin + debug_info_offset);
-
                     break;
                 default:
-
                     break;
                 }
-
                 debug_info_offset += form_size;
             }
-
             attribute->value = value;
-
             dwarfDIE->AddAttribute(attribute);
-
-            for (int i = 0; i < stack.size(); i++)
+            for (int i = 0; i < stack.size(); i++) {
                 DARWIN_KIT_LOG("\t");
-
+            }
             DARWIN_KIT_LOG("\tDW_AT = %s value = 0x%llx\n", DWAttrToString(attr), value);
         }
-
         if (static_cast<bool>(die->GetHasChildren())) {
             stack.push_back(dwarfDIE);
         }
-
-        if (parent)
+        if (parent) {
             parent->AddChild(dwarfDIE);
-
+        }
         compilationUnit->AddDebugInfoEntry(dwarfDIE);
     }
 }
 
 void Dwarf::ParseDebugLines() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_line = __debug_line;
-
     UInt8* debug_line_begin = (*macho)[debug_line->GetOffset()];
     UInt8* debug_line_end = (*macho)[debug_line->GetOffset() + debug_line->GetSize()];
-
     UInt32 debug_line_offset = 0;
-
     while (debug_line_offset < debug_line->GetSize()) {
         LineTable* lineTable = new LineTable(macho, this);
-
         struct LTPrologue prologue;
         struct LTStandardOpcodeLengths opcodes;
-
         memcpy(&prologue, debug_line_begin + debug_line_offset, sizeof(struct LTPrologue));
-
         UInt32 total_length = prologue.total_length;
         UInt32 prologue_length = prologue.prologue_length;
-
         UInt8* prologue_end = reinterpret_cast<UInt8*>(
             debug_line_begin + debug_line_offset + offsetof(struct LTPrologue, min_inst_length) +
             prologue_length);
         UInt8* end = reinterpret_cast<UInt8*>(debug_line_begin + debug_line_offset + total_length +
                                               sizeof(UInt32));
-
         debug_line_offset += sizeof(struct LTPrologue);
-
         memcpy(&opcodes, debug_line_begin + debug_line_offset,
                sizeof(struct LTStandardOpcodeLengths));
-
         debug_line_offset += sizeof(struct LTStandardOpcodeLengths);
-
         bool source_file_names = false;
-
         while ((debug_line_begin + debug_line_offset) < prologue_end) {
             if (source_file_names) {
                 struct LTSourceFile* source_file = new LTSourceFile;
-
                 char* source_file_name =
                     reinterpret_cast<char*>(debug_line_begin + debug_line_offset);
-
                 DARWIN_KIT_LOG("Source File Name: %s\n", source_file_name);
-
                 UInt32 string_size = GetStringSize(debug_line_begin + debug_line_offset);
-
                 debug_line_offset += string_size + 1;
-
                 lineTable->AddSourceFile(source_file);
-
                 memcpy(&source_file->metadata, debug_line_begin + debug_line_offset,
                        sizeof(struct LTSourceFileMetadata));
-
                 debug_line_offset += sizeof(struct LTSourceFileMetadata);
-
                 if (*(debug_line_begin + debug_line_offset) == 0) {
                     debug_line_offset++;
-
                     break;
                 }
-
             } else {
                 char* include_directory =
                     reinterpret_cast<char*>(debug_line_begin + debug_line_offset);
-
                 DARWIN_KIT_LOG("Include Directory: %s\n", include_directory);
-
                 UInt32 string_size = GetStringSize(debug_line_begin + debug_line_offset);
-
                 debug_line_offset += string_size + 1;
-
                 lineTable->AddIncludeDirectory(include_directory);
-
                 if (*(debug_line_begin + debug_line_offset) == 0) {
                     debug_line_offset++;
-
                     source_file_names = true;
                 }
             }
         }
-
         DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "Address", "Line", "Column", "File",
                    "ISA", "Discriminator", "Flags");
         DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "--------------------", "--------",
                    "------", "------", "----", "-------------", "-------------");
-
         struct Sequence* sequence = new Sequence;
-
         struct LTSourceFile* sourceFile = nullptr;
         struct LTSourceLine* sourceLine = nullptr;
-
         sourceLine = new LTSourceLine;
-
         memcpy(&sourceLine->state, &gInitialState, sizeof(struct LTStateMachine));
-
         sourceFile = lineTable->GetSourceFile(sourceLine->state.file - 1);
-
         sourceLine->source_file = sourceFile;
-
         UInt8 op_index = 0;
-
         while ((debug_line_begin + debug_line_offset) < end) {
             UInt8 op = *(debug_line_begin + debug_line_offset);
-
             debug_line_offset++;
-
             if (op == 0) {
                 UInt64 num_bytes = debug::ReadUleb128(debug_line_begin + debug_line_offset,
                                                       debug_line_end, &debug_line_offset);
-
                 op = *reinterpret_cast<UInt8*>(debug_line_begin + debug_line_offset);
-
                 debug_line_offset++;
-
                 num_bytes--;
-
                 switch (static_cast<DW_LNE>(op)) {
-                case DW_LNE::end_sequence:;
-                    {
-                        sequence->sourceLines.push_back(sourceLine);
-
-                        struct LTSourceLine* newSourceLine = new LTSourceLine;
-
-                        memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
-
-                        sourceLine = newSourceLine;
-
-                        sourceLine->state.end_sequence = 1;
-
-                        DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                                   sourceLine->state.address, sourceLine->state.line,
-                                   sourceLine->state.column, sourceLine->state.file,
-                                   sourceLine->state.isa, sourceLine->state.discriminator,
-                                   SourceLineFlagsToString(sourceLine));
-
-                        memcpy(&sourceLine->state, &gInitialState, sizeof(struct LTStateMachine));
-
-                        sourceLine->state.discriminator = 0;
-                        sourceLine->state.basic_block = 0;
-                        sourceLine->state.prologue_end = 0;
-                        sourceLine->state.epilogue_begin = 0;
-                        sourceLine->state.end_sequence = 0;
-
-                        break;
-                    }
-                case DW_LNE::set_address:;
-                    {
-                        UInt64 program_counter =
-                            *reinterpret_cast<UInt64*>(debug_line_begin + debug_line_offset);
-
-                        sourceLine->state.address = program_counter;
-
-                        DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                                   sourceLine->state.address, sourceLine->state.line,
-                                   sourceLine->state.column, sourceLine->state.file,
-                                   sourceLine->state.isa, sourceLine->state.discriminator,
-                                   SourceLineFlagsToString(sourceLine));
-
-                        sequence->sourceLines.push_back(sourceLine);
-
-                        struct LTSourceLine* newSourceLine = new LTSourceLine;
-
-                        memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
-
-                        sourceLine = newSourceLine;
-
-                        break;
-                    }
-                case DW_LNE::define_file:;
-                    {
-                        break;
-                    }
-                case DW_LNE::set_discriminator:;
-                    {
-                        UInt64 discriminator = debug::ReadUleb128(
-                            debug_line_begin + debug_line_offset, debug_line_end);
-
-                        sourceLine->state.discriminator = discriminator;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNE::lo_user:;
-                    {
-                        break;
-                    }
-                case DW_LNE::hi_user:;
-                    {
-                        break;
-                    }
+                case DW_LNE::end_sequence: {
+                    sequence->sourceLines.push_back(sourceLine);
+                    struct LTSourceLine* newSourceLine = new LTSourceLine;
+                    memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
+                    sourceLine = newSourceLine;
+                    sourceLine->state.end_sequence = 1;
+                    DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                                sourceLine->state.address, sourceLine->state.line,
+                                sourceLine->state.column, sourceLine->state.file,
+                                sourceLine->state.isa, sourceLine->state.discriminator,
+                                SourceLineFlagsToString(sourceLine));
+                    memcpy(&sourceLine->state, &gInitialState, sizeof(struct LTStateMachine));
+                    sourceLine->state.discriminator = 0;
+                    sourceLine->state.basic_block = 0;
+                    sourceLine->state.prologue_end = 0;
+                    sourceLine->state.epilogue_begin = 0;
+                    sourceLine->state.end_sequence = 0;
+                    break;
                 }
-
+                case DW_LNE::set_address: {
+                    UInt64 program_counter =
+                        *reinterpret_cast<UInt64*>(debug_line_begin + debug_line_offset);
+                    sourceLine->state.address = program_counter;
+                    DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                                sourceLine->state.address, sourceLine->state.line,
+                                sourceLine->state.column, sourceLine->state.file,
+                                sourceLine->state.isa, sourceLine->state.discriminator,
+                                SourceLineFlagsToString(sourceLine));
+                    sequence->sourceLines.push_back(sourceLine);
+                    struct LTSourceLine* newSourceLine = new LTSourceLine;
+                    memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
+                    sourceLine = newSourceLine;
+                    break;
+                }
+                case DW_LNE::define_file: {
+                    break;
+                }
+                case DW_LNE::set_discriminator: {
+                    UInt64 discriminator = debug::ReadUleb128(
+                        debug_line_begin + debug_line_offset, debug_line_end);
+                    sourceLine->state.discriminator = discriminator;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNE::lo_user: {
+                    break;
+                }
+                case DW_LNE::hi_user: {
+                    break;
+                }
+                }
                 debug_line_offset += num_bytes;
             } else if (op > 0 && op < 13) {
                 switch (static_cast<DW_LNS>(op)) {
@@ -1283,264 +1051,182 @@ void Dwarf::ParseDebugLines() {
                     // sourceLine->state.address, sourceLine->state.line, sourceLine->state.column,
                     // sourceLine->state.file, sourceLine->state.isa,
                     // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
                     sourceLine->state.discriminator = 0;
                     sourceLine->state.basic_block = 0;
                     sourceLine->state.prologue_end = 0;
                     sourceLine->state.epilogue_begin = 0;
                     sourceLine->state.end_sequence = 0;
-
                     break;
                 }
-                case DW_LNS::advance_pc:;
-                    {
-                        UInt64 program_counter =
-                            debug::ReadUleb128(debug_line_begin + debug_line_offset, debug_line_end,
-                                               &debug_line_offset);
-
-                        sourceLine->state.address += program_counter;
-                        sourceLine->state.prologue_end = 0;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-
-                case DW_LNS::advance_line:;
-                    {
-                        int64_t line = debug::ReadSleb128(debug_line_begin + debug_line_offset,
-                                                          debug_line_end, &debug_line_offset);
-
-                        sourceLine->state.line += line;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_file:;
-                    {
-                        UInt64 file = debug::ReadUleb128(debug_line_begin + debug_line_offset,
-                                                         debug_line_end, &debug_line_offset);
-
-                        sourceLine->state.file = file;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_column:;
-                    {
-                        UInt64 column = debug::ReadUleb128(debug_line_begin + debug_line_offset,
-                                                           debug_line_end, &debug_line_offset);
-
-                        sourceLine->state.column = column;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::negate_stmt:;
-                    {
-                        sourceLine->state.statement = ~sourceLine->state.statement;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_basic_block:;
-                    {
-                        sourceLine->state.basic_block = 1;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::const_add_pc:;
-                    {
-                        int64_t line_base = prologue.line_base;
-                        UInt8 line_range = prologue.line_range;
-
-                        UInt8 opcode_base = prologue.opcode_base;
-                        UInt8 min_inst_length = prologue.min_inst_length;
-
-                        UInt64 inc = min_inst_length * ((255 - opcode_base) / line_range);
-
-                        sourceLine->state.address += inc;
-
-                        break;
-                    }
-                case DW_LNS::fixed_advance_pc:;
-                    {
-                        UInt64 program_counter =
-                            *reinterpret_cast<UInt16*>(debug_line_begin + debug_line_offset);
-
-                        debug_line_offset += sizeof(UInt16);
-
-                        sourceLine->state.address += program_counter;
-
-                        sourceLine->state.prologue_end = 0;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_prologue_end:;
-                    {
-                        sourceLine->state.prologue_end = 1;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_epilogue_begin:;
-                    {
-                        sourceLine->state.epilogue_begin = 1;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
-                case DW_LNS::set_isa:;
-                    {
-                        UInt64 isa = debug::ReadUleb128(debug_line_begin + debug_line_offset,
+                case DW_LNS::advance_pc: {
+                    UInt64 program_counter =
+                        debug::ReadUleb128(debug_line_begin + debug_line_offset, debug_line_end,
+                                            &debug_line_offset);
+                    sourceLine->state.address += program_counter;
+                    sourceLine->state.prologue_end = 0;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::advance_line: {
+                    int64_t line = debug::ReadSleb128(debug_line_begin + debug_line_offset,
                                                         debug_line_end, &debug_line_offset);
-
-                        sourceLine->state.isa = isa;
-
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
-                        break;
-                    }
+                    sourceLine->state.line += line;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_file: {
+                    UInt64 file = debug::ReadUleb128(debug_line_begin + debug_line_offset,
+                                                        debug_line_end, &debug_line_offset);
+                    sourceLine->state.file = file;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_column: {
+                    UInt64 column = debug::ReadUleb128(debug_line_begin + debug_line_offset,
+                                                        debug_line_end, &debug_line_offset);
+                    sourceLine->state.column = column;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::negate_stmt: {
+                    sourceLine->state.statement = ~sourceLine->state.statement;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_basic_block: {
+                    sourceLine->state.basic_block = 1;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::const_add_pc: {
+                    int64_t line_base = prologue.line_base;
+                    UInt8 line_range = prologue.line_range;
+                    UInt8 opcode_base = prologue.opcode_base;
+                    UInt8 min_inst_length = prologue.min_inst_length;
+                    UInt64 inc = min_inst_length * ((255 - opcode_base) / line_range);
+                    sourceLine->state.address += inc;
+                    break;
+                }
+                case DW_LNS::fixed_advance_pc: {
+                    UInt64 program_counter =
+                        *reinterpret_cast<UInt16*>(debug_line_begin + debug_line_offset);
+                    debug_line_offset += sizeof(UInt16);
+                    sourceLine->state.address += program_counter;
+                    sourceLine->state.prologue_end = 0;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_prologue_end: {
+                    sourceLine->state.prologue_end = 1;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_epilogue_begin: {
+                    sourceLine->state.epilogue_begin = 1;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
+                case DW_LNS::set_isa: {
+                    UInt64 isa = debug::ReadUleb128(debug_line_begin + debug_line_offset,
+                                                    debug_line_end, &debug_line_offset);
+                    sourceLine->state.isa = isa;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
+                }
                 }
 
             } else {
                 int64_t line_base = prologue.line_base;
                 UInt8 line_range = prologue.line_range;
-
                 UInt8 opcode_base = prologue.opcode_base;
                 UInt8 min_inst_length = prologue.min_inst_length;
-
                 int64_t address_change = ((op - opcode_base) / line_range) * min_inst_length;
                 int64_t line_change = line_base + (op - opcode_base) % line_range;
-
                 sourceLine->state.address += address_change;
                 sourceLine->state.line += line_change;
-
                 DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                            sourceLine->state.address, sourceLine->state.line,
                            sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
                            sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-
                 sourceLine->state.prologue_end = 0;
-
                 sequence->sourceLines.push_back(sourceLine);
-
                 struct LTSourceLine* newSourceLine = new LTSourceLine;
-
                 memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
-
                 sourceLine = newSourceLine;
             }
         }
-
         debug_line_offset = (end - debug_line_begin);
-
         lineTables.push_back(lineTable);
     }
 }
 
 void Dwarf::ParseDebugLocations() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_loc = __debug_loc;
-
     UInt8* debug_loc_begin = (*macho)[debug_loc->GetOffset()];
     UInt8* debug_loc_end = (*macho)[debug_loc->GetOffset() + debug_loc->GetSize()];
-
     UInt32 debug_loc_offset = 0;
-
     DARWIN_KIT_LOG("0x%08x:\n", debug_loc_offset);
-
     struct LocationTableEntry* location_entry = new LocationTableEntry;
-
     location_entry->offset = debug_loc_offset;
-
     while (debug_loc_offset < debug_loc->GetSize()) {
         UInt64 value0 = *reinterpret_cast<UInt64*>(debug_loc_begin + debug_loc_offset);
-
         UInt64 value1 =
             *reinterpret_cast<UInt64*>(debug_loc_begin + debug_loc_offset + sizeof(UInt64));
-
         if (value0 != 0 || value1 != 0) {
             debug_loc_offset += sizeof(UInt64) * 2;
-
             UInt16 bytes = *reinterpret_cast<UInt16*>(debug_loc_begin + debug_loc_offset);
-
             debug_loc_offset += sizeof(UInt16);
-
             DARWIN_KIT_LOG("\t(0x%016llx, 0x%016llx) ", value0, value1);
-
             for (int i = 0; i < bytes; i++) {
                 UInt8 byte = *reinterpret_cast<UInt8*>(debug_loc_begin + debug_loc_offset);
-
                 location_entry->location_ops.push_back(static_cast<DW_OP>(byte));
-
                 DARWIN_KIT_LOG("0x%x ", byte);
-
                 debug_loc_offset++;
             }
-
             DARWIN_KIT_LOG("\n");
 
         } else if (value0 == -1ULL) {
             debug_loc_offset += sizeof(UInt64) * 2;
-
             location_entry->kind = DW_LLE::base_address;
-
             location_entry->value0 = value1;
         } else {
             debug_loc_offset += sizeof(UInt64) * 2;
-
             location_entry->kind = DW_LLE::end_of_list;
-
             locationTable.push_back(location_entry);
-
             location_entry = new LocationTableEntry;
-
             DARWIN_KIT_LOG("0x%08x:\n", debug_loc_offset);
-
             location_entry->offset = debug_loc_offset;
         }
     }
@@ -1548,45 +1234,29 @@ void Dwarf::ParseDebugLocations() {
 
 void Dwarf::ParseDebugRanges() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_ranges = __debug_ranges;
-
     UInt8* debug_ranges_begin = (*macho)[debug_ranges->GetOffset()];
     UInt8* debug_ranges_end = (*macho)[debug_ranges->GetOffset() + debug_ranges->GetSize()];
-
     UInt32 debug_ranges_offset = 0;
-
     UInt32 current_ranges_offset = 0;
-
     RangeEntries* rangeEntries = new RangeEntries;
-
     while (debug_ranges_offset < debug_ranges->GetSize()) {
         UInt64 value0 = *reinterpret_cast<UInt64*>(debug_ranges_begin + debug_ranges_offset);
-
         UInt64 value1 =
             *reinterpret_cast<UInt64*>(debug_ranges_begin + debug_ranges_offset + sizeof(UInt64));
-
         debug_ranges_offset += sizeof(UInt64) * 2;
-
         if (value0 == 0 && value1 == 0) {
             DARWIN_KIT_LOG("%08x <End of list>\n", current_ranges_offset);
-
             current_ranges_offset = debug_ranges_offset;
-
             ranges.push_back(rangeEntries);
-
             rangeEntries = new RangeEntries;
         } else {
             DARWIN_KIT_LOG("%08x %016llx %016llx\n", current_ranges_offset, value0, value1);
-
             struct RangeEntry* range = new RangeEntry;
-
             range->offset = current_ranges_offset;
             range->value0 = value0;
             range->value1 = value1;
-
             rangeEntries->push_back(range);
         }
     }
@@ -1594,68 +1264,44 @@ void Dwarf::ParseDebugRanges() {
 
 void Dwarf::ParseDebugAddressRanges() {
     MachO* macho = macho;
-
     Segment* dwarf = dwarf;
-
     Section* debug_aranges = __debug_aranges;
-
     UInt8* debug_aranges_begin = (*macho)[debug_aranges->GetOffset()];
     UInt8* debug_aranges_end = (*macho)[debug_aranges->GetOffset() + debug_aranges->GetSize()];
-
     UInt32 debug_aranges_offset = 0;
-
     UInt32 current_aranges_offset = 0;
-
     while (debug_aranges_offset < debug_aranges->GetSize()) {
         struct AddressRangeEntry* arange_entry = new AddressRangeEntry;
-
         struct AddressRangeHeader* address_range_header = &arange_entry->header;
-
         memcpy(address_range_header, debug_aranges_begin + debug_aranges_offset,
                sizeof(struct AddressRangeHeader));
-
         UInt32 length =
             address_range_header->length + sizeof(((struct AddressRangeHeader*)0)->length);
-
         UInt32 offset = debug_aranges_offset + sizeof(struct AddressRangeHeader);
-
         UInt32 segment_selector = *reinterpret_cast<UInt32*>(debug_aranges_begin + offset);
-
         offset += sizeof(UInt32);
-
         DARWIN_KIT_LOG("Address Range Header: length = 0x%08x, version = 0x%04x, cu_offset = 0x%08x, "
                    "addr_size = 0x%02x, seg_size = 0x%02x\n",
                    address_range_header->length, address_range_header->version,
                    address_range_header->offset, address_range_header->addr_size,
                    address_range_header->seg_size);
-
         while (offset < debug_aranges_offset + length) {
             struct AddressRange* range = new AddressRange;
-
             UInt64 value0 = *reinterpret_cast<UInt64*>(debug_aranges_begin + offset);
-
             UInt64 value1 =
                 *reinterpret_cast<UInt64*>(debug_aranges_begin + offset + sizeof(UInt64));
-
             if (value0 != 0 || value1 != 0) {
                 UInt64 address = *reinterpret_cast<UInt64*>(debug_aranges_begin + offset);
-
                 UInt64 size =
                     *reinterpret_cast<UInt64*>(debug_aranges_begin + offset + sizeof(UInt64));
-
                 range->start = address;
                 range->end = address + size;
-
                 DARWIN_KIT_LOG("(0x%016llx, 0x%016llx)\n", address, address + size);
-
                 arange_entry->ranges.push_back(range);
             }
-
             offset += (sizeof(UInt64) * 2);
         }
-
         addressRanges.push_back(arange_entry);
-
         debug_aranges_offset += length;
     }
 }

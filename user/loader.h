@@ -17,13 +17,10 @@
 #pragma once
 
 #include <type_traits>
-
 #include <vector>
-
 #include <types.h>
 
 #include "arch.h"
-
 #include "emu_fuzzer.h"
 
 class MachO;

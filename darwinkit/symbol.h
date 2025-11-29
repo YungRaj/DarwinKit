@@ -102,7 +102,6 @@ public:
 
 private:
     MachO* macho;
-
     Segment* segment;
     Section* section;
 
@@ -110,8 +109,6 @@ private:
     char* demangled_name;
 
     UInt32 type;
-
     xnu::mach::VmAddress address;
-
     Offset offset;
 };

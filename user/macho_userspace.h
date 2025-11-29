@@ -17,7 +17,6 @@
 #pragma once
 
 #include <types.h>
-
 #include <vector>
 
 #include "macho.h"
@@ -91,13 +90,10 @@ public:
 
 private:
     MachOUserspace* macho;
-
-    struct linkedit_data_command* cmd;
-
     SuperBlob* superBlob;
 
     code_directory_t codeDirectory;
-
+    struct linkedit_data_command* cmd;
     char* entitlements;
 };
 
@@ -195,21 +191,16 @@ public:
 
 private:
     xnu::Task* task;
-
     darwin::MachOUserspace* libobjc;
-
     darwin::dyld::Dyld* dyld;
+    darwin::CodeSignature* codeSignature;
+    objc::ObjCData* objc;
+    swift::SwiftABI* swift;
 
     xnu::mach::VmAddress dyld_base;
     xnu::mach::VmAddress dyld_shared_cache;
 
-    darwin::CodeSignature* codeSignature;
-
-    objc::ObjCData* objc;
-    swift::SwiftABI* swift;
-
     char* file_path;
-
     bool is_dyldCache;
     bool is_libobjc;
 

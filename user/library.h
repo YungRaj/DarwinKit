@@ -37,9 +37,7 @@ public:
 
 private:
     xnu::Task* task;
-
     darwin::dyld::Dyld* dyld;
-
     struct dyld_image_info* image_info;
 };
 

@@ -86,18 +86,13 @@ public:
     bool Commit();
 
 private:
+    Hook* hook;
     xnu::Task* task;
-
     xnu::mach::VmAddress address;
 
     Offset current_offset;
-
-    Hook* hook;
-
-    bool kernelPayload = false;
-
+    bool kernel_payload = false;
     Size size;
-
     xnu::mach::VmProtection prot;
 };
 }; // namespace darwin

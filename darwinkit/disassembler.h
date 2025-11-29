@@ -94,9 +94,7 @@ public:
 
 private:
     enum Architectures architecture;
-
     enum DisassemblerType disassembler;
-
     xnu::Task* task;
 
     enum DisassemblerType GetDisassemblerFromArch();

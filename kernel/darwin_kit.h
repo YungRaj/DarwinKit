@@ -19,12 +19,9 @@
 #include <types.h>
 
 #include "arch.h"
-
 #include "kernel.h"
 #include "kernel_patcher.h"
-
 #include "plugin.h"
-
 #include "kext.h"
 
 #include <string.h>

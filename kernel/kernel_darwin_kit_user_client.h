@@ -87,13 +87,11 @@ class IOKernelDarwinKitUserClient : public IOUserClient {
 
 private:
     IOKernelDarwinKitService* darwinkitService;
+    xnu::Kernel* kernel;
+    IOMemoryDescriptor *coverageMap = nullptr;
 
     task_t clientTask;
     task_t kernelTask;
-
-    xnu::Kernel* kernel;
-
-    IOMemoryDescriptor *coverageMap = nullptr;
 
     void initDarwinKit();
 

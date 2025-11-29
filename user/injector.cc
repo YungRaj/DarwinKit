@@ -358,7 +358,6 @@ int Injector::InjectLibrary(char* dylib) {
     }
     bool lib = false;
     bool libaddr = false;
-
     char* injected_code = reinterpret_cast<char*>(malloc(sizeof(injectedCode)));
     memcpy(injected_code, injectedCode, sizeof(injectedCode));
     for (uint32_t i = 0; i < sizeof(injectedCode); i++) {
@@ -401,13 +400,10 @@ int Injector::InjectLibrary(char* dylib) {
     RopCall(pthread_create_from_mach_thread, (char*)"uuuu", (uint64_t*)pthread, nullptr,
             (uint64_t*)remote_code, nullptr);
     sleep(5);
-
     thread_suspend(remote_thread);
     thread_terminate(remote_thread);
-
     vm_deallocate(task->GetTaskPort(), remote_stack, STACK_SIZE);
     free(injected_code);
-
     memset(&state, 0x0, sizeof(state));
     return 0;
 }
@@ -455,7 +451,6 @@ int Injector::WaitForProcessAndInjectLibrary(
     ES_RETURN_SUCCESS);
 
     dispatch_main();
-
     return 0;
 }
 

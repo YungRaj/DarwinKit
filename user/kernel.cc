@@ -22,54 +22,41 @@ namespace xnu {
 
 const char* GetKernelVersion() {
     char* kernelBuildVersion = new char[256];
-
     struct utsname kernelInfo;
-
     uname(&kernelInfo);
-
     strlcpy(kernelBuildVersion, kernelInfo.version, 256);
-
     DARWIN_KIT_LOG("DarwinKit::macOS kernel version = %s\n", kernelInfo.version);
-
     return kernelBuildVersion;
 }
 
 const char* GetOSBuildVersion() {
     int mib[2];
-
     size_t len = 256;
     char* buildVersion = new char[len];
-
     mib[0] = CTL_KERN;
     mib[1] = KERN_OSVERSION;
-
     if (sysctl(mib, 2, buildVersion, &len, nullptr, 0) == 0) {
         DARWIN_KIT_LOG("DarwinKit::macOS OS build version = %s\n", buildVersion);
     } else {
         return nullptr;
     }
-
     return buildVersion;
 }
 
 Kernel::Kernel() : connection(open_kernel_tfp0_connection()), slide(GetSlide()) {
     kernel = this;
-
     Task();
-
     // MachOUserspace *MachOUserspace = new MachOUserspace();
 #ifdef __x86_64__
     // MachOUserspace->initWithFilePath("/System/Library/Kernels/kernel");
 #elif __arm64__
     // MachOUserspace->initWithFilePath("/System/Library/Kernels/kernel.release.t8110");
 #endif
-
     // macho = MachOUserspace;
 }
 
 Kernel::~Kernel() {
     close_kernel_tfp0_connection();
-
     delete macho;
 }
 

@@ -47,20 +47,15 @@ static DeviceTree* deviceTree;
 
 PE_state_t* PlatformExpertState(xnu::Kernel* kernel);
 
-template <typename T>
-T GetDeviceTreeHead(xnu::Kernel* kernel) {
+template <typename DeviceTree>
+DeviceTree GetDeviceTreeHead(xnu::Kernel* kernel) {
     PE_state_t* PE = xnu::PlatformExpertState(kernel);
-
-    T deviceTreeHead = reinterpret_cast<T>(PE->deviceTreeHead);
-
-    return deviceTreeHead;
+    return reinterpret_cast<DeviceTree>(PE->deviceTreeHead);;
 }
 
 Size GetDeviceTreeSize(xnu::Kernel* kernel) {
     PE_state_t* PE = xnu::PlatformExpertState(kernel);
-
     Size deviceTreeSize = PE->deviceTreeSize;
-
     return deviceTreeSize;
 }
 
@@ -72,9 +67,9 @@ public:
 
     ~DeviceTree() = default;
 
-    template <typename T>
-    T GetAs() {
-        return reinterpret_cast<T>(device_tree);
+    template <typename DeviceTree>
+    DeviceTree GetAs() {
+        return reinterpret_cast<DeviceTree>(device_tree);
     }
 
     Size GetSize() const {
@@ -105,7 +100,6 @@ private:
     xnu::Kernel* kernel;
 
     xnu::mach::VmAddress device_tree;
-
     Size device_tree_sz;
 };
 

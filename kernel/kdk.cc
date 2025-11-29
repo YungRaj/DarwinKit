@@ -40,7 +40,6 @@ using namespace xnu;
 struct macOSVersionMap {
     char* darwinVersion;
     char* xnuVersion;
-
     char* buildVersion;
     char* versionNumber;
 };
@@ -117,56 +116,41 @@ KDKKernelMachO::KDKKernelMachO(xnu::Kernel* kern, const char* path)
 
 {
     kernel = kern;
-
     aslr_slide = kernel->GetSlide();
-
     ReadKDKKernelFromPath(kernel, path, &buffer);
-
-    if (!buffer)
+    if (!buffer) {
         panic("DarwinKit::KDK could not be read from disk at path %s\n", path);
-
+    }
     header = reinterpret_cast<struct mach_header_64*>(buffer);
     symbolTable = new SymbolTable();
-
     base = GetBase();
-
     ParseMachO();
 }
 
 xnu::mach::VmAddress KDKKernelMachO::GetBase() {
     struct mach_header_64* hdr = header;
-
     UInt8* cmds = reinterpret_cast<UInt8*>(hdr) + sizeof(struct mach_header_64);
-
     UInt8* q = cmds;
-
     xnu::mach::VmAddress base = UINT64_MAX;
-
     for (int i = 0; i < hdr->ncmds; i++) {
         struct load_command* load_cmd = reinterpret_cast<struct load_command*>(q);
-
         UInt32 cmdtype = load_cmd->cmd;
         UInt32 cmdsize = load_cmd->cmdsize;
-
         if (load_cmd->cmd == LC_SEGMENT_64) {
             struct segment_command_64* segment = reinterpret_cast<struct segment_command_64*>(q);
-
             UInt64 vmaddr = segment->vmaddr;
             UInt64 vmsize = segment->vmsize;
-
             UInt64 fileoffset = segment->fileoff;
             UInt64 filesize = segment->filesize;
-
-            if (vmaddr < base)
+            if (vmaddr < base) {
                 base = vmaddr;
+            }
         }
-
         q = q + load_cmd->cmdsize;
     }
-
-    if (base == UINT64_MAX)
+    if (base == UINT64_MAX) {
         return 0;
-
+    }
     return base;
 }
 
@@ -174,130 +158,85 @@ void KDKKernelMachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms,
                                       Size strsize) {
     for (int i = 0; i < nsyms; i++) {
         Symbol* symbol;
-
         xnu::macho::Nlist64* nl = &symtab[i];
-
         char* name;
-
         xnu::mach::VmAddress address;
-
         name = &strtab[nl->n_strx];
-
         address = nl->n_value + kernel->GetSlide();
-        // add the kernel slide so that the address is correct
-
+        // Adds the kernel slide so that the address is correct
         symbol =
             new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
                        SegmentForAddress(address), SectionForAddress(address));
-
         symbolTable->AddSymbol(symbol);
     }
-
     DARWIN_KIT_LOG("DarwinKit::KDKKernelMachO::%u syms!\n", nsyms);
 }
 
 char* GetBuildVersionFromOSVersion(char *osversion) {
     char kdkPath[1024];
-
     Size numEntries = sizeof(macOSVersions) / sizeof(macOSVersions[0]);
-
     for (int i = 0; i < numEntries; i++) {
         struct macOSVersionMap map = macOSVersions[i];
-
         if (strstr(osversion, map.xnuVersion) == 0) {
             return strdup(map.buildVersion);
         }
     }
-
     return nullptr;
 }
 
 char* GetKDKWithBuildVersion(const char* basePath, const char* buildVersion) {
     char kdkPath[1024];
-
     Size numEntries = sizeof(macOSVersions) / sizeof(macOSVersions[0]);
-
     for (int i = 0; i < numEntries; i++) {
         struct macOSVersionMap map = macOSVersions[i];
-
         if (strcmp(buildVersion, map.buildVersion) == 0) {
             snprintf(kdkPath, 1024, "%s/KDK_%s_%s.kdk", basePath, map.versionNumber,
                      map.buildVersion);
-
             return strdup(kdkPath);
         }
     }
-
     return nullptr;
 }
 
 kern_return_t ReadKDKKernelFromPath(xnu::Kernel* kernel, const char* path, char** out_buffer) {
     errno_t error = 0;
-
     vnode_t vnode = NULLVP;
-
     error = vnode_open(path, O_RDONLY, 0, 0, &vnode, vfs_context_current());
-
     if (error != 0) {
         DARWIN_KIT_LOG("Error opening file: %d\n", error);
-
         *out_buffer = nullptr;
-
         return KERN_FAILURE;
     }
-
     struct vnode_attr vattr;
-
     VATTR_INIT(&vattr);
     VATTR_WANTED(&vattr, va_data_size);
-
     error = vnode_getattr(vnode, &vattr, vfs_context_current());
-
     if (error != 0) {
         vnode_close(vnode, FREAD, vfs_context_current());
-
         *out_buffer = nullptr;
-
         DARWIN_KIT_LOG("DarwinKit:: KDK error getting file size: %d\n", error);
-
         return KERN_FAILURE;
     }
-
     Offset fileSize = vattr.va_data_size;
-
     char* buffer = (char*)IOMalloc((Size)fileSize);
-
     if (buffer == nullptr) {
         vnode_close(vnode, FREAD, vfs_context_current());
-
         *out_buffer = nullptr;
-
         DARWIN_KIT_LOG("DarwinKit:: KDK Memory allocation failed\n");
-
         return KERN_FAILURE;
     }
-
     Size bytesRead = 0;
-
     error = vn_rdwr(UIO_READ, vnode, buffer, (int)fileSize, 0, UIO_SYSSPACE, 0, kauth_cred_get(),
                     nullptr, kernel->GetProc());
-
     if (error != 0) {
         vnode_close(vnode, FREAD, vfs_context_current());
-
         *out_buffer = nullptr;
-
         DARWIN_KIT_LOG("DarwinKit:: KDK Error reading file: %d\n", error);
-
         IOFree(buffer, (Size)fileSize);
-
         return KERN_FAILURE;
     }
-
     vnode_close(vnode, FREAD, vfs_context_current());
-
     *out_buffer = buffer;
-
     return KERN_SUCCESS;
 }
 
@@ -342,13 +281,11 @@ char* GetKDKKernelNameFromType(KDKKernelType type) {
     default:
         return "";
     }
-
     return nullptr;
 }
 
 void KDK::GetKDKPathFromBuildInfo(char* buildVersion, char* outPath) {
     char* KDK = GetKDKWithBuildVersion("/Library/Developer/KDKs", buildVersion);
-
     if (outPath) {
         if (KDK) {
             strlcpy(outPath, KDK, KDK_PATH_SIZE);
@@ -363,7 +300,6 @@ void KDK::GetKDKPathFromBuildInfo(char* buildVersion, char* outPath) {
 void KDK::GetKDKKernelFromPath(char* path, char* kernelVersion, KDKKernelType* outType,
                                char* outKernelPath) {
     KDKKernelType type = KdkKernelTypeNone;
-
     if (strstr(kernelVersion, "RELEASE")) {
         if (strstr(kernelVersion, "T6000")) {
             type = KdkKernelTypeReleaseT6000;
@@ -379,7 +315,6 @@ void KDK::GetKDKKernelFromPath(char* path, char* kernelVersion, KDKKernelType* o
             type = KdkKernelTypeRelease;
         }
     }
-
     if (strstr(kernelVersion, "DEVELOPMENT")) {
         if (strstr(kernelVersion, "T6000")) {
             type = KdkKernelTypeDevelopmentT6000;
@@ -395,7 +330,6 @@ void KDK::GetKDKKernelFromPath(char* path, char* kernelVersion, KDKKernelType* o
             type = KdkKernelTypeDevelopment;
         }
     }
-
     if (strstr(kernelVersion, "KASAN")) {
         if (strstr(kernelVersion, "T6000")) {
             type = KdkKernelTypeKasanT6000;
@@ -411,14 +345,12 @@ void KDK::GetKDKKernelFromPath(char* path, char* kernelVersion, KDKKernelType* o
             type = KdkKernelTypeKasan;
         }
     }
-
     if (type == KdkKernelTypeNone) {
         *outType = KdkKernelTypeNone;
         *outKernelPath = '\0';
 
     } else {
         *outType = type;
-
         snprintf(outKernelPath, KDK_PATH_SIZE, "%s/System/Library/Kernels/%s", path,
                  GetKDKKernelNameFromType(type));
     }
@@ -430,7 +362,6 @@ KDK* KDK::KDKFromBuildInfo(xnu::Kernel* kernel, char* buildVersion, char* kernel
 
 KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, char* buildVersion, char* kernelVersion) {
     struct KDKInfo* kdkInfo;
-
     if (!buildVersion || !kernelVersion) {
         if (!buildVersion)
             DARWIN_KIT_LOG("DarwinKit::macOS Build Version not found!");
@@ -440,28 +371,20 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, char* buildVersion, char
 
         return nullptr;
     }
-
     kdkInfo = new KDKInfo;
-
     KDK::GetKDKPathFromBuildInfo(buildVersion, kdkInfo->path);
     KDK::GetKDKKernelFromPath(kdkInfo->path, kernelVersion, &kdkInfo->type, kdkInfo->kernelPath);
-
     if (kdkInfo->path[0] == '\0' || kdkInfo->type == KdkKernelTypeNone ||
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
-
         DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
                    buildVersion, kernelVersion);
-
         return nullptr;
     }
-
     kdkInfo->kernelName = GetKDKKernelNameFromType(kdkInfo->type);
-
     snprintf(kdkInfo->kernelDebugSymbolsPath, KDK_PATH_SIZE,
              "%s/System/Library/Kernels/%s.dSYM/Contents/Resources/DWARF/%s", kdkInfo->path,
              kdkInfo->kernelName, kdkInfo->kernelName);
-
     return kdkInfo;
 }
 

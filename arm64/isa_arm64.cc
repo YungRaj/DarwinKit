@@ -16,23 +16,6 @@
 
 #include "isa_arm64.h"
 
-/*
-void push_registers_arm64() {}
-void push_registers_arm64_end() {}
-
-void set_argument_arm64() {}
-void set_argument_arm64_end() {}
-
-void check_breakpoint_arm64() {}
-void check_breakpoint_arm64_end() {}
-
-void breakpoint_arm64() {}
-void breakpoint_arm64_end() {}
-
-void pop_registers_arm64() {}
-void pop_registers_arm64_end() {}
-*/
-
 namespace arch {
 namespace arm64 {
 union Breakpoint MakeBreakpoint() {
@@ -47,75 +30,52 @@ union Breakpoint MakeBreakpoint() {
 
 union Branch MakeBranch(mach_vm_address_t to, mach_vm_address_t from) {
     union Branch branch;
-
     bool sign;
-
     mach_vm_address_t imm;
-
     mach_vm_address_t max;
     mach_vm_address_t min;
-
     max = (from > to) ? from : to;
     min = (from > to) ? to : from;
-
     mach_vm_address_t diff = (max - min);
-
     if (from > to) {
         sign = true;
     } else {
         sign = false;
     }
-
     branch.branch.mode = 0b0;
     branch.branch.op = arch::arm64::NormalBranchPrefix;
-
     imm = diff;
-
     imm >>= 2;
-
-    if (sign)
+    if (sign) {
         imm = (~(imm - 1) & 0x1FFFFFF) | 0x2000000;
-
+    }
     branch.branch.imm = static_cast<uint32_t>(imm);
-
     return branch;
 }
 
 union FunctionCall MakeCall(mach_vm_address_t to, mach_vm_address_t from) {
     union FunctionCall call;
-
     bool sign;
-
     mach_vm_address_t imm;
-
     mach_vm_address_t max;
     mach_vm_address_t min;
-
     uint32_t insn_length = sizeof(uint32_t);
-
     from = from + insn_length;
-
     max = (from > to) ? from : to;
     min = (from > to) ? to : from;
-
     mach_vm_address_t diff = (max - min);
-
     if (from > to) {
         sign = true;
     } else {
         sign = false;
     }
-
     call.c.mode = 0b1;
     call.c.op = arch::arm64::CallFunctionPrefix;
-
     imm >>= 2;
-
-    if (sign)
+    if (sign) {
         imm = (~imm + 1) | 0x2000000;
-
+    }
     call.c.imm = static_cast<uint32_t>(imm);
-
     return call;
 }
 } // namespace arm64

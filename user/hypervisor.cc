@@ -40,7 +40,6 @@ Hypervisor::Hypervisor(fuzzer::Harness* harness, xnu::mach::VmAddress virtualBas
         printf("Failed to prepare Hypervisor's System Memory!\n");
         exit(-1);
     }
-
     PrepareBootArgs("DeviceTree_vma2");
     Configure();
     Start();
@@ -50,27 +49,19 @@ Hypervisor::Hypervisor(fuzzer::Harness* harness, xnu::mach::VmAddress virtualBas
 
 void Hypervisor::SynchronizeCpuState() {
     HvfArm64State* env = &state;
-
     hv_return_t ret;
-
     UInt64 val;
-
     hv_simd_fp_uchar16_t fpval;
-
     int i;
-
     for (i = 0; i < ARRAY_SIZE(hvf_reg_match); i++) {
         HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, (hv_reg_t)hvf_reg_match[i].reg, &val));
-
         *(UInt64*)((void*)((UInt64)env + hvf_reg_match[i].offset)) = val;
     }
-
     for (i = 0; i < ARRAY_SIZE(hvf_fpreg_match); i++) {
         HYP_ASSERT_SUCCESS(
             hv_vcpu_get_simd_fp_reg(vcpu, (hv_simd_fp_reg_t)hvf_fpreg_match[i].reg, &fpval));
         memcpy((void*)((UInt64)env + hvf_fpreg_match[i].offset), &fpval, sizeof(fpval));
     }
-
     /*
     val = 0;
     HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_FPCR, &val));
@@ -81,9 +72,7 @@ void Hypervisor::SynchronizeCpuState() {
 
     vfp_set_fpsr(env, val);
     */
-
     HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_CPSR, &val));
-
     env->ZF = (~val) & PSTATE_Z;
     env->NF = val;
     env->CF = (val >> 29) & 1;
@@ -91,12 +80,10 @@ void Hypervisor::SynchronizeCpuState() {
     env->daif = val & PSTATE_DAIF;
     env->btype = (val >> 10) & 3;
     env->pstate = val & ~CACHED_PSTATE_BITS;
-
     for (i = 0; i < ARRAY_SIZE(hvf_sreg_match); i++) {
         if (hvf_sreg_match[i].cp_idx == -1) {
             continue;
         }
-
         if (0) {
             /* Handle debug registers */
             switch (hvf_sreg_match[i].reg) {
@@ -185,20 +172,14 @@ void Hypervisor::SynchronizeCpuState() {
             }
             }
         }
-
         HYP_ASSERT_SUCCESS(hv_vcpu_get_sys_reg(vcpu, (hv_sys_reg_t)hvf_sreg_match[i].reg, &val));
-
         // arm_cpu->cpreg_values[hvf_sreg_match[i].cp_idx] = val;
     }
-
     // assert(write_list_to_cpustate(arm_cpu));
-
     int el;
-
     if (env->aarch64) {
         el = extract32(env->pstate, 2, 2);
     }
-
     switch (env->uncached_cpsr & 0x1f) {
     case ARM_CPU_MODE_USR:
         el = 0;
@@ -209,7 +190,6 @@ void Hypervisor::SynchronizeCpuState() {
     default:
         el = 1;
     }
-
     if (env->pstate & PSTATE_SP) {
         env->sp_el[el] = env->xregs[31];
     } else {
@@ -219,47 +199,30 @@ void Hypervisor::SynchronizeCpuState() {
 
 void Hypervisor::FlushCpuState() {
     HvfArm64State* env = &state;
-
     hv_return_t ret;
-
     UInt64 val;
-
     hv_simd_fp_uchar16_t fpval;
-
     int i;
-
     for (i = 0; i < ARRAY_SIZE(hvf_reg_match); i++) {
         val = *(UInt64*)((void*)((UInt64)env + hvf_reg_match[i].offset));
-
         HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, (hv_reg_t)hvf_reg_match[i].reg, val));
     }
-
     for (i = 0; i < ARRAY_SIZE(hvf_fpreg_match); i++) {
         memcpy(&fpval, (void*)((UInt64)env + hvf_fpreg_match[i].offset), sizeof(fpval));
-
         HYP_ASSERT_SUCCESS(
             hv_vcpu_set_simd_fp_reg(vcpu, (hv_simd_fp_reg_t)hvf_fpreg_match[i].reg, fpval));
     }
-
     // HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_FPCR, vfp_get_fpcr(env)));
-
     // HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_FPSR, vfp_get_fpsr(env)));
-
     int ZF;
-
     ZF = (env->ZF == 0);
-
     UInt32 cpsr = (env->NF & 0x80000000) | (ZF << 30) | (env->CF << 29) |
                   ((env->VF & 0x80000000) >> 3) | env->pstate | env->daif | (env->btype << 10);
-
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_CPSR, cpsr));
-
     int el;
-
     if (env->aarch64) {
         el = extract32(env->pstate, 2, 2);
     }
-
     switch (env->uncached_cpsr & 0x1f) {
     case ARM_CPU_MODE_USR:
         el = 0;
@@ -270,18 +233,15 @@ void Hypervisor::FlushCpuState() {
     default:
         el = 1;
     }
-
     if (env->pstate & PSTATE_SP) {
         env->sp_el[el] = env->xregs[31];
     } else {
         env->sp_el[0] = env->xregs[31];
     }
-
     for (i = 0; i < ARRAY_SIZE(hvf_sreg_match); i++) {
         if (hvf_sreg_match[i].cp_idx == -1) {
             continue;
         }
-
         if (0) {
             /* Handle debug registers */
             switch (hvf_sreg_match[i].reg) {
@@ -357,30 +317,22 @@ void Hypervisor::FlushCpuState() {
                 continue;
             }
         }
-
         // val = arm_cpu->cpreg_values[hvf_sreg_match[i].cp_idx];
         HYP_ASSERT_SUCCESS(hv_vcpu_set_sys_reg(vcpu, (hv_sys_reg_t)hvf_sreg_match[i].reg, val));
     }
-
     // HYP_ASSERT_SUCCESS(hv_vcpu_set_vtimer_offset(cpu->accel->fd, hvf_state->vtimer_offset));
 }
 
 int Hypervisor::SysregRead(UInt32 reg, UInt32 rt) {
     HvfArm64State* env = &state;
-
     UInt64 val = 0;
-
     switch (reg) {
     case SYSREG_CNTPCT_EL0:
         UInt64 gt_cntfrq_hz;
-
         asm volatile("mrs %0, cntfrq_el0" : "=r"(gt_cntfrq_hz));
-
 #define NANOSECONDS_PER_SECOND 1000000000LL
-
         val = get_clock() /
               (NANOSECONDS_PER_SECOND > gt_cntfrq_hz ? NANOSECONDS_PER_SECOND / gt_cntfrq_hz : 1);
-
         break;
     case SYSREG_PMCR_EL0:
         val = env->cp15.c9_pmcr;
@@ -539,17 +491,13 @@ int Hypervisor::SysregRead(UInt32 reg, UInt32 rt) {
 
         return 1;
     }
-
     printf("Success!\n");
-
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, (hv_reg_t)(HV_REG_X0 + rt), val));
-
     return 0;
 }
 
 int Hypervisor::SysregWrite(UInt32 reg, UInt64 val) {
     HvfArm64State* env = &state;
-
     switch (reg) {
     case SYSREG_PMCCNTR_EL0:
         env->cp15.c15_ccnt = val;
@@ -559,17 +507,14 @@ int Hypervisor::SysregWrite(UInt32 reg, UInt64 val) {
             /* The counter has been reset */
             env->cp15.c15_ccnt = 0;
         }
-
         if (val & PMCRP) {
             unsigned int i;
             for (i = 0; i < pmu_num_counters(env); i++) {
                 env->cp15.c14_pmevcntr[i] = 0;
             }
         }
-
         env->cp15.c9_pmcr &= ~PMCR_WRITABLE_MASK;
         env->cp15.c9_pmcr |= (val & PMCR_WRITABLE_MASK);
-
         break;
     case SYSREG_PMUSERENR_EL0:
         env->cp15.c9_pmuserenr = val & 0xf;
@@ -710,42 +655,29 @@ int Hypervisor::SysregWrite(UInt32 reg, UInt64 val) {
 
         return 0;
     }
-
     printf("Success!\n");
-
     return 0;
 }
 
 void Hypervisor::PrepareBootArgs(const char* deviceTreePath) {
     int fd = open(deviceTreePath, O_RDONLY);
-
     if (!fd) {
         fprintf(stderr, "Failed to open DeviceTree at path %s\n", deviceTreePath);
 
         exit(-1);
     }
-
     Size deviceTreeSize = lseek(fd, 0, SEEK_END);
-
     lseek(fd, 0, SEEK_SET);
-
     char* deviceTree = reinterpret_cast<char*>(malloc(deviceTreeSize));
-
     Size bytes_read;
-
     bytes_read = read(fd, deviceTree, size);
-
     close(fd);
-
     printf("deviceTree = 0x%llx\n", (UInt64)deviceTree);
     printf("deviceTreeSize = 0x%llx\n", (UInt64)deviceTreeSize);
-
     char* CommandLineArguments = "-s";
-
     bootArgsOffset = size + 0x10000;
     framebufferOffset = size + 0x10000 * 4;
     deviceTreeOffset = size + 0x10000 * 32;
-
     boot_args.Revision = kBootArgsRevision2;
     boot_args.Version = kBootArgsVersion2;
     boot_args.virtBase = virtualBase;
@@ -764,14 +696,11 @@ void Hypervisor::PrepareBootArgs(const char* deviceTreePath) {
     strlcpy(boot_args.CommandLine, CommandLineArguments, strlen(CommandLineArguments));
     boot_args.bootFlags = 0;
     boot_args.memSizeActual = gMainMemSize;
-
     memcpy((void*)((UInt64)mainMemory + deviceTreeOffset), (void*)deviceTree, deviceTreeSize);
     memcpy((void*)((UInt64)mainMemory + bootArgsOffset), (void*)&boot_args,
            sizeof(struct boot_args));
-
     printf("deviceTreeP = 0x%llx\n", (UInt64)boot_args.deviceTreeP);
     printf("deviceTreeLength = 0x%llx\n", (UInt64)boot_args.deviceTreeLength);
-
     printf("virtBase = 0x%llx\n", boot_args.virtBase);
     printf("physBase = 0x%llx\n", boot_args.physBase);
 }
@@ -780,60 +709,45 @@ int Hypervisor::PrepareSystemMemory() {
     // Reset trampoline
     // Well, dear Apple, why you reset the CPU at EL0
     posix_memalign(&resetTrampolineMemory, 0x10000, gResetTrampolineMemorySize);
-
     if (resetTrampolineMemory == nullptr) {
         printf("Failed to posix_memalign() g_pMainMemory!\n");
 
         return -ENOMEM;
     }
-
     memset(resetTrampolineMemory, 0, gResetTrampolineMemorySize);
-
     for (UInt64 offset = 0; offset < 0x780; offset += 0x80) {
         memcpy((void*)((UInt64)resetTrampolineMemory + offset), sArm64ResetTrampoline,
                sizeof(sArm64ResetTrampoline));
     }
-
     // memcpy((void*) ((UInt64) resetTrampolineMemory + 0x800), sArm64ResetVector,
     // sizeof(sArm64ResetVector));
-
     // Map the RAM into the VM
     HYP_ASSERT_SUCCESS(hv_vm_map(resetTrampolineMemory, gAdrResetTrampoline,
                                  gResetTrampolineMemorySize, HV_MEMORY_READ | HV_MEMORY_EXEC));
-
     // Main memory.
     posix_memalign(&mainMemory, 0x1000, gMainMemSize);
-
     if (mainMemory == nullptr) {
         printf("Failed to posix_memalign() g_pMainMemory!\n");
-
         return -ENOMEM;
     }
-
     // Copy our code into the VM's RAM
     memset(mainMemory, 0, gMainMemSize);
     memcpy(mainMemory, (void*)base, size);
-
     // Map the RAM into the VM
     HYP_ASSERT_SUCCESS(hv_vm_map(mainMemory, gMainMemory, gMainMemSize,
                                  HV_MEMORY_READ | HV_MEMORY_WRITE | HV_MEMORY_EXEC));
-
     return 0;
 }
 
 void Hypervisor::Configure() {
     xnu::mach::VmAddress __start = (entryPoint - virtualBase) + gMainMemory;
-
     printf("entryPoint = 0x%llx\n", entryPoint);
     printf("virtualBase = 0x%llx\n", virtualBase);
     printf("__start physical address = 0x%llx\n", __start);
-
     // Add a virtual CPU to our VM
     HYP_ASSERT_SUCCESS(hv_vcpu_create(&vcpu, &vcpu_exit, nullptr));
-
     // Configure initial VBAR_EL1 to the trampoline
     HYP_ASSERT_SUCCESS(hv_vcpu_set_sys_reg(vcpu, HV_SYS_REG_VBAR_EL1, gAdrResetTrampoline));
-
 #if USE_EL0_TRAMPOILNE
     // Set the CPU's PC to execute from the trampoline
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_PC, gAdrResetTrampoline + 0x800));
@@ -842,17 +756,13 @@ void Hypervisor::Configure() {
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_CPSR, 0x3c4));
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_PC, __start));
 #endif
-
     // Configure misc
     HYP_ASSERT_SUCCESS(hv_vcpu_set_sys_reg(vcpu, HV_SYS_REG_SP_EL0, gMainMemory + size + 0x4000));
     HYP_ASSERT_SUCCESS(hv_vcpu_set_sys_reg(vcpu, HV_SYS_REG_SP_EL1, gMainMemory + size + 0x8000));
-
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_FP, gMainMemory + size + 0xC000));
-
     // Trap debug access (BRK)
     HYP_ASSERT_SUCCESS(hv_vcpu_set_trap_debug_exceptions(vcpu, true));
     HYP_ASSERT_SUCCESS(hv_vcpu_set_trap_debug_reg_accesses(vcpu, true));
-
     HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_X0, (UInt64)gMainMemory + bootArgsOffset));
 }
 
@@ -868,116 +778,76 @@ void Hypervisor::Start() {
             UInt64 syndrome = vcpu_exit->exception.syndrome;
             UInt8 ec = (syndrome >> 26) & 0x3f;
             // check Exception Class
-
             printf("EC = %u Syndrome %llu\n", ec, syndrome);
-
             SynchronizeCpuState();
-
             if (ec == EC_AA32_HVC) {
                 // Exception Class 0x16 is
                 // "HVC instruction execution in AArch64 state, when HVC is not disabled."
                 UInt64 x0;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_X0, &x0));
-
                 printf("VM made an HVC call! x0 register holds 0x%llx\n", x0);
-
                 break;
             } else if (ec == EC_AA64_SMC) {
                 // Exception Class 0x17 is
                 // "SMC instruction execution in AArch64 state, when SMC is not disabled."
-
                 // Yes despite M1 doesn't have EL3, it is capable to trap it too. :)
                 UInt64 x0;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_X0, &x0));
                 printf("VM made an SMC call! x0 register holds 0x%llx\n", x0);
                 printf("Return to get on next instruction.\n");
-
                 // ARM spec says trapped SMC have different return path, so it is required
                 // to increment elr_el2 by 4 (one instruction.)
                 UInt64 pc;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_PC, &pc));
-
                 pc += 4;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_PC, pc));
-
             } else if (ec == EC_SYSTEMREGISTERTRAP) {
                 UInt64 pc;
-
                 bool isread = (syndrome >> 0) & 1;
-
                 UInt32 rt = (syndrome >> 5) & 0x1f;
-
                 UInt32 reg = syndrome & SYSREG_MASK;
-
                 UInt64 val;
-
                 int ret = 0;
-
                 if (isread) {
                     ret = SysregRead(reg, rt);
                 } else {
                     HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, (hv_reg_t)rt, &val));
-
                     ret = SysregWrite(reg, val);
                 }
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_PC, &pc));
-
                 printf("EC_SYSTEMREGISTERTRAP isread = %u pc 0x%llx %u %u 0x%x!\n", isread, pc, rt,
                        reg, *(UInt32*)((pc - gMainMemory) + (UInt64)mainMemory));
-
                 pc += 4;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_set_reg(vcpu, HV_REG_PC, pc));
-
                 UInt64 ttbr;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_sys_reg(vcpu, HV_SYS_REG_TTBR0_EL1, &ttbr));
-
                 printf("TTBR0_EL1 0x%llx\n", ttbr);
-
             } else if (ec == EC_AA64_BKPT) {
                 // Exception Class 0x3C is BRK in AArch64 state
                 UInt64 reg;
-
                 printf("VM made an BRK call!\n");
                 printf("Reg dump:\n");
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_PC, &reg));
-
                 printf("PC: 0x%llx\n", reg);
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_FP, &reg));
-
                 printf("FP: 0x%llx\n", reg);
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_LR, &reg));
-
                 printf("LR: 0x%llx\n", reg);
-
                 for (UInt32 reg = HV_REG_X0; reg <= HV_REG_FP; reg++) {
                     UInt64 s;
                     HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, (hv_reg_t)reg, &s));
                     printf("X%d: 0x%llx\n", reg, s);
                 }
-
                 break;
             } else {
                 UInt64 pc, sp, fp, lr;
                 UInt64 x[30];
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_PC, &pc));
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_FP, &fp));
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, HV_REG_LR, &lr));
-
                 for (int i = 0; i < 30; i++) {
                     HYP_ASSERT_SUCCESS(hv_vcpu_get_reg(vcpu, (hv_reg_t)(HV_REG_X0 + i), &x[i]));
                 }
-
                 fprintf(stderr,
                         "Unexpected VM exception: 0x%llx, EC 0x%x, VirtAddr 0x%llx, IPA 0x%llx "
                         "Reason 0x%x\nPC 0x%llx\nFP 0x%llx\nLR 0x%llx\nX0 0x%llx\nX1 0x%llx\nX2 "
@@ -991,18 +861,13 @@ void Hypervisor::Start() {
                         x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12],
                         x[13], x[14], x[15], x[16], x[17], x[18], x[19], x[20], x[21], x[22], x[23],
                         x[24], x[25], x[26], x[27], x[28], x[29]);
-
                 UInt64 ttbr;
-
                 HYP_ASSERT_SUCCESS(hv_vcpu_get_sys_reg(vcpu, HV_SYS_REG_TTBR0_EL1, &ttbr));
-
                 printf("TTBR0_EL1 0x%llx\n", ttbr);
-
                 break;
             }
         } else {
             fprintf(stderr, "Unexpected VM exit reason: %d\n", vcpu_exit->reason);
-
             break;
         }
     }
@@ -1013,7 +878,6 @@ void Hypervisor::Destroy() {
     // Tear down the VM
     hv_vcpu_destroy(vcpu);
     hv_vm_destroy();
-
     // Free memory
     free(resetTrampolineMemory);
     free(mainMemory);

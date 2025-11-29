@@ -194,26 +194,18 @@ public:
 
 private:
     void* target;
-
     darwin::Patcher* patcher;
-
     xnu::Task* task;
-
     arch::Architecture* architecture;
-
     Disassembler* disassembler;
-
     darwin::Payload* payload;
 
-    bool kernelHook = false;
-
+    bool kernel_hook = false;
     xnu::mach::VmAddress from;
     xnu::mach::VmAddress trampoline;
-
     enum HookType hooktype;
 
     HookCallbackArray<xnu::mach::VmAddress> callbacks;
-
     HookArray<struct HookPatch*> hooks;
 };
 

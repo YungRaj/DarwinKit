@@ -21,7 +21,6 @@
 #include <types.h>
 
 #include "objc.h"
-
 #include "dictionary.h"
 
 class MachO;

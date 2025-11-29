@@ -19,9 +19,7 @@
 extern "C" {
 #include <sys/types.h>
 }
-
 #include <IOKit/IOService.h>
-
 #include <types.h>
 
 #include "api.h"

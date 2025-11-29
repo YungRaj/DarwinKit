@@ -71,12 +71,9 @@ public:
 
 private:
     xnu::macho::Section64* section;
-
     char* name;
 
     xnu::mach::VmAddress address;
-
     Offset offset;
-
     Size size;
 };

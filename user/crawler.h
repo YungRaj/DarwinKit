@@ -185,15 +185,10 @@ public:
 
 private:
     NSDarwinAppCrawler* crawler;
-
     NSDictionary* crawlData;
-
     NSString* bundleIdentifier;
-
     UIApplication* application;
-
     id<UIApplicationDelegate> delegate;
-
     UIViewController* currentViewController;
 };
 } // namespace AppCrawler

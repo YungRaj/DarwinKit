@@ -29,7 +29,6 @@ namespace xnu {
 Kext::Kext(Kernel* kernel, xnu::mach::VmAddress base, char* identifier)
     : kernel(kernel), address(base), identifier(identifier) {
     macho = new KextMachO(kernel, identifier, address);
-
     kmod_info = reinterpret_cast<xnu::KmodInfo*>(macho->GetSymbolAddressByName("_kmod_info"));
 }
 
@@ -41,35 +40,25 @@ Kext::Kext(Kernel* kernel, void* kext, xnu::KmodInfo* kmod_info)
 
 Kext* Kext::FindKextWithIdentifier(Kernel* kernel, char* name) {
     darwin::DarwinKit* darwinkit = kernel->GetDarwinKit();
-
     return darwinkit->GetKextByIdentifier(name);
 }
 
 Kext* Kext::FindKextWithIdentifier_deprecated(Kernel* kernel, char* name) {
     xnu::KmodInfo** kextKmods;
-
     xnu::mach::VmAddress _kmod = kernel->GetSymbolAddressByName("_kmod");
-
     kextKmods = reinterpret_cast<xnu::KmodInfo**>(_kmod);
-
     for (xnu::KmodInfo* kmod = *kextKmods; kmod; kmod = kmod->next) {
         if (strcmp(kmod->name, name) == 0) {
             Kext* kext;
-
             void* OSKext;
-
             typedef void* (*lookupKextWithIdentifier)(const char*);
-
             void* (*__ZN6OSKext24lookupKextWithIdentifierEPKc)(const char*);
-
             xnu::mach::VmAddress OSKext_lookupWithIdentifier =
                 kernel->GetSymbolAddressByName("__ZN6OSKext24lookupKextWithIdentifierEPKc");
-
             __ZN6OSKext24lookupKextWithIdentifierEPKc =
                 reinterpret_cast<lookupKextWithIdentifier>(OSKext_lookupWithIdentifier);
 
             OSKext = __ZN6OSKext24lookupKextWithIdentifierEPKc(name);
-
             kext = new Kext(kernel, OSKext, kmod);
         }
     }

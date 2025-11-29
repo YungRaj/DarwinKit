@@ -86,15 +86,12 @@ struct AttrSpec {
 struct AttrAbbrev {
     enum DW_TAG tag;
     enum DW_CHILDREN children;
-
     struct AttrSpec attr_spec;
-
     UInt64 code;
 };
 
 struct Attribute {
     struct AttrAbbrev abbreviation;
-
     UInt64 value;
 };
 
@@ -171,17 +168,14 @@ private:
     std::vector<struct AttrAbbrev*> abbreviationTable;
 
     enum DW_TAG tag;
-
     enum DW_CHILDREN has_children;
 
     char* name;
-
     DIE<T>* parent;
 
     UInt32 idx;
     UInt32 sibling_idx;
     UInt32 parent_idx;
-
     Offset offset;
 };
 
@@ -242,11 +236,8 @@ public:
 
 private:
     Dwarf<T>* dwarf;
-
     CompilationUnit<T>* compilationUnit;
-
     DIE<T>* die;
-
     DwarfDIE<T>* parent;
 
     std::vector<DwarfDIE*> children;
@@ -293,23 +284,17 @@ public:
 
 private:
     Dwarf<T>* dwarf;
-
     DIE<T>* die;
 
     struct CompileUnitHeader* header;
-
     std::vector<DwarfDIE<T>*> debugInfoEntries;
-
     LineTable<T>* lineTable;
 
     char* source_file;
     char* source_language;
-
     UInt16 dwarf_version;
-
     UInt8 unit_type;
     UInt64 dwo_id;
-
     UInt64 unit_type_signature;
     UInt64 unit_type_offset;
 
@@ -358,35 +343,29 @@ struct LTSourceFileMetadata {
 
 struct LTSourceFile {
     char* source_file;
-
     struct LTSourceFileMetadata metadata;
 };
 
 struct LTStateMachine {
     xnu::mach::VmAddress address;
-
     UInt8 isa;
     Int64 line;
     UInt64 column;
     UInt16 file;
     UInt32 discriminator;
-
     UInt8 statement : 1, basic_block : 1, end_sequence : 1, prologue_end : 1, epilogue_begin : 1;
 };
 
 struct LTSourceLine {
     struct LTSourceFile* source_file;
-
     struct LTStateMachine state;
 };
 
 struct Sequence {
     UInt64 LowPC;
     UInt64 HighPC;
-
     Segment* segment;
     Section* section;
-
     std::vector<LTSourceLine*> sourceLines;
 };
 
@@ -451,29 +430,21 @@ private:
     T binary;
 
     Dwarf<T>* dwarf;
-
     struct LTPrologue prologue;
-
     struct LTStandardOpcodeLengths standardOpcodeLengths;
-
     CompilationUnit<T>* compilationUnit;
 
     std::vector<Sequence*> sources;
-
     std::vector<char*> include_directories;
     std::vector<struct LTSourceFile*> files;
 };
 
 struct LocationTableEntry {
     DW_LLE kind;
-
     UInt32 offset;
-
     UInt64 value0;
     UInt64 value1;
-
     Segment* segment;
-
     std::vector<DW_OP> location_ops;
 };
 
@@ -494,13 +465,11 @@ struct AddressRangeHeader {
 
 struct AddressRangeEntry {
     struct AddressRangeHeader header;
-
     std::vector<struct AddressRange*> ranges;
 };
 
 struct RangeEntry {
     UInt32 offset;
-
     UInt64 value0;
     UInt64 value1;
 };
@@ -590,21 +559,16 @@ public:
 
 private:
     T binary;
-
     T binaryWithDebugSymbols;
 
     std::vector<DIE<T>*> dies;
     std::vector<CompilationUnit<T>*> compilationUnits;
-
     std::vector<LineTable<T>*> lineTables;
-
     std::vector<struct LocationTableEntry*> locationTable;
-
     std::vector<RangeEntries*> ranges;
     std::vector<struct AddressRangeEntry*> addressRanges;
 
     Seg dwarf;
-
     Sect __debug_line;
     Sect __debug_loc;
     Sect __debug_aranges;

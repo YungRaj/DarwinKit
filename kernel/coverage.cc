@@ -150,10 +150,8 @@ void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
         /* Kernel-only coverage tracking using a bitmap */
         UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
         curr_location = index;
-
         /* AFL-style edge tracking */
         UInt64 edge = curr_location ^ prev_location;
-
         coverage_bitmap[edge]++;
         prev_location = curr_location >> 1;
     }

@@ -25,7 +25,6 @@
 #include <sys/types.h>
 
 #include <types.h>
-
 #include <arch.h>
 
 namespace xnu {

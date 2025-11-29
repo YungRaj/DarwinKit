@@ -153,12 +153,10 @@ public:
 
 private:
     xnu::Kernel* kernel;
-
     xnu::KmodInfo** kextKmods;
 
     darwin::Hook* copyClientEntitlementHook;
     darwin::Hook* hasEntitlementHook;
-
     darwin::Hook* binaryLoadHook;
     darwin::Hook* kextLoadHook;
 

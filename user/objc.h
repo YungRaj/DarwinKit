@@ -19,7 +19,6 @@
 #include <mach/mach_types.h>
 
 #include <vector>
-
 #include <types.h>
 
 #include "pac.h"
@@ -228,14 +227,12 @@ struct _objc_2_method {
 struct _objc_2_class_protocol {
     UInt64 isa;
     UInt64 name;
-
     UInt64 protocols;
     UInt64 instance_methods;
     UInt64 class_methods;
     UInt64 opt_instance_methods;
     UInt64 opt_class_methods;
     UInt64 instance_properties;
-
     UInt32 cb;
     UInt32 flags;
 };
@@ -243,7 +240,6 @@ struct _objc_2_class_protocol {
 struct _objc_2_category {
     UInt64 category_name;
     UInt64 class_name;
-
     UInt64 instance_methods;
     UInt64 class_methods;
     UInt64 protocols;
@@ -253,7 +249,6 @@ struct _objc_2_category {
 struct _objc_2_class_ivar {
     UInt64 offset;
     UInt64 name;
-
     UInt64 type;
     UInt32 align;
     UInt32 size;
@@ -261,7 +256,6 @@ struct _objc_2_class_ivar {
 
 struct _objc_2_class_property {
     UInt64 name;
-
     UInt64 attributes;
 };
 
@@ -272,11 +266,9 @@ struct _objc_2_class_data {
     UInt32 reserved;
     UInt64 iVarLayout;
     UInt64 name;
-
     UInt64 methods;
     UInt64 protocols;
     UInt64 ivars;
-
     UInt64 weakIVarLayout;
     UInt64 properties;
 };
@@ -286,29 +278,23 @@ struct _objc_2_class {
     UInt64 superclass;
     UInt64 cache;
     UInt64 vtable;
-
     struct _objc_2_class_data* data;
 };
 
 struct _objc_2_class_rw_t {
     UInt32 flags;
     UInt16 witness;
-
     UInt64 ro_or_rw_ext;
-
     UInt64 firstSubclass;
     UInt64 nextSiblingClass;
 };
 
 struct _objc_2_class_rw_ext_t {
     UInt64 ro;
-
     UInt64 methods;
     UInt64 properties;
     UInt64 protocols;
-
     UInt64 demangledName;
-
     UInt32 version;
 };
 }; // namespace objc
@@ -419,15 +405,11 @@ private:
     struct _objc_2_class_protocol* protocol;
 
     char* name;
-
     UInt64 offset;
-
     std::vector<Method*> instance_methods;
     std::vector<Method*> class_methods;
-
     std::vector<Method*> optional_instance_methods;
     std::vector<Method*> optional_class_methods;
-
     std::vector<Property*> instance_properties;
 };
 
@@ -456,13 +438,11 @@ public:
 
 private:
     struct _objc_2_category* category;
-
     char* name;
     char* class_name;
 
     std::vector<Method*> class_methods;
     std::vector<Method*> instance_methods;
-
     std::vector<Property*> properties;
 };
 
@@ -488,15 +468,11 @@ public:
 
 private:
     ObjC* object;
-
     struct _objc_2_class_ivar* ivar;
 
     char* name;
-
     UInt64 offset;
-
     UInt64 type;
-
     Size size;
 };
 
@@ -514,11 +490,8 @@ public:
 
 private:
     ObjC* object;
-
     struct _objc_2_class_property* property;
-
     char* name;
-
     char* attributes;
 };
 
@@ -541,13 +514,10 @@ public:
 
 private:
     ObjC* object;
-
     struct _objc_2_class_method* method;
 
     char* name;
-
     UInt64 type;
-
     UInt64 impl;
 };
 
@@ -627,11 +597,8 @@ private:
     darwin::MachOUserspace* macho;
 
     bool metaclass;
-
     struct _objc_2_class* cls;
-
     struct _objc_2_class_data* data;
-
     char* name;
 
     ObjCClass* super;
@@ -642,11 +609,8 @@ private:
     UInt64 vtable;
 
     std::vector<Method*> methods;
-
     std::vector<Protocol*> protocols;
-
     std::vector<Ivar*> ivars;
-
     std::vector<Property*> properties;
 };
 

@@ -17,11 +17,9 @@
 #pragma once
 
 #include <IOKit/IOKitLib.h>
-
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <mach/mach_types.h>
-
 #include <sys/types.h>
 
 #include "api.h"

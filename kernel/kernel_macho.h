@@ -61,15 +61,11 @@ public:
 
 protected:
     xnu::Kernel* kernel;
-
     xnu::mach::VmAddress kernel_cache;
-
     xnu::mach::VmAddress kernel_collection;
 
     UInt8* linkedit;
-
     xnu::mach::VmAddress linkedit_off;
-
     Size linkedit_size;
 };
 

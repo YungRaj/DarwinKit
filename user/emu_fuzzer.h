@@ -24,13 +24,10 @@ extern "C" {
 };
 
 #include <vector>
-
 #include <types.h>
 
 #include "kernel.h"
-
 #include "binary_format.h"
-
 #include "kernel_macho.h"
 #include "kext_macho.h"
 #include "macho.h"
@@ -194,11 +191,8 @@ struct RawBinary : public binary::BinaryFormat {
 
     private:
         char* name;
-
         xnu::mach::VmAddress address;
-
         Size size;
-
         int prot;
         int idx;
     };
@@ -217,22 +211,18 @@ struct RawBinary : public binary::BinaryFormat {
         char* GetDemangledName() {
             if constexpr (LangType == LANG_TYPE_SWIFT) {
                 char* _swift_demangle = swift_demangle(GetName());
-
-                if (_swift_demangle)
+                if (_swift_demangle) {
                     return _swift_demangle;
+                }
             }
-
             if constexpr (LangType == LANG_TYPE_CXX) {
                 char* _cxx_demangle = cxx_demangle(GetName());
-
-                if (_cxx_demangle)
+                if (_cxx_demangle) {
                     return _cxx_demangle;
+                }
             }
-
             char* empty = new char[1];
-
             *empty = '\0';
-
             return empty;
         }
 
@@ -258,9 +248,7 @@ struct RawBinary : public binary::BinaryFormat {
 
     private:
         char* name;
-
         xnu::mach::VmAddress address;
-
         int type;
     };
 
@@ -291,27 +279,23 @@ public:
 
     SymbolRaw* GetSymbol(const char* name) {
         std::vector<SymbolRaw*>& symbols = linkerMap->GetSymbols();
-
         for (int i = 0; i < symbols.size(); i++) {
             SymbolRaw* sym = symbols.at(i);
-
-            if (strcmp(name, sym->GetName()) == 0)
+            if (strcmp(name, sym->GetName()) == 0) {
                 return sym;
+            }
         }
-
         return nullptr;
     }
 
     SectionRaw* GetSection(const char* name) {
         std::vector<SectionRaw*>& sections = linkerMap->GetSections();
-
         for (int i = 0; i < sections.size(); i++) {
             SectionRaw* sect = sections.at(i);
-
-            if (strcmp(name, sect->GetName()) == 0)
+            if (strcmp(name, sect->GetName()) == 0) {
                 return sect;
+            }
         }
-
         return nullptr;
     }
 
@@ -322,7 +306,6 @@ private:
     xnu::mach::VmAddress base;
 
     char* path;
-
     char* mapFile;
 
     LinkerMap<RawBinary*, SymbolRaw*, SectionRaw*>* linkerMap;
@@ -472,19 +455,15 @@ struct FuzzBinary {
         }
     {
         static_assert(AnyBinaryFormat<Binary>, "Unsupported type for FuzzBinary:GetSymbol()");
-
         if constexpr (std::is_base_of_v<MachO, std::remove_pointer_t<Binary>>) {
             return dynamic_cast<Sym>(binary.macho->GetSymbol(symbolname));
         }
-
         if constexpr (std::is_same_v<Binary, MachO*>) {
             return binary.macho->GetSymbol(symbolname);
         }
-
         if constexpr (std::is_same_v<Binary, RawBinary*>) {
             return binary.raw->GetSymbol(symbolname);
         }
-
         return nullptr;
     }
 
@@ -498,26 +477,21 @@ struct FuzzBinary {
         }
     {
         static_assert(AnyBinaryFormat<Binary>, "Unsupported type for FuzzBinary:GetSegment()");
-
         if constexpr (std::is_base_of_v<MachO, std::remove_pointer_t<Binary>>) {
             return dynamic_cast<Seg>(binary.macho->GetSegment(segname));
         }
-
         if constexpr (std::is_same_v<Binary, MachO*>) {
             return binary.macho->GetSegment(segname);
         }
-
         if constexpr (std::is_same_v<Binary, RawBinary*>) {
             return binary.raw->GetSection(segname);
         }
-
         return nullptr;
     }
 };
 
 static_assert(std::is_same_v<GetSegmentReturnType<MachO*>, Segment*>);
 static_assert(std::is_same_v<GetSectionReturnType<RawBinary*>, SectionRaw*>);
-
 static_assert(AnyBinaryFormat<decltype(FuzzBinary::binary.macho)> &&
                   // AnyBinaryFormat<decltype(FuzzBinary::binary.elf)> &&
                   // AnyBinaryFormat<decltype(FuzzBinary::binary.portableExecutable)> &&
@@ -647,11 +621,9 @@ private:
     emulation::Emulator<emulation::Panda> *panda;
 
     xnu::Kernel* kernel;
-
     xnu::KDKInfo* kdkInfo;
 
     struct FuzzBinary* fuzzBinary;
-
     fuzzer::Loader* loader;
 
     char* mapFile;

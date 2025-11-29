@@ -17,7 +17,6 @@
 #pragma once
 
 #include <types.h>
-
 #include <arch.h>
 #include <vector.h>
 
@@ -91,9 +90,9 @@ protected:
     darwin::DarwinKit* darwin;
 };
 
-class GDBStubA64 : public Debugger {
+class GdbStubA64 : public Debugger {
 public:
-    explicit GDBStubArm64(xnu::Kernel* kernel);
+    explicit GdbStubA64(xnu::Kernel* kernel);
 
     void AddBreakpoint(xnu::mach::VmAddress address);
 
@@ -111,13 +110,12 @@ public:
 
 private:
     arch::Architecture architecture;
-
     Array<Hook*> breakpoints;
 };
 
-class GDBStubX64 : public Debugger {
+class GdbStubX64 : public Debugger {
 public:
-    explicit GDBStubX64(xnu::Kernel* kernel);
+    explicit GdbStubX64(xnu::Kernel* kernel);
 
     void AddBreakpoint(xnu::mach::VmAddress address);
 
@@ -135,7 +133,6 @@ public:
 
 private:
     arch::Architecture architecture;
-
     Array<Hook*> breakpoints;
 }
 }; // namespace debug

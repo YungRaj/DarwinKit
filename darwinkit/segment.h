@@ -90,7 +90,6 @@ public:
                 return section;
             }
         }
-
         return nullptr;
     }
 
@@ -112,17 +111,12 @@ public:
 
 private:
     xnu::macho::Segment64* segment;
-
     std::vector<Section*> sections;
-
     char* name;
 
     xnu::mach::VmAddress address;
-
     Size size;
-
     Offset fileoffset;
-
     Size filesize;
 
     xnu::mach::VmProtection maxprot;

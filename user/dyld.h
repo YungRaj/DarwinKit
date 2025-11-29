@@ -18,15 +18,12 @@
 
 extern "C" {
 #include <mach-o.h>
-
 #include <mach/mach_types.h>
 #include <sys/types.h>
-
 #include <dyld_cache_format.h>
 }
 
 #include <vector>
-
 #include <types.h>
 
 class MachO;
@@ -133,22 +130,16 @@ public:
 
 private:
     char* main_image_path;
-
     xnu::Kernel* kernel;
-
     xnu::Task* task;
-
     std::vector<Library*> libraries;
 
     xnu::mach::VmAddress main_image_load_base;
-
     xnu::mach::VmAddress dyld;
     xnu::mach::VmAddress dyld_shared_cache;
 
     Offset slide;
-
     xnu::mach::VmAddress all_image_info_addr;
-
     Size all_image_info_size;
 
     dyld::shared_cache::AllImageInfos* all_image_infos;

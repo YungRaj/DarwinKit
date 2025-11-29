@@ -16,6 +16,14 @@
 
 #pragma once
 
+extern "C" {
+#include <libkern/libkern.h>
+
+#include <kern/host.h>
+#include <mach/mach_types.h>
+#include <sys/sysctl.h>
+}
+
 #include <types.h>
 
 #include "disassembler.h"
@@ -25,14 +33,6 @@
 #include "segment.h"
 
 #include "process.h"
-
-extern "C" {
-#include <libkern/libkern.h>
-
-#include <kern/host.h>
-#include <mach/mach_types.h>
-#include <sys/sysctl.h>
-}
 
 typedef void* pmap_t;
 
@@ -162,26 +162,20 @@ public:
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname, bool sign = false);
 
 protected:
+    char* name;
     xnu::Kernel* kernel;
 
-    char* name;
-
     Disassembler* disassembler;
-
     xnu::mach::Port task_port;
-
     bsd::Process* process;
 
     task_t task;
     proc_t proc;
-
     vm_map_t map;
     pmap_t pmap;
 
     xnu::mach::VmAddress base;
-
     Offset slide;
-
     xnu::mach::VmAddress dyld = 0;
     xnu::mach::VmAddress dyld_shared_cache = 0;
 

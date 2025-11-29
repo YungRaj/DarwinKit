@@ -18,25 +18,22 @@
 
 #include <types.h>
 
-#include "task.h"
+#include <mach/mach_types.h>
 
-#include "dwarf.h"
-
-#include "kernel_macho.h"
-#include "macho.h"
-#include "macho_userspace.h"
-
-#include "disassembler.h"
+#include <sys/sysctl.h>
+#include <sys/utsname.h>
 
 extern "C" {
 #include "api.h"
 #include "kern_user.h"
 }
 
-#include <mach/mach_types.h>
-
-#include <sys/sysctl.h>
-#include <sys/utsname.h>
+#include "disassembler.h"
+#include "task.h"
+#include "dwarf.h"
+#include "kernel_macho.h"
+#include "macho.h"
+#include "macho_userspace.h"
 
 namespace xnu {
 class Task;
@@ -122,13 +119,9 @@ public:
 
 private:
     darwin::MachOUserspace* macho;
-
     xnu::mach::Port connection;
-
     Disassembler* disassembler;
-
     xnu::mach::VmAddress base;
-
     Offset slide;
 };
 
@@ -160,9 +153,7 @@ enum KDKKernelType {
 
 struct KDKInfo {
     KDKKernelType type;
-
     char* kernelName;
-
     char path[KDK_PATH_SIZE];
     char kernelPath[KDK_PATH_SIZE];
     char kernelDebugSymbolsPath[KDK_PATH_SIZE];
@@ -171,9 +162,7 @@ struct KDKInfo {
 template <typename T>
 struct Xref {
     xnu::mach::VmAddress what;
-
     xnu::mach::VmAddress where;
-
     T data;
 };
 
@@ -236,19 +225,13 @@ public:
 
 private:
     bool valid;
-
     char* path;
 
     KDKKernelType type;
-
     xnu::KDKInfo* kdkInfo;
-
     xnu::Kernel* kernel;
-
     xnu::KernelMachO* kernelWithDebugSymbols;
-
     debug::Dwarf<KernelMachO*>* dwarf;
-
     xnu::mach::VmAddress base;
 };
 }; // namespace xnu

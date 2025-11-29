@@ -142,20 +142,14 @@ public:
 
 protected:
     char* buffer;
-
     bool fat;
 
     xnu::macho::Header64* header;
-
     std::vector<Segment*> segments;
-
     SymbolTable* symbolTable;
 
     Offset aslr_slide;
-
     xnu::mach::VmAddress entry_point;
-
     xnu::mach::VmAddress base;
-
     Size size;
 };

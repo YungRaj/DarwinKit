@@ -17,6 +17,8 @@
 #include "api.h"
 #include "log.h"
 
+#include <stdarg.h>
+
 #define SS (sizeof(size_t))
 #define ALIGNMENT (sizeof(size_t)-1)
 #define ONES ((size_t)-1/UCHAR_MAX)
@@ -25,65 +27,61 @@
 
 #define MAX(x, y) (x > y) ? x : y
 
-int tolower(int c)
-{
-    if (c >= 'A' && c <= 'Z')
+int tolower(int c) {
+    if (c >= 'A' && c <= 'Z') {
         return c +'a'-'A';
-    else
+	} else {
         return c;
+	}
 }
 
-void *memchr(const void *src, int c, size_t n)
-{
+void *memchr(const void *src, int c, size_t n) {
 	const unsigned char *s = (const unsigned char *)src;
 	c = (unsigned char)c;
-
 	for (; n && *s != c; s++, n--);
-
 	return n ? (void *)s : 0;
 }
 
-static char *twobyte_memmem(const unsigned char *h, size_t k, const unsigned char *n)
-{
+static char *twobyte_memmem(const unsigned char *h, size_t k, const unsigned char *n) {
 	uint16_t nw = (uint16_t)(n[0]<<8 | n[1]), hw = (uint16_t)(h[0]<<8 | h[1]);
-	for (h+=2, k-=2; k; k--, hw = (uint16_t) (hw<<8 | *h++))
+	for (h+=2, k-=2; k; k--, hw = (uint16_t) (hw<<8 | *h++)) {
 		if (hw == nw) return (char *)h-2;
+	}
 	return hw == nw ? (char *)h-2 : 0;
 }
 
-static char *threebyte_memmem(const unsigned char *h, size_t k, const unsigned char *n)
-{
+static char *threebyte_memmem(const unsigned char *h, size_t k, const unsigned char *n) {
 	uint32_t nw = (uint32_t) (n[0]<<24 | n[1]<<16 | n[2]<<8);
 	uint32_t hw = (uint32_t) (h[0]<<24 | h[1]<<16 | h[2]<<8);
-	for (h+=3, k-=3; k; k--, hw = (hw|*h++)<<8)
-		if (hw == nw) return (char *)h-3;
+	for (h+=3, k-=3; k; k--, hw = (hw|*h++)<<8) {
+		if (hw == nw) {
+			return (char *)h-3;
+		}
+	}
 	return hw == nw ? (char *)h-3 : 0;
 }
 
-static char *fourbyte_memmem(const unsigned char *h, size_t k, const unsigned char *n)
-{
+static char *fourbyte_memmem(const unsigned char *h, size_t k, const unsigned char *n) {
 	uint32_t nw = (uint32_t) (n[0]<<24 | n[1]<<16 | n[2]<<8 | n[3]);
 	uint32_t hw = (uint32_t) (h[0]<<24 | h[1]<<16 | h[2]<<8 | h[3]);
-	for (h+=4, k-=4; k; k--, hw = hw<<8 | *h++)
+	for (h+=4, k-=4; k; k--, hw = hw<<8 | *h++) {
 		if (hw == nw) return (char *)h-4;
+	}
 	return hw == nw ? (char *)h-4 : 0;
 }
 
 #define BITOP(a,b,op) \
  ((a)[(size_t)(b)/(8*sizeof *(a))] op (size_t)1<<((size_t)(b)%(8*sizeof *(a))))
 
-static char *twoway_memmem(const unsigned char *h, const unsigned char *z, const unsigned char *n, size_t l)
-{
+static char *twoway_memmem(const unsigned char *h, const unsigned char *z, const unsigned char *n, size_t l) {
 	size_t i, ip, jp, k, p, ms, p0, mem, mem0;
 	size_t byteset[32 / sizeof(size_t)] = { 0 };
 	size_t shift[256];
-
 	/* Computing length of needle and fill shift table */
 	for (i=0; i<l; i++) {
 		BITOP(byteset, n[i], |=);
 		shift[n[i]] = i+1;
 	}
-
 	/* Compute maximal suffix */
 	ip = (size_t) -1; jp = 0; k = p = 1;
 	while (jp+k<l) {
@@ -103,7 +101,6 @@ static char *twoway_memmem(const unsigned char *h, const unsigned char *z, const
 	}
 	ms = ip;
 	p0 = p;
-
 	/* And with the opposite comparison */
 	ip = (size_t) -1; jp = 0; k = p = 1;
 	while (jp+k<l) {
@@ -123,14 +120,12 @@ static char *twoway_memmem(const unsigned char *h, const unsigned char *z, const
 	}
 	if (ip+1 > ms+1) ms = ip;
 	else p = p0;
-
 	/* Periodic needle? */
 	if (memcmp(n, n+p, ms+1)) {
 		mem0 = 0;
 		p = MAX(ms, l-ms-1) + 1;
 	} else mem0 = l-p;
 	mem = 0;
-
 	/* Search loop */
 	for (;;) {
 		/* If remainder of haystack is shorter than needle, done */
@@ -166,8 +161,7 @@ static char *twoway_memmem(const unsigned char *h, const unsigned char *z, const
 	}
 }
 
-void *memmem(const void *h0, size_t k, const void *n0, size_t l)
-{
+void *memmem(const void *h0, size_t k, const void *n0, size_t l) {
 	const unsigned char *h = (const unsigned char *)h0, *n = (const unsigned char *)n0;
 
 	/* Return immediately on empty needle */
@@ -187,8 +181,6 @@ void *memmem(const void *h0, size_t k, const void *n0, size_t l)
 
 	return twoway_memmem(h, h+k, n, l);
 }
-
-#include <stdarg.h>
 
 void darwin_kit_log(const char *fmt, ...) {
     va_list args;

@@ -28,11 +28,9 @@
 #include <Hypervisor/Hypervisor.h>
 
 #include <types.h>
-
 #include <iboot.h>
 
 #include "emu_fuzzer.h"
-
 #include "virt.h"
 
 namespace darwin {

@@ -61,51 +61,34 @@ using VmAddress = vm_address_t;
 
 namespace mach {
 using VmMap = vm_map_t;
-
 using VmAddress = mach_vm_address_t;
 using VmProtection = vm_prot_t;
-
 using Port = mach_port_t;
 }; // namespace mach
 
 namespace macho {
 using Header64 = struct mach_header_64;
-
 using FatHeader = struct fat_header;
-
 using FatArch = struct fat_arch;
-
 using Nlist64 = struct nlist_64;
-
 using SymbolName = char*;
 
 using SectionName = char*;
 using SegmentName = char*;
-
 using Segment64 = struct segment_command_64;
 using Section64 = struct section_64;
 
 namespace LoadCommand {
 using Cmd = struct load_command;
-
 using FilesetEntry = struct fileset_entry_command;
-
 using Symtab = struct symtab_command;
-
 using Dysymtab = struct dysymtab_command;
-
 using LinkeditData = linkedit_data_command;
-
 using EncryptionInfo = struct encryption_info_command;
-
 using EntryPoint = struct entry_point_command;
-
 using UnixThread = struct unixthread_command;
-
 using Uuid = struct uuid_command;
-
 using Dylib = struct dylib_command;
-
 using DyldInfo = struct dyld_info_command;
 }; // namespace LoadCommand
 }; // namespace macho

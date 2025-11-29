@@ -69,12 +69,9 @@ public:
 
 private:
     std::vector<Symbol*> symbolTable;
-
     xnu::macho::Nlist64* symtab;
 
     UInt32 nsyms;
-
     char* strtab;
-
     Size strsize;
 };

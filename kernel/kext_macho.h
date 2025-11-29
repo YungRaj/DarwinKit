@@ -18,7 +18,6 @@
 
 #include <mach/kmod.h>
 #include <mach/mach_types.h>
-
 #include <types.h>
 
 #include "macho.h"
@@ -80,22 +79,16 @@ public:
 
 private:
     xnu::Kernel* kernel;
+    xnu::KmodInfo* kmod_info;
 
     xnu::mach::VmAddress address;
-
     char* name;
-
     Offset base_offset;
-
     xnu::mach::VmAddress kernel_cache;
     xnu::mach::VmAddress kernel_collection;
 
-    xnu::KmodInfo* kmod_info;
-
     UInt8* linkedit;
-
     Offset linkedit_off;
-
     Size linkedit_size;
 };
 } // namespace xnu

@@ -30,7 +30,6 @@ private:
     uc_engine* uc;
 
     UInt64 base;
-
     UInt64 code;
 
     Size size;

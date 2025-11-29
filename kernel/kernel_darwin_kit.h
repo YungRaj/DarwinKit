@@ -87,12 +87,8 @@ public:
 
 private:
     darwin::DarwinKit* darwinkit;
-
     xnu::Kernel* kernel;
-
     xnu::Kext* darwinkitKext;
-
     xnu::mach::Port tfp0;
-
     OSSet* userClients;
 };

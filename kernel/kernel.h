@@ -18,16 +18,12 @@
 
 extern "C" {
 #include <libkern/libkern.h>
-
 #include <kern/host.h>
-
 #include <mach/mach_types.h>
-
 #include <sys/sysctl.h>
 }
 
 #include <IOKit/IOLib.h>
-
 #include <types.h>
 
 #include "task.h"
@@ -229,21 +225,15 @@ public:
 
 protected:
     KDK* kernelDebugKit;
-
     MachO* macho;
-
     IOKernelDarwinKitService* darwinkitService;
-
     darwin::DarwinKit* darwinkit;
-
     xnu::mach::Port kernel_task_port;
 
 private:
     char* version;
     char* osBuildVersion;
-
     IOSimpleLock* kernelWriteLock;
-
     void CreateKernelTaskPort();
 };
 
@@ -275,9 +265,7 @@ enum KDKKernelType {
 
 struct KDKInfo {
     KDKKernelType type;
-
     char* kernelName;
-
     char path[KDK_PATH_SIZE];
     char kernelPath[KDK_PATH_SIZE];
     char kernelDebugSymbolsPath[KDK_PATH_SIZE];
@@ -286,9 +274,7 @@ struct KDKInfo {
 template <typename T>
 struct Xref {
     xnu::mach::VmAddress what;
-
     xnu::mach::VmAddress where;
-
     T data;
 };
 
@@ -345,19 +331,14 @@ public:
 
 private:
     bool valid;
-
     char* path;
 
     KDKInfo* kdkInfo;
-
     KDKKernelType type;
 
     xnu::Kernel* kernel;
-
     xnu::KernelMachO* kernelWithDebugSymbols;
-
     debug::Dwarf* dwarf;
-
     xnu::mach::VmAddress base;
 };
 
