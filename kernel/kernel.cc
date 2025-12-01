@@ -1213,35 +1213,28 @@ Symbol* Kernel::GetSymbolByName(char* symbolname) {
 
 Symbol* Kernel::GetSymbolByAddress(xnu::mach::VmAddress address) {
     Symbol* symbol = nullptr;
-
     symbol = macho->GetSymbolByAddress(address);
-
     if (kernelDebugKit) {
         if (!symbol) {
             symbol = kernelDebugKit->GetKDKSymbolByAddress(address);
         }
     }
-
     return symbol;
 }
 
 xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign) {
     xnu::mach::VmAddress symbolAddress = 0;
-
     symbolAddress = macho->GetSymbolAddressByName(symbolname);
-
     if (kernelDebugKit) {
         if (!symbolAddress) {
             symbolAddress = kernelDebugKit->GetKDKSymbolAddressByName(symbolname);
         }
     }
-
 #ifdef __arm64e__
     if(sign) {
         symbolAddress = PacSignPointerWithAKey(symbolAddress);
     }
 #endif
-
     return symbolAddress;
 }
 
@@ -1252,6 +1245,9 @@ void Kernel::Fuzz(enum FuzzContext context) {
             break;
         }
         case kLibAFLFuzzInKernel: {
+            // Ensure collecting coverage occurs on all kernel code
+            // LibAFL Calibration stages will ensure basic block edges that are not from harness aren't included
+            userspace = false;
             libafl_start_darwin_kit_fuzzer((unsigned char*) sanitizer_cov_get_bitmap());
             break;
         }

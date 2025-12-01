@@ -41,21 +41,22 @@ class IOKernelDarwinKitUserClient : public IOUserClient {
     OSDeclareDefaultStructors(IOKernelDarwinKitUserClient)
  public:
     static IOKernelDarwinKitUserClient* darwinKitUserClientWithKernel(xnu::Kernel* kern,
-                                                                               task_t owningTask,
-                                                                               void* securityToken,
-                                                                               UInt32 type);
+                                                                      task_t owningTask,
+                                                                      void* securityToken,
+                                                                      UInt32 type);
 
     static IOKernelDarwinKitUserClient* darwinKitUserClientWithKernel(xnu::Kernel* kern,
-                                                                  task_t owningTask,
-                                                                  void* securityToken, UInt32 type,
-                                                                  OSDictionary* properties);
+                                                                      task_t owningTask,
+                                                                      void* securityToken,
+                                                                      UInt32 type,
+                                                                      OSDictionary* properties);
 
     virtual bool initDarwinKitUserClientWithKernel(xnu::Kernel* kern, task_t owningTask,
-                                                 void* securityToken, UInt32 type);
+                                                   void* securityToken, UInt32 type);
 
     virtual bool initDarwinKitUserClientWithKernel(xnu::Kernel* kern, task_t owningTask,
-                                                 void* securityToken, UInt32 type,
-                                                 OSDictionary* properties);
+                                                   void* securityToken, UInt32 type,
+                                                   OSDictionary* properties);
 
     virtual bool start(IOService* provider);
     virtual void stop(IOService* provider);

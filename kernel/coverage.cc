@@ -17,9 +17,8 @@ extern "C" {
 extern task_t current_task();
 extern thread_t current_thread();
 
-bool fuzz_from_userspace = true;
-
 Int32 current_pid = 0;
+task_t client_task = nullptr;
 
 alignas(16 * 1024)
 __attribute__((section("__DATA,__cov")))
@@ -29,6 +28,11 @@ UInt64 curr_location = 0;
 UInt64 prev_location = 0;
 
 Bool collect_coverage = false;
+// Flag to specify that we're fuzzing from userspace. This adds additional logic to coverage collection
+// So that we only track basic block edges coming from the userspace portion of the harness
+// When fuzzing inside of the kernel, initiate the harness from userspace by setting the FuzzContext
+// This flag will automatically flip to false when triggering the fuzz in kernel logic from the IOUserClient
+Bool userspace = true;
 
 #ifdef __arm64__
 void instrument_thunks() {
@@ -147,6 +151,9 @@ void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
     if (collect_coverage) {
         task_t t = current_task();
         thread_t tr = current_thread();
+        if(userspace && client_task != t) {
+            return;
+        }
         /* Kernel-only coverage tracking using a bitmap */
         UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
         curr_location = index;
