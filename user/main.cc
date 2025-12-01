@@ -70,8 +70,8 @@ int main(int argc, char **argv, char **envp) {
     int pid = -1;
     int c;
 
-    std::unique_ptr<Kernel> kernel = std::make_unique<Kernel>();
-    std::unique_ptr<Task> task = nullptr;
+    xnu::Kernel *kernel = xnu::Kernel::Xnu();
+    std::unique_ptr<xnu::Task> task = nullptr;
 
     // Example - running code in the macOS kernel in userspace
     // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
@@ -121,7 +121,7 @@ int main(int argc, char **argv, char **envp) {
         print_usage();
     }
     if (pid) {
-        task = std::make_unique<Task>(kernel.get(), pid);
+        task = std::make_unique<Task>(kernel, pid);
     }
     if (!task) {
         print_usage();
@@ -140,7 +140,7 @@ int main(int argc, char **argv, char **envp) {
                 Injector::WaitForProcessAndInjectLibrary(
                     argc, argv, envp, wait_for_process_name, library);
             } else {
-                Injector injector(kernel.get(), task.get());
+                Injector injector(kernel, task.get());
                 err = injector.InjectLibrary(library);
                 if (err != 0) {
                     return err;

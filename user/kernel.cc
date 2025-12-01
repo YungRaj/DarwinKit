@@ -16,6 +16,8 @@
 
 #include "kernel.h"
 
+#include <memory>
+
 #include "libafl_fuzzer.h"
 
 namespace xnu {
@@ -41,6 +43,11 @@ const char* GetOSBuildVersion() {
         return nullptr;
     }
     return buildVersion;
+}
+
+Kernel* Kernel::Xnu() {
+    static std::unique_ptr<Kernel> kernel = std::make_unique<Kernel>();
+    return kernel.get();
 }
 
 Kernel::Kernel() : connection(open_kernel_tfp0_connection()), slide(GetSlide()) {
@@ -257,6 +264,14 @@ void Kernel::Fuzz(enum FuzzContext context) {
             break;
         }
     }
+}
+
+void Kernel::EnableCoverage() {
+    kcov_enable_coverage();
+}
+
+void Kernel::DisableCoverage() {
+    kcov_disable_coverage();
 }
 
 }

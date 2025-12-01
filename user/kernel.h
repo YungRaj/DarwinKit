@@ -42,10 +42,14 @@ const char* GetKernelVersion();
 const char* GetOSBuildVersion();
 
 class Kernel : public xnu::Task {
+    static constexpr Size coverageMapSize = 64 * 1024;
+
 public:
     explicit Kernel();
 
     ~Kernel();
+
+    static xnu::Kernel* Xnu();
 
     virtual xnu::mach::VmAddress GetBase();
 
@@ -114,6 +118,9 @@ public:
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
 
     virtual UInt8* GetCoverageMap();
+
+    void EnableCoverage();
+    void DisableCoverage();
 
     void Fuzz(enum FuzzContext context);
 

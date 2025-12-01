@@ -20,10 +20,10 @@
 
 #include "kernel_darwin_kit.h"
 #include "darwin_kit.h"
-
 #include "kernel_macho.h"
-
 #include "pac.h"
+#include "coverage.h"
+#include "libafl_fuzzer.h"
 
 extern "C" {
 #include "kern.h"
@@ -1243,6 +1243,27 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign)
 #endif
 
     return symbolAddress;
+}
+
+void Kernel::Fuzz(enum FuzzContext context) {
+    switch (context) {
+        case kLibAFLFuzzFromUserspace: {
+            panic("Fuzzing from userspace is not supported inside of kernel!");
+            break;
+        }
+        case kLibAFLFuzzInKernel: {
+            libafl_start_darwin_kit_fuzzer((unsigned char*) sanitizer_cov_get_bitmap());
+            break;
+        }
+    }
+}
+
+void Kernel::EnableCoverage() {
+    sanitizer_cov_enable_coverage();
+}
+
+void Kernel::DisableCoverage() {
+    sanitizer_cov_disable_coverage();
 }
 
 } // namespace xnu

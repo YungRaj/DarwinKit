@@ -18,20 +18,13 @@
 #include "kernel_darwin_kit_user_client.h"
 
 #include "darwin_kit.h"
-
 #include "kernel.h"
 #include "kernel_patcher.h"
-
 #include "task.h"
-
 #include "section.h"
 #include "segment.h"
-
 #include "log.h"
-
 #include "coverage.h"
-
-#include "libafl_fuzzer.h"
 
 #include <mach/vm_types.h>
 
@@ -859,21 +852,20 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
     case kIOKernelDarwinKitMapSharedMemory:
         break;
     case kIOKernelDarwinKitEnableCoverage: {
-        sanitizer_cov_enable_coverage();
+        kernel->EnableCoverage();
         break;
     }
     case kIOKernelDarwinKitDisableCoverage: {
-        sanitizer_cov_disable_coverage();
+        kernel->DisableCoverage();
         break;
     }
     case kIOKernelDarwinKitStartHarness: {
-        libafl_start_darwin_kit_fuzzer((unsigned char*) sanitizer_cov_get_bitmap());
+        kernel->Fuzz(kLibAFLFuzzInKernel);
         break;
     }
     default:
         result = IOUserClient::externalMethod(selector, arguments, nullptr, target, reference);
         break;
     }
-
     return result;
 }

@@ -27,11 +27,10 @@ extern "C" {
 #include <types.h>
 
 #include "task.h"
-
 #include "disassembler.h"
 #include "dwarf.h"
-
 #include "kernel_macho.h"
+#include "coverage.h"
 
 class IOKernelDarwinKitService;
 
@@ -57,6 +56,7 @@ static char* GetOSBuildVersion();
 
 class Kernel : public xnu::Task {
     static constexpr Size tempExecutableMemorySize{4096 * 4 * 32};
+    static constexpr Size coverageMapSize = KCOV_COVERAGE_BITMAP_SIZE;
 
     static Offset tempExecutableMemoryOffset;
 
@@ -223,6 +223,11 @@ public:
 
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname, bool sign = false);
 
+    void EnableCoverage();
+    void DisableCoverage();
+
+    void Fuzz(enum FuzzContext context);
+
 protected:
     KDK* kernelDebugKit;
     MachO* macho;
@@ -234,6 +239,7 @@ private:
     char* version;
     char* osBuildVersion;
     IOSimpleLock* kernelWriteLock;
+
     void CreateKernelTaskPort();
 };
 
