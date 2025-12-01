@@ -126,8 +126,6 @@ public:
     MachO* CacheDumpImage(char* image);
     MachO* CacheDumpImageToFile(char* image, char* path);
 
-    Library* InjectLibrary(const char* path);
-
 private:
     char* main_image_path;
     xnu::Kernel* kernel;
