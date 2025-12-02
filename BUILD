@@ -1,7 +1,5 @@
-load("@rules_apple//apple:macos.bzl", "macos_kernel_extension")
-load("@rules_apple//apple:macos.bzl", "macos_command_line_application")
-load("@rules_apple//apple:macos.bzl", "macos_dynamic_framework")
 load("@rules_apple//apple:ios.bzl", "ios_static_framework")
+load("@rules_apple//apple:macos.bzl", "macos_command_line_application", "macos_dynamic_framework", "macos_kernel_extension")
 
 config_setting(
     name = "arm64",
@@ -33,11 +31,10 @@ cc_library(
 
 cc_test(
     name = "macho_test",
-    data = glob(["tests/testdata/*"]),
     srcs = [
-        "tests/macho_test.cc",
         "darwinkit/macho.cc",
         "darwinkit/symbol_table.cc",
+        "tests/macho_test.cc",
     ],
     copts = [
         "-w",
@@ -48,11 +45,12 @@ cc_test(
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
     ],
+    data = glob(["tests/testdata/*"]),
     deps = [
         ":darwinkit_test",
-        "@googletest//:gtest",
         "@fuzztest//fuzztest",
         "@fuzztest//fuzztest:fuzztest_gtest_main",
+        "@googletest//:gtest",
     ],
 )
 
@@ -150,16 +148,8 @@ cc_library(
 
 cc_library(
     name = "DarwinKit_user_iokit",
-    deps = [],
     srcs = glob(["user/*.c"]),
     hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]),
-    includes = [
-        "user",
-        "darwinkit",
-        "/usr/include",
-        "/usr/local/include",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
-    ],
     copts = [
         "-w",
         "-D__USER__",
@@ -168,39 +158,52 @@ cc_library(
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
     ],
-    linkopts = [
-        "-framework", "IOKit",
+    includes = [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
+        "/usr/include",
+        "/usr/local/include",
+        "darwinkit",
+        "user",
     ],
-    visibility = ["//visibility:public"],
-    alwayslink = True,
+    linkopts = [
+        "-framework",
+        "IOKit",
+    ],
     linkstatic = True,
+    visibility = ["//visibility:public"],
+    deps = [],
+    alwayslink = True,
 )
 
 cc_library(
     name = "DarwinKit_user",
-    deps = [":DarwinKit_user_iokit",],
-    srcs = glob(["user/*.cc"]) + 
-           glob(["darwinkit/*.cc"]) +
-           select({
-            ":arm64": glob([
-                "arm64/*.s"
-            ], allow_empty = True),
-            ":arm64e": glob([
-                "arm64/*.s"
-            ], allow_empty = True),
-            ":x86_64": glob([
+    srcs = glob(["user/*.cc"]) + glob([
+        "darwinkit/*.cc",
+    ]) + select({
+        ":arm64": glob(
+            [
+                "arm64/*.s",
+            ],
+            allow_empty = True,
+        ),
+        ":arm64e": glob(
+            [
+                "arm64/*.s",
+            ],
+            allow_empty = True,
+        ),
+        ":x86_64": glob(
+            [
                 # "x86_64/*.s"
-            ], allow_empty = True)}) +
-           glob(["arm64/*.cc"]) +
-           glob(["x86_64/*.cc"]),
+            ],
+            allow_empty = True,
+        ),
+    }) + glob([
+        "arm64/*.cc",
+    ]) + glob([
+        "x86_64/*.cc",
+    ]),
     hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]) + glob(["arm64/*.h"]) + glob(["x86_64/*.h"]) + glob(["capstone/include/capstone/*.h"]),
-    includes = [
-        "user",
-        "darwinkit",
-        "/usr/include",
-        "/usr/local/include",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
-    ],
     copts = [
         "-w",
         "-std=c++20",
@@ -210,26 +213,39 @@ cc_library(
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
     ],
+    includes = [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
+        "/usr/include",
+        "/usr/local/include",
+        "darwinkit",
+        "user",
+    ],
     linkopts = [
-        "-framework", "IOKit",
-        "-framework", "Hypervisor",
+        "-framework",
+        "IOKit",
+        "-framework",
+        "Hypervisor",
         "-lEndpointSecurity",
         "-lbsm",
     ],
-    visibility = ["//visibility:public"],
-    alwayslink = True,
     linkstatic = True,
+    visibility = ["//visibility:public"],
+    deps = [":DarwinKit_user_iokit"],
+    alwayslink = True,
 )
 
 macos_command_line_application(
     name = "darwinkit_tool",
+    codesignopts = [
+        "--entitlements",
+        "entitlements.xml",
+    ],
+    linkopts = ["-lresolv"],
+    minimum_os_version = "11.0",
     deps = [
         ":DarwinKit_user",
         ":libafl_fuzzer_frida",
     ],
-    codesignopts = ["--entitlements", "entitlements.xml"],
-    minimum_os_version = "11.0",
-    linkopts = ["-lresolv"]
 )
 
 objc_library(
@@ -237,18 +253,20 @@ objc_library(
     srcs = ["user/cycript_runner.mm"],
     hdrs = [],
     linkopts = [
-        "-framework", "AppKit",
-        "-framework", "Foundation",
+        "-framework",
+        "AppKit",
+        "-framework",
+        "Foundation",
     ],
     alwayslink = True,
 )
 
 cc_binary(
     name = "cycript_runner_lib",
+    linkshared = True,
     deps = [
         ":cycript_runner",
     ],
-    linkshared = True,
 )
 
 genrule(
@@ -266,27 +284,31 @@ cc_library(
     name = "DarwinKit_kext_library",
     srcs = glob(["kernel/*.c"] + ["darwinkit/*.c"]),
     hdrs = glob(["kernel/*.h"]) + glob(["darwinkit/*.h"]),
-    includes = [
-        "kernel",
-        "darwinkit",
-        "/usr/include",
-        "/usr/local/include",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
-    ],
     copts = [
         "-w",
-        "-mkernel", "-D__KERNEL__",
+        "-mkernel",
+        "-D__KERNEL__",
         "-nostdlib",
         "-I./",
         "-I./capstone/include",
-        "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers",
-        "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/IOKit.framework/Headers",
+        "-isystem",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers",
+        "-isystem",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/IOKit.framework/Headers",
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
         "-DCAPSTONE_HAS_OSXKERNEL=1",
     ],
+    includes = [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
+        "/usr/include",
+        "/usr/local/include",
+        "darwinkit",
+        "kernel",
+    ],
     linkopts = [
-        "-framework", "IOKit",
+        "-framework",
+        "IOKit",
         "-Wl,-sectalign,__DATA,__cov,0x4000",
         "-Wl,-order_file,cov.order",
     ],
@@ -296,36 +318,36 @@ cc_library(
 
 cc_library(
     name = "DarwinKit_kext",
-    deps = [
-        ":DarwinKit_kext_library",
-        ":capstone_fat_static_kernel",
-        ":libafl_fuzzer_no_std",
-    ],
-    srcs = glob(["kernel/*.cc"]) + 
-           glob(["darwinkit/*.cc"]) +
-           select({
-            ":arm64": glob([
-                "arm64/*.s"
-            ], allow_empty = True),
-            ":arm64e": glob([
-                "arm64/*.s"
-            ], allow_empty = True),
-            ":x86_64": glob([
+    srcs = glob(["kernel/*.cc"]) + glob([
+        "darwinkit/*.cc",
+    ]) + select({
+        ":arm64": glob(
+            [
+                "arm64/*.s",
+            ],
+            allow_empty = True,
+        ),
+        ":arm64e": glob(
+            [
+                "arm64/*.s",
+            ],
+            allow_empty = True,
+        ),
+        ":x86_64": glob(
+            [
                 # "x86_64/*.s"
-            ], allow_empty = True),
-            "//conditions:default": glob([
-                "arm64/*.s"
-            ])}) +
-           glob(["arm64/*.cc"]) +
-           glob(["x86_64/*.cc"]),
+            ],
+            allow_empty = True,
+        ),
+        "//conditions:default": glob([
+            "arm64/*.s",
+        ]),
+    }) + glob([
+        "arm64/*.cc",
+    ]) + glob([
+        "x86_64/*.cc",
+    ]),
     hdrs = glob(["kernel/*.h"]) + glob(["darwinkit/*.h"]) + glob(["arm64/*.h"]) + glob(["x86_64/*.h"]) + glob(["capstone/include/capstone/*.h"]),
-    includes = [
-        "kernel",
-        "darwinkit",
-        "/usr/include",
-        "/usr/local/include",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
-    ],
     copts = [
         "-w",
         "-Xlinker",
@@ -334,29 +356,49 @@ cc_library(
         "-export_dynamic",
         "-Wl,-kext",
         "-lkmod",
-        "-lkmodc++", 
+        "-lkmodc++",
         "-lcc_kext",
         "-std=c++20",
-        "-mkernel", "-D__KERNEL__",
+        "-mkernel",
+        "-D__KERNEL__",
         "-nostdlib",
         "-I./",
         "-I./capstone/include",
-        "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers",
-        "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/IOKit.framework/Headers",
+        "-isystem",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers",
+        "-isystem",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/IOKit.framework/Headers",
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
         "-DCAPSTONE_HAS_OSXKERNEL=1",
     ],
+    includes = [
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
+        "/usr/include",
+        "/usr/local/include",
+        "darwinkit",
+        "kernel",
+    ],
     linkopts = [
-        "-framework", "IOKit",
+        "-framework",
+        "IOKit",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        ":DarwinKit_kext_library",
+        ":capstone_fat_static_kernel",
+        ":libafl_fuzzer_no_std",
+    ],
     alwayslink = True,
 )
 
 genrule(
     name = "libafl_fuzzer_no_std_genrule",
-    srcs = ["fuzz/kernel/libafl_fuzzer.rs", "fuzz/kernel/allocator.rs", "fuzz/kernel/Cargo.toml"],
+    srcs = [
+        "fuzz/kernel/libafl_fuzzer.rs",
+        "fuzz/kernel/allocator.rs",
+        "fuzz/kernel/Cargo.toml",
+    ],
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
@@ -394,7 +436,10 @@ genrule(
 
 genrule(
     name = "libafl_fuzzer_frida_genrule",
-    srcs = ["fuzz/user/libafl_fuzzer.rs", "fuzz/user/Cargo.toml"],
+    srcs = [
+        "fuzz/user/libafl_fuzzer.rs",
+        "fuzz/user/Cargo.toml",
+    ],
     outs = ["liblibafl_fuzzer_frida_lib.a"],
     cmd = """  
         export RUSTUP_TOOLCHAIN=nightly
@@ -433,9 +478,6 @@ cc_library(
 
 macos_kernel_extension(
     name = "DarwinKit",
-    deps =
-        [":DarwinKit_kext",],
-    resources = [],
     additional_contents = {},
     additional_linker_inputs = [],
     bundle_id = "com.YungRaj.DarwinKit",
@@ -455,16 +497,19 @@ macos_kernel_extension(
         "-kext",
         "-export_dynamic",
         "-lkmod",
-        "-lkmodc++", 
+        "-lkmodc++",
     ],
     minimum_deployment_os_version = "",
     minimum_os_version = "11.0",
     platform_type = "macos",
     provisioning_profile = None,
+    resources = [],
     shared_capabilities = [],
     stamp = 1,
     strings = [],
     version = None,
+    deps =
+        [":DarwinKit_kext"],
 )
 
 objc_library(
@@ -476,6 +521,8 @@ objc_library(
 
 ios_static_framework(
     name = "Crawler",
+    hdrs = [],
+    bundle_name = "Crawler",
     families = [
         "iphone",
         "ipad",
@@ -484,6 +531,4 @@ ios_static_framework(
     deps = [
         ":Crawler_static",
     ],
-    bundle_name = "Crawler",
-    hdrs = []
 )

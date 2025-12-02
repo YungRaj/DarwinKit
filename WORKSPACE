@@ -31,7 +31,7 @@ http_archive(
     name = "com_google_absl",
     sha256 = "338420448b140f0dfd1a1ea3c3ce71b3bc172071f24f4d9a57d59b45037da440",
     strip_prefix = "abseil-cpp-20240116.0",
-    url = "https://github.com/abseil/abseil-cpp/releases/download/20240116.0/abseil-cpp-20240116.0.tar.gz"
+    url = "https://github.com/abseil/abseil-cpp/releases/download/20240116.0/abseil-cpp-20240116.0.tar.gz",
 )
 
 # Required by com_google_absl.
@@ -56,25 +56,25 @@ http_archive(
 
 http_archive(
     name = "snappy",
+    build_file = "@com_google_riegeli//third_party:snappy.BUILD",
     sha256 = "38b4aabf88eb480131ed45bfb89c19ca3e2a62daeb081bdf001cfb17ec4cd303",
     strip_prefix = "snappy-1.1.8",
     urls = ["https://github.com/google/snappy/archive/1.1.8.zip"],  # 2020-01-14
-    build_file = "@com_google_riegeli//third_party:snappy.BUILD",
 )
 
 http_archive(
     name = "highwayhash",
+    build_file = "@com_google_riegeli//third_party:highwayhash.BUILD",
     strip_prefix = "highwayhash-08d3f5b4d351d2202531ff22f2ba2e0e0e9865e7",
     urls = ["https://github.com/google/highwayhash/archive/08d3f5b4d351d2202531ff22f2ba2e0e0e9865e7.zip"],  # 2019-02-22
-    build_file = "@com_google_riegeli//third_party:highwayhash.BUILD",
 )
 
 http_archive(
     name = "net_zstd",
+    build_file = "@com_google_riegeli//third_party:net_zstd.BUILD",
     sha256 = "b6c537b53356a3af3ca3e621457751fa9a6ba96daf3aebb3526ae0f610863532",
     strip_prefix = "zstd-1.4.5/lib",
     urls = ["https://github.com/facebook/zstd/archive/v1.4.5.zip"],  # 2020-05-22
-    build_file = "@com_google_riegeli//third_party:net_zstd.BUILD",
 )
 
 http_archive(
