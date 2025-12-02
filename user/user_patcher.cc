@@ -20,18 +20,14 @@
 #include "payload.h"
 
 void UserPatcher::FindAndReplace(void* data, Size dataSize, const void* find, Size findSize,
-                                 const void* replace, Size replaceSize) {
-}
+                                 const void* replace, Size replaceSize) {}
 
-void UserPatcher::RouteFunction(Hook* hook) {
-}
+void UserPatcher::RouteFunction(Hook* hook) {}
 
-void UserPatcher::OnKextLoad(void* kext, kmod_info_t* kmod) {
-}
+void UserPatcher::OnKextLoad(void* kext, kmod_info_t* kmod) {}
 
 void UserPatcher::OnExec(char* name, int pid, xnu::mach::Port port, xnu::mach::VmAddress task,
-                         xnu::mach::VmAddress proc) {         
-}
+                         xnu::mach::VmAddress proc) {}
 
 xnu::mach::VmAddress UserPatcher::InjectPayload(xnu::mach::VmAddress address, Payload* payload) {
     return 0;

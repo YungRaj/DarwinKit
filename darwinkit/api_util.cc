@@ -22,4 +22,4 @@ namespace api {
 void Dump(Kernel* kernel, uint64_t address) {}
 
 void Hexdump(unsigned char* data, size_t size, bool rev) {}
-}; // namespace API
+}; // namespace api

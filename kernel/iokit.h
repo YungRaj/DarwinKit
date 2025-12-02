@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <IOKit/IOLib.h>
 #include <IOKit/IODeviceTreeSupport.h>
+#include <IOKit/IOLib.h>
 #include <IOKit/IORegistryEntry.h>
 #include <IOKit/IOService.h>
 #include <IOKit/IOUserClient.h>

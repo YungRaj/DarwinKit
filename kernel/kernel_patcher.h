@@ -17,7 +17,6 @@
 #pragma once
 
 #include <IOKit/IOLib.h>
-
 #include <mach/kmod.h>
 #include <mach/mach_types.h>
 
@@ -111,7 +110,7 @@ public:
 
     static OSObject* CopyClientEntitlement(task_t task, const char* entitlement);
 
-    static bool IOCurrentTaskHasEntitlement(const char *entitlement);
+    static bool IOCurrentTaskHasEntitlement(const char* entitlement);
 
     static void TaskSetMainThreadQos(task_t task, thread_t thread);
 

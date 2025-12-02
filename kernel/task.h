@@ -27,12 +27,10 @@ extern "C" {
 #include <types.h>
 
 #include "disassembler.h"
-
 #include "macho.h"
+#include "process.h"
 #include "section.h"
 #include "segment.h"
-
-#include "process.h"
 
 typedef void* pmap_t;
 

@@ -33,21 +33,25 @@ public:
 
     ~Instruction() = default;
 
-    Architecture* GetArchitecture() { return architecture; }
+    Architecture* GetArchitecture() {
+        return architecture;
+    }
 
-    BasicBlock<Bin>* GetBasicBlock() { return basic_block; }
+    BasicBlock<Bin>* GetBasicBlock() {
+        return basic_block;
+    }
 
     bool IsTerminator() const;
 
 private:
     UInt64 pc;
 
-    Architecture *architecture;
+    Architecture* architecture;
 
-    BasicBlock<Bin> *block;
+    BasicBlock<Bin>* block;
 
     cs_insn insn;
 };
 
-}
-}
+} // namespace ir
+} // namespace darwinkit

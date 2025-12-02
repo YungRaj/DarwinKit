@@ -40,7 +40,8 @@ uint32_t n_digits(uint64_t val, uint8_t digit) {
         } else {
             if (digits > max) {
                 max = digits;
-            } if (loop) {
+            }
+            if (loop) {
                 break;
             }
             digits = 0;
@@ -147,31 +148,44 @@ uint64_t get_signed_imm(char* operand, int base, bool* sign) {
 uint8_t get_cond(char* condition) {
     if (strcmp(condition, "EQ") == 0) {
         return 0b0000;
-    } if (strcmp(condition, "NE") == 0) {
+    }
+    if (strcmp(condition, "NE") == 0) {
         return 0b0001;
-    } if (strcmp(condition, "CS") == 0) {
+    }
+    if (strcmp(condition, "CS") == 0) {
         return 0b0010;
-    } if (strcmp(condition, "CC") == 0) {
+    }
+    if (strcmp(condition, "CC") == 0) {
         return 0b0011;
-    } if (strcmp(condition, "MI") == 0) {
+    }
+    if (strcmp(condition, "MI") == 0) {
         return 0b0100;
-    } if (strcmp(condition, "PL") == 0) {
+    }
+    if (strcmp(condition, "PL") == 0) {
         return 0b0101;
-    } if (strcmp(condition, "VS") == 0) {
+    }
+    if (strcmp(condition, "VS") == 0) {
         return 0b0110;
-    } if (strcmp(condition, "VC") == 0) {
+    }
+    if (strcmp(condition, "VC") == 0) {
         return 0b0111;
-    } if (strcmp(condition, "HI") == 0) {
+    }
+    if (strcmp(condition, "HI") == 0) {
         return 0b1000;
-    } if (strcmp(condition, "LS") == 0) {
+    }
+    if (strcmp(condition, "LS") == 0) {
         return 0b1001;
-    } if (strcmp(condition, "GE") == 0) {
+    }
+    if (strcmp(condition, "GE") == 0) {
         return 0b1010;
-    } if (strcmp(condition, "GT") == 0) {
+    }
+    if (strcmp(condition, "GT") == 0) {
         return 0b1100;
-    } if (strcmp(condition, "LE") == 0) {
+    }
+    if (strcmp(condition, "LE") == 0) {
         return 0b1101;
-    } if (strcmp(condition, "AL") == 0) {
+    }
+    if (strcmp(condition, "AL") == 0) {
         return 0b1111;
     }
     return 0;
@@ -969,7 +983,8 @@ uint32_t assemble_logic(char* ins) {
             ands.Rd = get_reg(operands[0]);
             ands.imm = imm;
             memcpy(&assembly, &ands, sizeof(uint32_t));
-            return assembly;;
+            return assembly;
+            ;
         } else if (count == 3) {
             ands_imm_t ands;
             ands.op = 0b11100100;
@@ -2996,7 +3011,8 @@ uint32_t assemble_sys(char* ins) {
             msr.msr = 0b110101010001;
             if (*operands[1] != 'c' && *operands[2] != 'c') {
                 return 0;
-            } if (*operands[4] != 'X') {
+            }
+            if (*operands[4] != 'X') {
                 return 0;
             }
             uint8_t op1;
@@ -3163,6 +3179,6 @@ uint32_t* Assemble(char* ins, uint32_t* nins) {
     delete ins;
     return assembly;
 }
-} // namespace Assembler
+} // namespace assembler
 } // namespace arm64
 } // namespace arch

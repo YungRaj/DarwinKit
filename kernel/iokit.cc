@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "iokit.h"
 #include "api_util.h"
+#include "iokit.h"
 #include "log.h"
 
 namespace IOKit {
@@ -45,7 +45,8 @@ bool AwaitPublishing(IORegistryEntry* obj) {
             DARWIN_KIT_LOG("pci device %s is in service plane %lu", obj->getName(), counter);
             return true;
         }
-        DARWIN_KIT_LOG("pci device %s is not in service plane %lu, polling", obj->getName(), counter);
+        DARWIN_KIT_LOG("pci device %s is not in service plane %lu, polling", obj->getName(),
+                       counter);
         ++counter;
         IOSleep(20);
     }
@@ -62,7 +63,8 @@ UInt32 ReadPCIConfigValue(IORegistryEntry* service, UInt32 reg, UInt32 space, UI
     auto read8 = reinterpret_cast<t_PCIConfigRead8**>(service)[0][PCIConfigOffset::ConfigRead8];
     if (space == 0) {
         space = GetMember<UInt32>(service, 0xA8);
-        DARWIN_KIT_LOG("read pci config discovered %s space to be 0x%08X", service->getName(), space);
+        DARWIN_KIT_LOG("read pci config discovered %s space to be 0x%08X", service->getName(),
+                       space);
     }
     if (size != 0) {
         switch (size) {
@@ -225,7 +227,7 @@ bool RenameDevice(IORegistryEntry* entry, char* name, bool compat) {
     UInt32 compatibleSz = compatibleProp->getLength();
     const char* compatibleStr = static_cast<const char*>(compatibleProp->getBytesNoCopy());
     DARWIN_KIT_LOG("compatible property starts with %s and is %u bytes",
-               compatibleStr ? compatibleStr : "(nullptr)", compatibleSz);
+                   compatibleStr ? compatibleStr : "(nullptr)", compatibleSz);
     if (compatibleStr) {
         for (UInt32 i = 0; i < compatibleSz; i++) {
             if (!strcmp(&compatibleStr[i], name)) {
@@ -247,11 +249,12 @@ bool RenameDevice(IORegistryEntry* entry, char* name, bool compat) {
                 compatibleData->release();
                 return true;
             } else {
-                DARWIN_KIT_LOG("compatible property memory alloc failure %u for %s", compatibleBufSz,
-                           name);
+                DARWIN_KIT_LOG("compatible property memory alloc failure %u for %s",
+                               compatibleBufSz, name);
             }
         } else {
-            DARWIN_KIT_LOG("compatible buffer memory alloc failure %u for %s", compatibleBufSz, name);
+            DARWIN_KIT_LOG("compatible buffer memory alloc failure %u for %s", compatibleBufSz,
+                           name);
         }
     }
     return false;

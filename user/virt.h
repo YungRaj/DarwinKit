@@ -21,9 +21,9 @@ typedef struct HvfArm64State HvfArm64State;
  * numbers); works even if d is a smaller type than n.
  */
 
-#define ROUND_UP(n, d) ROUND_DOWN((n) + (d)-1, (d))
+#define ROUND_UP(n, d) ROUND_DOWN((n) + (d) - 1, (d))
 
-#define DIV_ROUND_UP(n, d) (((n) + (d)-1) / (d))
+#define DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
 
 typedef int64_t target_long;
 typedef uint64_t target_ulong;

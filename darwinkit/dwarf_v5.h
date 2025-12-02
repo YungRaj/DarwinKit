@@ -524,4 +524,4 @@ enum class Type {
     string
 };
 
-}; // namespace Debug
+}; // namespace debug

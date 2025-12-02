@@ -27,31 +27,39 @@ template <typename Bin>
 class BasicBlock {
 public:
     using InstructionList = std::vector<Instruction*>;
-    using BasicBlockList = std::vector<BasicBlock<Bin>*>
-    using iterator = InstructionList::iterator;
+    using BasicBlockList = std::vector<BasicBlock<Bin>*> using iterator = InstructionList::iterator;
 
     explicit BasicBlock() {}
 
     ~BasicBlock() = default;
 
-    Bin* GetBinary() { return bin; }
+    Bin* GetBinary() {
+        return bin;
+    }
 
-    InstructionList& GetInstructions() { return instructions; }
+    InstructionList& GetInstructions() {
+        return instructions;
+    }
 
     Instruction* GetTerminator();
 
     BasicBlockList GetSuccessors();
 
-    BasicBlockList GetPrecedessors():
+    BasicBlockList GetPrecedessors()
+        :
 
-    inline iterator begin() { return instructions.begin(); }
+          inline iterator begin() {
+        return instructions.begin();
+    }
 
-    inline iterator end() { return instructions.end(); }
+    inline iterator end() {
+        return instructions.end();
+    }
 
 private:
     UInt64 pc;
 
-    Bin *bin;
+    Bin* bin;
 
     InstructionList instructions;
 
@@ -59,5 +67,5 @@ private:
     BasicBlockList predecessors;
 };
 
-}
-}
+} // namespace ir
+} // namespace darwinkit

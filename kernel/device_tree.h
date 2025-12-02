@@ -58,7 +58,8 @@ public:
     template <typename DeviceTree>
     static DeviceTree GetHead(xnu::Kernel* kernel) {
         PE_state_t* PE = xnu::PlatformExpertState(kernel);
-        return reinterpret_cast<DeviceTree>(PE->deviceTreeHead);;
+        return reinterpret_cast<DeviceTree>(PE->deviceTreeHead);
+        ;
     }
 
     static Size GetSize(xnu::Kernel* kernel) {

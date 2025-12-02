@@ -16,13 +16,13 @@
 
 #pragma once
 
-#include <types.h>
 #include <memory>
+#include <types.h>
 
-#include "macho.h"
-#include "symbol.h"
 #include "basic_block.h"
 #include "disassembler.h"
+#include "macho.h"
+#include "symbol.h"
 
 namespace darwinkit {
 namespace ir {
@@ -48,24 +48,36 @@ public:
 
     ~ControlFlowGraph() = default;
 
-    T* GetBinary() const { return binary; }
+    T* GetBinary() const {
+        return binary;
+    }
 
-    Sym *GetSymbol() const { return symbol; }
+    Sym* GetSymbol() const {
+        return symbol;
+    }
 
-    inline iterator begin() { return blocks.begin(); }
-    inline const_iterator const_begin() const { return blocks.begin(); }
+    inline iterator begin() {
+        return blocks.begin();
+    }
+    inline const_iterator const_begin() const {
+        return blocks.begin();
+    }
 
-    inline iterator end() { return blocks.end(); }
-    inline const_iterator const_end() const { return blocks.end(); }
+    inline iterator end() {
+        return blocks.end();
+    }
+    inline const_iterator const_end() const {
+        return blocks.end();
+    }
 
 private:
     UInt64 pc;
 
-    Disassembler *disassembler;
+    Disassembler* disassembler;
 
-    T *binary;
+    T* binary;
 
-    Bin *symbol;
+    Bin* symbol;
 
     BasicBlockList blocks;
 };
@@ -75,10 +87,10 @@ class PreOrder {
 public:
     using BasicBlockList = ControlFlowGraph<Bin>::BasicBlockList;
 
-    explicit PreOrder(ControlFlowGraph<Bin> *cfg);
+    explicit PreOrder(ControlFlowGraph<Bin>* cfg);
 
-    PreOrder(const PreOrder &) = delete;
-    PreOrder &operator=(const PreOrder &) = delete;
+    PreOrder(const PreOrder&) = delete;
+    PreOrder& operator=(const PreOrder&) = delete;
 
     ~PreOrder() = default;
 
@@ -86,27 +98,31 @@ public:
         return pre_order_blocks_;
     }
 
-    iterator begin() { return pre_order_blocks_.begin(); }
+    iterator begin() {
+        return pre_order_blocks_.begin();
+    }
     const_iterator const_begin() const {
         return pre_order_blocks_.begin();
     }
 
-    iterator end() override { return pre_order_blocks_.end(); }
-    const_iterator const_end() const { return pre_order_blocks_.end(); }
+    iterator end() override {
+        return pre_order_blocks_.end();
+    }
+    const_iterator const_end() const {
+        return pre_order_blocks_.end();
+    }
 
-    bool IsBackEdge(BasicBlock<Bin> *block) {
+    bool IsBackEdge(BasicBlock<Bin>* block) {
         return back_edges_.contains(block);
     }
 
-    private:
-    void Visit(BasicBlockList *seen_on_path,
-               BasicBlockList> *visited,
-               BasicBlock<Bin> *cur_block);
+private:
+    void Visit(BasicBlockList* seen_on_path, BasicBlockList > *visited, BasicBlock<Bin>* cur_block);
 
     BasicBlockList pre_order_blocks_;
 
     BasicBlockList back_edges_;
 };
 
-}
-}
+} // namespace ir
+} // namespace darwinkit

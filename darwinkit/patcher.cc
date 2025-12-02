@@ -23,8 +23,7 @@ namespace darwin {
 void Patcher::FindAndReplace(void* data, Size data_size, const void* find, Size find_size,
                              const void* replace, Size replace_size) {}
 
-void Patcher::OnKextLoad(void* kext, kmod_info_t* kmod) {
-}
+void Patcher::OnKextLoad(void* kext, kmod_info_t* kmod) {}
 
 void Patcher::RouteFunction(Hook* hook) {
     hooks.push_back(hook);
@@ -101,4 +100,4 @@ void Patcher::RemoveHook(Hook* hook) {
     delete hook;
 }
 
-}
+} // namespace darwin

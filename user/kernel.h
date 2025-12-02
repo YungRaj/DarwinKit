@@ -19,7 +19,6 @@
 #include <types.h>
 
 #include <mach/mach_types.h>
-
 #include <sys/sysctl.h>
 #include <sys/utsname.h>
 
@@ -29,11 +28,11 @@ extern "C" {
 }
 
 #include "disassembler.h"
-#include "task.h"
 #include "dwarf.h"
 #include "kernel_macho.h"
 #include "macho.h"
 #include "macho_userspace.h"
+#include "task.h"
 
 namespace xnu {
 class Task;

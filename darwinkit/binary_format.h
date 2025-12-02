@@ -24,4 +24,4 @@ public:
     BinaryFormat() {}
     ~BinaryFormat() {}
 };
-} // namespace Binary
+} // namespace binary

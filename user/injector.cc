@@ -24,12 +24,12 @@
 
 #include <EndpointSecurity/EndpointSecurity.h>
 
-#include <memory>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <span>
 #include <stdexcept>
@@ -109,33 +109,34 @@ static constexpr char injectedCode_x86_64[] =
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
 
-#define ensure(condition)                                                                                         \
-	do {                                                                                                          \
-		if (!(condition)) {                                                                                       \
-			throw std::runtime_error(std::string("") + "Check \"" + #condition "\" failed at " +                  \
-			                         __FILE__ + ":" + std::to_string(__LINE__) + " in function " + __FUNCTION__); \
-		}                                                                                                         \
-	} while (0)
+#define ensure(condition)                                                                          \
+    do {                                                                                           \
+        if (!(condition)) {                                                                        \
+            throw std::runtime_error(std::string("") + "Check \"" + #condition "\" failed at " +   \
+                                     __FILE__ + ":" + std::to_string(__LINE__) + " in function " + \
+                                     __FUNCTION__);                                                \
+        }                                                                                          \
+    } while (0)
 
 #define CS_OPS_STATUS 0
 #define CS_ENFORCEMENT 0x00001000
 
 extern "C" {
-int csops(pid_t pid, unsigned int ops, void *useraddr, size_t usersize);
+int csops(pid_t pid, unsigned int ops, void* useraddr, size_t usersize);
 };
 
 bool Injector::IsTranslated(pid_t pid) {
     auto name = std::array{CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
-	kinfo_proc proc;
-	size_t size = sizeof(proc);
-	ensure(!sysctl(name.data(), name.size(), &proc, &size, nullptr, 0) && size == sizeof(proc));
-	return !!(proc.kp_proc.p_flag & P_TRANSLATED);
+    kinfo_proc proc;
+    size_t size = sizeof(proc);
+    ensure(!sysctl(name.data(), name.size(), &proc, &size, nullptr, 0) && size == sizeof(proc));
+    return !!(proc.kp_proc.p_flag & P_TRANSLATED);
 }
 
 bool Injector::IsCodeSigningEnforced(pid_t pid) {
-	int flags;
-	ensure(!csops(pid, CS_OPS_STATUS, &flags, sizeof(flags)));
-	return !!(flags & CS_ENFORCEMENT);
+    int flags;
+    ensure(!csops(pid, CS_OPS_STATUS, &flags, sizeof(flags)));
+    return !!(flags & CS_ENFORCEMENT);
 }
 
 void Injector::LocateAddresses() {
@@ -183,9 +184,8 @@ void* Injector::FindGadget(const char* gadget, int gadget_len) {
     return nullptr;
 }
 
-uint64_t Injector::RopCall(
-    xnu::mach::VmAddress function, char* argMap,
-    UInt64* arg1, UInt64* arg2, UInt64* arg3, UInt64* arg4) {
+uint64_t Injector::RopCall(xnu::mach::VmAddress function, char* argMap, UInt64* arg1, UInt64* arg2,
+                           UInt64* arg3, UInt64* arg4) {
     kern_return_t kret;
 #ifndef __arm64e__
     state.__pc = (uint64_t)ptrauth_sign_unauthenticated(
@@ -224,49 +224,51 @@ uint64_t Injector::RopCall(
             break;
         }
         switch (*argp) {
-            case 's':
-                int num_digits;
-                char tmp_buf[6];
-                argp++;
-                num_digits = 0;
-                while (*argp >= '0' && *argp <= '9') {
-                    if (++num_digits == 6) {
-                        fprintf(stderr, "String too long, param=%d\n", param);
-                        return 0;
-                    }
-                    tmp_buf[num_digits - 1] = *(argp++);
+        case 's':
+            int num_digits;
+            char tmp_buf[6];
+            argp++;
+            num_digits = 0;
+            while (*argp >= '0' && *argp <= '9') {
+                if (++num_digits == 6) {
+                    fprintf(stderr, "String too long, param=%d\n", param);
+                    return 0;
                 }
-                tmp_buf[num_digits] = 0;
-                paramLen = strtoull(tmp_buf, nullptr, 10);
-                uint64_t* argPtr;
-                if (param == 0) {
-                    argPtr = arg1;
-                }
-                if (param == 1) {
-                    argPtr = arg2;
-                } if (param == 2) {
-                    argPtr = arg3;
-                } if (param == 3) {
-                    argPtr = arg4;
-                }
-                memcpy(stack_ptr, argPtr, paramLen);
-                state.__x[param] = (uint64_t)remote_stack + (stack_ptr - local_fake_stack);
-                stack_ptr += 16;
-                stack_ptr += paramLen;
-                stack_ptr = (char*)align64((uint64_t)stack_ptr);
-                break;
-            case 'u':
-                state.__x[param] = (param == 0)   ? (uint64_t)arg1
-                                : (param == 1) ? (uint64_t)arg2
-                                : (param == 2) ? (uint64_t)arg3
-                                                : (uint64_t)arg4;
-
-                argp++;
-                break;
-            default:
-                fprintf(stderr, "Unknown argument type: '%c'\n", *argp);
-                exit(-1);
+                tmp_buf[num_digits - 1] = *(argp++);
             }
+            tmp_buf[num_digits] = 0;
+            paramLen = strtoull(tmp_buf, nullptr, 10);
+            uint64_t* argPtr;
+            if (param == 0) {
+                argPtr = arg1;
+            }
+            if (param == 1) {
+                argPtr = arg2;
+            }
+            if (param == 2) {
+                argPtr = arg3;
+            }
+            if (param == 3) {
+                argPtr = arg4;
+            }
+            memcpy(stack_ptr, argPtr, paramLen);
+            state.__x[param] = (uint64_t)remote_stack + (stack_ptr - local_fake_stack);
+            stack_ptr += 16;
+            stack_ptr += paramLen;
+            stack_ptr = (char*)align64((uint64_t)stack_ptr);
+            break;
+        case 'u':
+            state.__x[param] = (param == 0)   ? (uint64_t)arg1
+                               : (param == 1) ? (uint64_t)arg2
+                               : (param == 2) ? (uint64_t)arg3
+                                              : (uint64_t)arg4;
+
+            argp++;
+            break;
+        default:
+            fprintf(stderr, "Unknown argument type: '%c'\n", *argp);
+            exit(-1);
+        }
     }
     kret = vm_write(task->GetTaskPort(), remote_stack, (vm_address_t)local_fake_stack, STACK_SIZE);
     free(local_fake_stack);
@@ -408,50 +410,48 @@ int Injector::InjectLibrary(char* dylib) {
     return 0;
 }
 
-int Injector::WaitForProcessAndInjectLibrary(
-    int argc, char **argv, char **envp,
-    char *process_name, char *dylib) {
-    es_client_t *cl = nullptr;
+int Injector::WaitForProcessAndInjectLibrary(int argc, char** argv, char** envp, char* process_name,
+                                             char* dylib) {
+    es_client_t* cl = nullptr;
     auto library = *++argv;
-	std::vector<std::regex> processes;
-	for (auto process : std::span(++argv, argc - 2)) {
-		processes.push_back(std::regex(process));
-	}
-    ensure(es_new_client(&cl, ^(es_client_t *client, const es_message_t *message) {
-        switch (message->event_type) {
-            case ES_EVENT_TYPE_AUTH_EXEC: {
-                const char *name = message->event.exec.target->executable->path.data;
-                for (const auto &process : processes) {
-                    pid_t pid = audit_token_to_pid(message->process->audit_token);
-                    if (std::regex_search(name, process) && IsTranslated(getpid()) ==
-    IsTranslated(pid)) {
-                        if (IsCodeSigningEnforced(pid)) {
-                            ensure(!ptrace(PT_ATTACHEXC, pid, nullptr, 0));
-                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-    1'000'000'000), dispatch_get_main_queue(), ^ {
-                                ensure(!ptrace(PT_DETACH, pid, nullptr, 0));
-                            });
-                        }
-                        std::unique_ptr<Kernel> kernel = std::make_unique<Kernel>();
-                        std::unique_ptr<Task> task = std::make_unique<Task>(kernel.get(), pid);
-                        Injector injector(kernel.get(), task.get());
-                        injector.InjectLibrary(dylib);
-                    }
-                }
-                es_respond_auth_result(client, message, ES_AUTH_RESULT_ALLOW, false);
-                break;
-            }
-            default:
-                ensure(false && "Unexpected event type!");
-        }
-    }) == ES_NEW_CLIENT_RESULT_SUCCESS);
-    
+    std::vector<std::regex> processes;
+    for (auto process : std::span(++argv, argc - 2)) {
+        processes.push_back(std::regex(process));
+    }
+    ensure(es_new_client(&cl, ^(es_client_t* client, const es_message_t* message) {
+             switch (message->event_type) {
+             case ES_EVENT_TYPE_AUTH_EXEC: {
+                 const char* name = message->event.exec.target->executable->path.data;
+                 for (const auto& process : processes) {
+                     pid_t pid = audit_token_to_pid(message->process->audit_token);
+                     if (std::regex_search(name, process) &&
+                         IsTranslated(getpid()) == IsTranslated(pid)) {
+                         if (IsCodeSigningEnforced(pid)) {
+                             ensure(!ptrace(PT_ATTACHEXC, pid, nullptr, 0));
+                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1'000'000'000),
+                                            dispatch_get_main_queue(), ^{
+                                              ensure(!ptrace(PT_DETACH, pid, nullptr, 0));
+                                            });
+                         }
+                         std::unique_ptr<Kernel> kernel = std::make_unique<Kernel>();
+                         std::unique_ptr<Task> task = std::make_unique<Task>(kernel.get(), pid);
+                         Injector injector(kernel.get(), task.get());
+                         injector.InjectLibrary(dylib);
+                     }
+                 }
+                 es_respond_auth_result(client, message, ES_AUTH_RESULT_ALLOW, false);
+                 break;
+             }
+             default:
+                 ensure(false && "Unexpected event type!");
+             }
+           }) == ES_NEW_CLIENT_RESULT_SUCCESS);
+
     es_event_type_t events[] = {ES_EVENT_TYPE_AUTH_EXEC};
-    ensure(es_subscribe(cl, events, sizeof(events) / sizeof(*events)) ==
-    ES_RETURN_SUCCESS);
+    ensure(es_subscribe(cl, events, sizeof(events) / sizeof(*events)) == ES_RETURN_SUCCESS);
 
     dispatch_main();
     return 0;
 }
 
-}
+} // namespace darwin

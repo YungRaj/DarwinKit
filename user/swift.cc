@@ -18,9 +18,7 @@
 
 #include "macho.h"
 #include "macho_userspace.h"
-
 #include "pac.h"
-
 #include "swift.h"
 
 #ifdef __arm64__
@@ -47,7 +45,7 @@ static char kSwift5Assocty[] = "__swift5_assocty";
 static char kSwift5Proto[] = "__swift5_proto";
 static char kSwift5Types[] = "__swift5_types";
 static char kSwift5Protos[] = "__swift5_protos";
-static char kSwift5Capture[]  = "__swift5_capture";
+static char kSwift5Capture[] = "__swift5_capture";
 static char kSwift5Mpenum[] = "__swift5_mpenum";
 
 SwiftABI* ParseSwift(darwin::MachOUserspace* macho) {
@@ -111,8 +109,7 @@ struct Type* SwiftABI::ParseTypeDescriptor(struct TypeDescriptor* typeDescriptor
         struct Struct* structure = new Struct;
         memcpy(&structure->descriptor, typeDescriptor, sizeof(struct TypeDescriptor));
         type = dynamic_cast<struct Type*>(structure);
-    }
-    break;
+    } break;
     case FDK_Class: {
         struct Class* cls = new Class;
         memcpy(&cls->descriptor, typeDescriptor, sizeof(struct TypeDescriptor));
@@ -185,8 +182,7 @@ UInt64 SwiftABI::GetTypeMetadata(struct TypeDescriptor* typeDescriptor) {
 #endif
 }
 
-void SwiftABI::ParseFieldDescriptor(struct Type* type,
-                                         struct FieldDescriptor* fieldDescriptor) {
+void SwiftABI::ParseFieldDescriptor(struct Type* type, struct FieldDescriptor* fieldDescriptor) {
     struct Fields* fields = new Fields;
     UInt64 field_start = reinterpret_cast<UInt64>(fieldDescriptor) + sizeof(struct FieldDescriptor);
     fields->descriptor = fieldDescriptor;

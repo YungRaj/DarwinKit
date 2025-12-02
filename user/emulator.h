@@ -48,4 +48,4 @@ public:
 private:
     Emu* emu;
 };
-}; // namespace Emulation
+}; // namespace emulation

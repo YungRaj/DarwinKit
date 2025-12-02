@@ -24,9 +24,8 @@
 #include <mach/mach_types.h>
 #include <mach/vm_types.h>
 
-#include "hook.h"
-
 #include "arch.h"
+#include "hook.h"
 
 namespace xnu {
 class Kernel;
@@ -41,8 +40,7 @@ class Payload {
 
 public:
     explicit Payload(Task* task, Hook* hook, xnu::mach::VmProtection protection)
-             : task(task), hook(hook),
-               prot(protection), current_offset(0) {}
+        : task(task), hook(hook), prot(protection), current_offset(0) {}
 
     ~Payload() = default;
 

@@ -14,13 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <CommonCrypto/CommonDigest.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <sys/stat.h>
-
-#include <CommonCrypto/CommonDigest.h>
 
 #include "macho_userspace.h"
 
@@ -206,8 +204,8 @@ bool CodeSignature::ParseCodeSignature() {
                             fread(info_buf, 1, size, info);
                             fclose(info);
 
-                            UInt8* info_hash = ComputeHash(special_slots[i].sha256, info_buf,
-                                                                 (UInt32)info_size);
+                            UInt8* info_hash =
+                                ComputeHash(special_slots[i].sha256, info_buf, (UInt32)info_size);
                             if (memcmp(info_hash, special_slots[i].hash,
                                        special_slots[i].hashSize) == 0) {
                                 DARWIN_KIT_LOG(" OK...");
@@ -220,8 +218,7 @@ bool CodeSignature::ParseCodeSignature() {
                 free(zerobuf);
                 DARWIN_KIT_LOG("\n");
             }
-        }
-        break;
+        } break;
         case CSMAGIC_BLOBWRAPPER:
             break;
         case CSMAGIC_REQUIREMENTS:
@@ -237,15 +234,14 @@ bool CodeSignature::ParseCodeSignature() {
             blob_hash = ComputeHash(special_slots[ENTITLEMENTS].sha256, blob_raw, length);
             DARWIN_KIT_LOG("\nEntitlements ");
             if (CompareHash(special_slots[ENTITLEMENTS].hash, blob_hash,
-                                  special_slots[ENTITLEMENTS].hashSize)) {
+                            special_slots[ENTITLEMENTS].hashSize)) {
                 DARWIN_KIT_LOG("OK...\n");
             } else {
                 DARWIN_KIT_LOG("Invalid!!!\n");
             }
             DARWIN_KIT_LOG("%s\n", entitlements);
             free(entitlements);
-        }
-        break;
+        } break;
         default:
             break;
         }

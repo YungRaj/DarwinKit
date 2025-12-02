@@ -24,8 +24,8 @@
 #include <mach/mach_types.h>
 #include <sys/types.h>
 
-#include <types.h>
 #include <arch.h>
+#include <types.h>
 
 namespace xnu {
 class Thread {

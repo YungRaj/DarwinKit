@@ -13,12 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "dwarf.h"
-#include "kernel.h"
-#include "kernel_macho.h"
-#include "macho.h"
-
+#include <kern/task.h>
+#include <libkern/libkern.h>
 #include <sys/errno.h>
 #include <sys/fcntl.h>
 #include <sys/file.h>
@@ -29,10 +25,10 @@
 #include <sys/vnode.h>
 #include <sys/vnode_if.h>
 
-#include <libkern/libkern.h>
-
-#include <kern/task.h>
-
+#include "dwarf.h"
+#include "kernel.h"
+#include "kernel_macho.h"
+#include "macho.h"
 #include "strparse.h"
 
 using namespace xnu;
@@ -106,7 +102,7 @@ struct macOSVersionMap macOSVersions[] = {
     {"20.1.0", "xnu-7195.41.8~9", "20A2411", "11.0"},
 };
 
-char* GetBuildVersionFromOSVersion(char *osversion);
+char* GetBuildVersionFromOSVersion(char* osversion);
 char* GetKDKWithBuildVersion(const char* basePath, const char* buildVersion);
 
 kern_return_t ReadKDKKernelFromPath(xnu::Kernel* kernel, const char* path, char** out_buffer);
@@ -164,15 +160,14 @@ void KDKKernelMachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms,
         name = &strtab[nl->n_strx];
         address = nl->n_value + kernel->GetSlide();
         // Adds the kernel slide so that the address is correct
-        symbol =
-            new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
-                       SegmentForAddress(address), SectionForAddress(address));
+        symbol = new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
+                            SegmentForAddress(address), SectionForAddress(address));
         symbolTable->AddSymbol(symbol);
     }
     DARWIN_KIT_LOG("DarwinKit::KDKKernelMachO::%u syms!\n", nsyms);
 }
 
-char* GetBuildVersionFromOSVersion(char *osversion) {
+char* GetBuildVersionFromOSVersion(char* osversion) {
     char kdkPath[1024];
     Size numEntries = sizeof(macOSVersions) / sizeof(macOSVersions[0]);
     for (int i = 0; i < numEntries; i++) {
@@ -378,7 +373,7 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, char* buildVersion, char
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
         DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
-                   buildVersion, kernelVersion);
+                       buildVersion, kernelVersion);
         return nullptr;
     }
     kdkInfo->kernelName = GetKDKKernelNameFromType(kdkInfo->type);

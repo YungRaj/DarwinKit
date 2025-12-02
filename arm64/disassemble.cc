@@ -37,7 +37,7 @@ static inline int hibit_pos(uintmax_t x) {
 #define lsr(x, shift) ((x) >> (shift))
 
 // logical shift left
-#define lsl(x, shift, width) (((x) << (shift)) & (((uint64_t)2 << ((width)-1)) - 1))
+#define lsl(x, shift, width) (((x) << (shift)) & (((uint64_t)2 << ((width) - 1)) - 1))
 
 // rotate right
 #define ror(x, shift, width)                                                                       \
@@ -306,15 +306,20 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         if (CRm == 0b001) {
             if (op2 == 0b000) {
                 return "VMALLE1OS";
-            } if (op2 == 0b001) {
+            }
+            if (op2 == 0b001) {
                 return "VAE1OS";
-            } if (op2 == 0b010) {
+            }
+            if (op2 == 0b010) {
                 return "ASIDE1OS";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "VAAE1OS";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "VALE1OS";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "VAALE1OS";
             } else {
                 return "???";
@@ -322,11 +327,14 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         } else if (CRm == 0b0010) {
             if (op2 == 0b001) {
                 return "RVAE1IS";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "RVAAE1IS";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "RVALE1IS";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "RVAALE1IS";
             } else {
                 return "???";
@@ -334,15 +342,20 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         } else if (CRm == 0b0011) {
             if (op2 == 0b000) {
                 return "VMALLE1IS";
-            } if (op2 == 0b001) {
+            }
+            if (op2 == 0b001) {
                 return "VAE1IS";
-            } if (op2 == 0b010) {
+            }
+            if (op2 == 0b010) {
                 return "ASIDE1IS";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "VAAE1IS";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "VALE1IS";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "VAALE1IS";
             } else {
                 return "???";
@@ -350,11 +363,14 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         } else if (CRm == 0b0101) {
             if (op2 == 0b001) {
                 return "RVAE1OS";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "RVAAE1OS";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "RVALE1OS";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "RVAALE1OS";
             } else {
                 return "???";
@@ -362,11 +378,14 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         } else if (CRm == 0b0110) {
             if (op2 == 0b001) {
                 return "RVAE1";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "RVAAE1";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "RVALE1";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "RVAALE1";
             } else {
                 return "???";
@@ -374,15 +393,20 @@ char* tlbi_op(uint8_t op1, uint8_t CRm, uint8_t op2) {
         } else if (CRm == 0b0111) {
             if (op2 == 0b000) {
                 return "VMALLE1";
-            } if (op2 == 0b001) {
+            }
+            if (op2 == 0b001) {
                 return "VAE1";
-            } if (op2 == 0b010) {
+            }
+            if (op2 == 0b010) {
                 return "ASIDE1";
-            } if (op2 == 0b011) {
+            }
+            if (op2 == 0b011) {
                 return "VAAE1";
-            } if (op2 == 0b101) {
+            }
+            if (op2 == 0b101) {
                 return "VALE1";
-            } if (op2 == 0b111) {
+            }
+            if (op2 == 0b111) {
                 return "VAALE1";
             } else {
                 return "???";
@@ -721,7 +745,8 @@ bool disassemble_logic(MachO* macho, uint64_t pc, uint32_t op) {
     if (AARCH64_INS_TYPE(op, AND_IM_CLASS)) {
         and_imm_t and_imm = *(and_imm_t*)&op;
         uint64_t wmask, tmask, imm;
-        if (!decode_bit_masks(and_imm.sf, and_imm.N, and_imm.imms, and_imm.immr, 1, &wmask, &tmask)) {
+        if (!decode_bit_masks(and_imm.sf, and_imm.N, and_imm.imms, and_imm.immr, 1, &wmask,
+                              &tmask)) {
             return false;
         }
         imm = lobits(wmask, (and_imm.sf ? 64 : 32));
@@ -754,7 +779,8 @@ bool disassemble_logic(MachO* macho, uint64_t pc, uint32_t op) {
     if (name) {
         and_imm_t and_imm = *(and_imm_t*)&op;
         uint64_t wmask, tmask, imm;
-        if (!decode_bit_masks(and_imm.sf, and_imm.N, and_imm.imms, and_imm.immr, 1, &wmask, &tmask)) {
+        if (!decode_bit_masks(and_imm.sf, and_imm.N, and_imm.imms, and_imm.immr, 1, &wmask,
+                              &tmask)) {
             return false;
         }
         imm = lobits(wmask, (and_imm.sf ? 64 : 32));
@@ -896,25 +922,25 @@ bool disassemble_memory(MachO* macho, uint64_t pc, uint32_t op) {
         } else if (IS_OP_INS(str_pre, op) || IS_OP_INS(str_post, op) || IS_OP_INS(str_uoff, op)) {
             name = "STR";
         } else if (IS_OP_INS(ldrb_imm_pre, op) || IS_OP_INS(ldrb_imm_post, op) ||
-                 IS_OP_INS(ldrb_imm_uoff, op)) {
+                   IS_OP_INS(ldrb_imm_uoff, op)) {
             name = "LDRB";
         } else if (IS_OP_INS(ldrh_imm_pre, op) || IS_OP_INS(ldrh_imm_post, op) ||
-                 IS_OP_INS(ldrh_imm_uoff, op)) {
+                   IS_OP_INS(ldrh_imm_uoff, op)) {
             name = "LDRH";
         } else if (IS_OP_INS(strb_imm_pre, op) || IS_OP_INS(strb_imm_post, op) ||
-                 IS_OP_INS(strb_imm_uoff, op)) {
+                   IS_OP_INS(strb_imm_uoff, op)) {
             name = "STRB";
         } else if (IS_OP_INS(strh_imm_pre, op) || IS_OP_INS(strh_imm_post, op) ||
-                 IS_OP_INS(strh_imm_uoff, op)) {
+                   IS_OP_INS(strh_imm_uoff, op)) {
             name = "STRH";
         } else if (IS_OP_INS(ldrsb_imm_pre, op) || IS_OP_INS(ldrsb_imm_post, op) ||
-                 IS_OP_INS(ldrsb_imm_uoff, op)) {
+                   IS_OP_INS(ldrsb_imm_uoff, op)) {
             name = "LDRSB";
         } else if (IS_OP_INS(ldrsh_imm_pre, op) || IS_OP_INS(ldrsh_imm_post, op) ||
-                 IS_OP_INS(ldrsh_imm_uoff, op)) {
+                   IS_OP_INS(ldrsh_imm_uoff, op)) {
             name = "LDRSH";
         } else if (IS_OP_INS(ldrsw_imm_pre, op) || IS_OP_INS(ldrsw_imm_post, op) ||
-                 IS_OP_INS(ldrsw_imm_uoff, op)) {
+                   IS_OP_INS(ldrsw_imm_uoff, op)) {
             name = "LDRSW";
         }
         if (AARCH64_INS_TYPE(op, LDR_UI_CLASS)) {
@@ -1304,7 +1330,7 @@ bool disassemble_pac(MachO* macho, uint64_t pc, uint32_t op) {
             imm = ((int64_t)(ldraa.imm & 0b11111111)) << 3;
             for (int i = 8 + 3; i < 64; i++) {
                 imm |= (1UL << i);
-            } 
+            }
             imm *= -1;
         } else {
             imm = ldraa.imm << 3;
@@ -1840,7 +1866,7 @@ bool disassemble_fp_simd(MachO* macho, uint64_t pc, uint32_t op) {
         IS_OP_INS(stp_simd_fp_soff, op)) {
         name = "STP";
     } else if (IS_OP_INS(ldp_simd_fp_pre, op) || IS_OP_INS(ldp_simd_fp_post, op) ||
-             IS_OP_INS(ldp_simd_fp_soff, op)) {
+               IS_OP_INS(ldp_simd_fp_soff, op)) {
         name = "LDP";
     }
     if (name) {
@@ -1971,6 +1997,6 @@ void Disassemble(MachO* macho, mach_vm_address_t start, uint64_t* length) {
         }
     }
 }
-} // namespace Disassembler
+} // namespace disassembler
 } // namespace arm64
 } // namespace arch

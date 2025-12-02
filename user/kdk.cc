@@ -90,9 +90,8 @@ public:
             name = &strtab[nl->n_strx];
             address = nl->n_value + kernelSlide;
             // Adds the kernel slide so that the address is correct
-            symbol =
-                new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
-                           SegmentForAddress(address), SectionForAddress(address));
+            symbol = new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
+                                SegmentForAddress(address), SectionForAddress(address));
             symbolTable->AddSymbol(symbol);
         }
         DARWIN_KIT_LOG("DarwinKit::KDKKernelMachO::%u syms!\n", nsyms);
@@ -308,7 +307,7 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
         DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
-                   buildVersion, kernelVersion);
+                       buildVersion, kernelVersion);
         return nullptr;
     }
     kdkInfo->kernelName = GetKDKKernelNameFromType(kdkInfo->type);
@@ -338,7 +337,7 @@ KDKInfo* KDK::KDKInfoFromBuildInfo(xnu::Kernel* kernel, const char* buildVersion
         kdkInfo->kernelPath[0] == '\0') {
         delete kdkInfo;
         DARWIN_KIT_LOG("DarwinKit::Failed to find KDK with buildVersion %s and kernelVersion %s",
-                   buildVersion, kernelVersion);
+                       buildVersion, kernelVersion);
         return nullptr;
     }
     kdkInfo->kernelName = GetKDKKernelNameFromType(kdkInfo->type);

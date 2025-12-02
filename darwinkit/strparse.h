@@ -24,11 +24,9 @@
 #include <string.h>
 
 #ifndef __KERNEL__
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #endif
 
 int hex_digit(char c);

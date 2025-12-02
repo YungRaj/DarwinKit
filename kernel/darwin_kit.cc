@@ -36,24 +36,22 @@ void DarwinKit::RegisterCallbacks() {
         (void*)this, [](void* user, task_t task, const char* entitlement, void* original) {
             static_cast<DarwinKit*>(user)->OnEntitlementRequest(task, entitlement, original);
         });
-    RegisterBinaryLoadCallback(
-        (void*)this, [](void* user, task_t task, const char* path, Size len) {
-            static_cast<DarwinKit*>(user)->OnProcLoad(task, path, len);
-        });
+    RegisterBinaryLoadCallback((void*)this,
+                               [](void* user, task_t task, const char* path, Size len) {
+                                   static_cast<DarwinKit*>(user)->OnProcLoad(task, path, len);
+                               });
     RegisterKextLoadCallback((void*)this, [](void* user, void* kext, xnu::KmodInfo* kmod) {
         static_cast<DarwinKit*>(user)->OnKextLoad(kext, kmod);
     });
 }
 
 void DarwinKit::RegisterEntitlementCallback(void* user, EntitlementCallback callback) {
-    StoredPair<EntitlementCallback>* pair =
-        StoredPair<EntitlementCallback>::create(callback, user);
+    StoredPair<EntitlementCallback>* pair = StoredPair<EntitlementCallback>::create(callback, user);
     entitlementCallbacks.push_back(pair);
 }
 
 void DarwinKit::RegisterBinaryLoadCallback(void* user, BinaryLoadCallback callback) {
-    StoredPair<BinaryLoadCallback>* pair =
-        StoredPair<BinaryLoadCallback>::create(callback, user);
+    StoredPair<BinaryLoadCallback>* pair = StoredPair<BinaryLoadCallback>::create(callback, user);
     binaryLoadCallbacks.push_back(pair);
 }
 

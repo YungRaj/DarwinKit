@@ -22,7 +22,6 @@
 #include <types.h>
 
 #include "darwin_kit.h"
-
 #include "kernel.h"
 #include "kext.h"
 
@@ -36,13 +35,14 @@ class IOKernelDarwinKitUserClient;
 extern kern_return_t darwinkit_start(IOKernelDarwinKitService* service, xnu::Kernel* kernel,
                                      xnu::Kext** kext);
 extern kern_return_t darwinkit_stop(IOKernelDarwinKitService* service, xnu::Kernel* kernel,
-                                      xnu::Kext** kext);
+                                    xnu::Kext** kext);
 
 extern darwin::DarwinKit* darwinkit_get_darwinkit();
 
 class IOKernelDarwinKitService : public IOService {
-    OSDeclareDefaultStructors(IOKernelDarwinKitService)
-public:   
+    OSDeclareDefaultStructors(IOKernelDarwinKitService);
+
+public:
     virtual bool init(OSDictionary* properties) override;
 
     virtual void free() override;

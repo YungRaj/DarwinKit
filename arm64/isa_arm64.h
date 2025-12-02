@@ -139,13 +139,13 @@ enum {
     AARCH64_EXTEND_LSL = 8,
 };
 
-#define AARCH64_EXTEND_TYPE(ext) ((ext)&0x7)
+#define AARCH64_EXTEND_TYPE(ext) ((ext) & 0x7)
 
-#define AARCH64_EXTEND_LEN(ext) ((ext)&0x3)
+#define AARCH64_EXTEND_LEN(ext) ((ext) & 0x3)
 #define AARCH64_EXTEND_SIGN(ext) (((ext) >> 2) & 1)
-#define AARCH64_EXTEND_IS_LSL(ext) ((ext)&AARCH64_EXTEND_LSL)
+#define AARCH64_EXTEND_IS_LSL(ext) ((ext) & AARCH64_EXTEND_LSL)
 
-#define AARCH64_INS_TYPE(ins, type) (((ins)&AARCH64_##type##_MASK) == AARCH64_##type##_BITS)
+#define AARCH64_INS_TYPE(ins, type) (((ins) & AARCH64_##type##_MASK) == AARCH64_##type##_BITS)
 
 // ---- ADC, ADCS, SBC, SBCS ----
 // ---- NGC, NGCS ----

@@ -24,9 +24,7 @@
 
 namespace fuzzer {
 
-void Module::Load() {
-    
-}
+void Module::Load() {}
 
 // template<typename Sym>
 // Sym Module::GetSymbol(const char *symname) requires requires(Sym sym) {
@@ -134,7 +132,7 @@ void Loader::LoadKextMachO(const char* kextPath, xnu::mach::VmAddress* loadAddre
         return;
     }
     harness->UpdateSymbolTableForMappedMachO(file_data, (xnu::mach::VmAddress)baseAddress,
-                                                   *oldLoadAddress);
+                                             *oldLoadAddress);
     harness->UpdateSegmentLoadCommandsForNewLoadAddress(
         file_data, (xnu::mach::VmAddress)baseAddress, *oldLoadAddress);
     // success = harness->mapSegments<MachO, Segment>(file_data, nullptr);
@@ -202,4 +200,4 @@ void* Loader::AllocateModuleMemory(Size sz, int prot) {
     return baseAddress;
 }
 
-}
+} // namespace fuzzer

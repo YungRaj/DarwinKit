@@ -21,7 +21,6 @@
 #include <types.h>
 
 #include "macho.h"
-
 #include "symbol_table.h"
 #include "vector.h"
 

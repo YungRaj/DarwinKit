@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
 #include <mach/kmod.h>
 #include <mach/mach_types.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <types.h>
 
 #include "kext_macho.h"

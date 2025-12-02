@@ -35,11 +35,11 @@
 
 #include "dwarf.h"
 #include "dyld.h"
+#include "injector.h"
 #include "kernel.h"
 #include "macho_userspace.h"
 #include "pac.h"
 #include "task.h"
-#include "injector.h"
 
 extern "C" {
 #include "api.h"
@@ -62,7 +62,7 @@ void print_usage() {
 
 #include "fuzzer.h"
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char** argv, char** envp) {
     bool fuzz, from_kernel, from_user = false;
     int err;
     char* wait_for_process_name = nullptr;
@@ -70,7 +70,7 @@ int main(int argc, char **argv, char **envp) {
     int pid = -1;
     int c;
 
-    xnu::Kernel *kernel = xnu::Kernel::Xnu();
+    xnu::Kernel* kernel = xnu::Kernel::Xnu();
     std::unique_ptr<xnu::Task> task = nullptr;
 
     // Example - running code in the macOS kernel in userspace
@@ -137,8 +137,8 @@ int main(int argc, char **argv, char **envp) {
 
         if (!libraryLoadedAt) {
             if (wait_for_process_name) {
-                Injector::WaitForProcessAndInjectLibrary(
-                    argc, argv, envp, wait_for_process_name, library);
+                Injector::WaitForProcessAndInjectLibrary(argc, argv, envp, wait_for_process_name,
+                                                         library);
             } else {
                 Injector injector(kernel, task.get());
                 err = injector.InjectLibrary(library);

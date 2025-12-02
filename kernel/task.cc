@@ -15,9 +15,8 @@
  */
 
 #include "kernel.h"
-#include "task.h"
-
 #include "log.h"
+#include "task.h"
 
 #include <IOKit/IOLib.h>
 #include <mach/mach_types.h>
@@ -59,7 +58,8 @@ void Task::Initialize() {
     proc = _get_bsdtask_info(task);
 
     typedef vm_map_t (*get_task_map)(task_t task);
-    auto _get_task_map = reinterpret_cast<get_task_map>(kernel->GetSymbolAddressByName("_get_task_map"));
+    auto _get_task_map =
+        reinterpret_cast<get_task_map>(kernel->GetSymbolAddressByName("_get_task_map"));
     map = _get_task_map(task);
 
     typedef pmap_t (*get_task_pmap)(task_t task);
@@ -101,14 +101,14 @@ xnu::mach::Port Task::GetTaskPort(Kernel* kernel, int pid) {
 }
 
 pid_t Task::GetPid(task_t task) {
-    Kernel *kernel = xnu::Kernel::Xnu();
+    Kernel* kernel = xnu::Kernel::Xnu();
     auto _get_bsd_task_info = reinterpret_cast<proc_t (*)(task_t task)>(
         kernel->GetSymbolAddressByName("_get_bsdtask_info", /*sign=*/true));
     proc_t proc = _get_bsd_task_info(task);
 
     auto _proc_pid = reinterpret_cast<int (*)(proc_t proc)>(
         kernel->GetSymbolAddressByName("_proc_pid", /*sign=*/true));
-   return _proc_pid(proc);
+    return _proc_pid(proc);
 }
 
 Task* Task::GetTaskByName(Kernel* kernel, char* name) {
@@ -151,8 +151,7 @@ proc_t Task::FindProcByPid(Kernel* kernel, int pid) {
     current_proc = (proc_t) * (UInt64*)((UInt8*)current_proc + 0x8);
 
     typedef int (*proc_pid)(proc_t proc);
-    auto _proc_pid = reinterpret_cast<proc_pid>(
-        kernel->GetSymbolAddressByName("_proc_pid", true));
+    auto _proc_pid = reinterpret_cast<proc_pid>(kernel->GetSymbolAddressByName("_proc_pid", true));
 
     while (current_proc) {
         current_pid = _proc_pid(current_proc);
@@ -181,10 +180,10 @@ proc_t Task::FindProcByName(Kernel* kernel, char* name) {
     typedef int (*proc_pid)(proc_t proc);
     typedef void (*proc_name)(int pid, char* name, Size size);
 
-    auto _proc_pid = reinterpret_cast<proc_pid>(
-        kernel->GetSymbolAddressByName("_proc_pid", /*sign=*/true));
-    auto _proc_name = reinterpret_cast<proc_name>(
-        kernel->GetSymbolAddressByName("_proc_name",/*sign=*/true));
+    auto _proc_pid =
+        reinterpret_cast<proc_pid>(kernel->GetSymbolAddressByName("_proc_pid", /*sign=*/true));
+    auto _proc_name =
+        reinterpret_cast<proc_name>(kernel->GetSymbolAddressByName("_proc_name", /*sign=*/true));
 
     while (current_proc) {
         char* current_name;
@@ -210,8 +209,8 @@ proc_t Task::FindProcByName(Kernel* kernel, char* name) {
 task_t Task::FindTaskByPid(Kernel* kernel, int pid) {
     proc_t proc = Task::FindProcByPid(kernel, pid);
     typedef task_t (*proc_task)(proc_t proc);
-    auto _proc_task = reinterpret_cast<proc_task>(
-        kernel->GetSymbolAddressByName("_proc_task", /*sign=*/true));
+    auto _proc_task =
+        reinterpret_cast<proc_task>(kernel->GetSymbolAddressByName("_proc_task", /*sign=*/true));
     if (proc != nullptr) {
         task_t task = _proc_task(proc);
         return task;
@@ -297,8 +296,7 @@ bool Task::Read(xnu::mach::VmAddress address, void* data, Size size) {
 
 UInt8 Task::Read8(xnu::mach::VmAddress address) {
     UInt8 value;
-    bool success =
-        task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
+    bool success = task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
     if (!success) {
         return 0;
     }
@@ -307,8 +305,7 @@ UInt8 Task::Read8(xnu::mach::VmAddress address) {
 
 UInt16 Task::Read16(xnu::mach::VmAddress address) {
     UInt16 value;
-    bool success =
-        task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
+    bool success = task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
     if (!success) {
         return 0;
     }
@@ -317,8 +314,7 @@ UInt16 Task::Read16(xnu::mach::VmAddress address) {
 
 UInt32 Task::Read32(xnu::mach::VmAddress address) {
     UInt32 value;
-    bool success =
-        task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
+    bool success = task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
     if (!success) {
         return 0;
     }
@@ -327,8 +323,7 @@ UInt32 Task::Read32(xnu::mach::VmAddress address) {
 
 UInt64 Task::Read64(xnu::mach::VmAddress address) {
     UInt64 value;
-    bool success =
-        task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
+    bool success = task_vm_read(GetMap(), address, reinterpret_cast<void*>(&value), sizeof(value));
     if (!success) {
         return 0;
     }

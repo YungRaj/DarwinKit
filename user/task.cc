@@ -15,15 +15,14 @@
  */
 
 #include <assert.h>
-
 #include <mach/mach.h>
 
+#include "task.h"
+
 #include "disassembler.h"
+#include "dyld.h"
 #include "kernel.h"
 #include "log.h"
-
-#include "dyld.h"
-#include "task.h"
 
 namespace xnu {
 
@@ -409,7 +408,6 @@ xnu::mach::VmAddress Task::GetImageLoadedAt(char* image_name, char** image_path)
     return image;
 }
 
-void Task::PrintLoadedImages() {
-}
+void Task::PrintLoadedImages() {}
 
 } // namespace xnu

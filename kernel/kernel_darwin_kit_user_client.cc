@@ -15,16 +15,16 @@
  */
 
 #include "kernel_darwin_kit.h"
-#include "kernel_darwin_kit_user_client.h"
 
+#include "coverage.h"
 #include "darwin_kit.h"
 #include "kernel.h"
+#include "kernel_darwin_kit_user_client.h"
 #include "kernel_patcher.h"
-#include "task.h"
+#include "log.h"
 #include "section.h"
 #include "segment.h"
-#include "log.h"
-#include "coverage.h"
+#include "task.h"
 
 #include <mach/vm_types.h>
 
@@ -34,7 +34,7 @@ extern "C" {
 
 OSDefineMetaClassAndStructors(IOKernelDarwinKitUserClient, IOUserClient)
 
-IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(
+    IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(
         xnu::Kernel* kernel, task_t owningTask, void* securityToken, UInt32 type) {
     IOKernelDarwinKitUserClient* client = new IOKernelDarwinKitUserClient();
     if (client) {
@@ -52,7 +52,7 @@ IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWit
     IOKernelDarwinKitUserClient* client = new IOKernelDarwinKitUserClient();
     if (client) {
         if (!client->initDarwinKitUserClientWithKernel(kernel, owningTask, securityToken, type,
-                                                     properties)) {
+                                                       properties)) {
             client->release();
             return nullptr;
         }
@@ -61,8 +61,9 @@ IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWit
 }
 
 bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel* kern,
-                                                                task_t owningTask,
-                                                                void* securityToken, UInt32 type) {
+                                                                    task_t owningTask,
+                                                                    void* securityToken,
+                                                                    UInt32 type) {
     bool result = IOUserClient::initWithTask(owningTask, securityToken, type);
     kernel = kern;
     if (!kernel) {
@@ -77,9 +78,10 @@ bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel*
 }
 
 bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel* kern,
-                                                                task_t owningTask,
-                                                                void* securityToken, UInt32 type,
-                                                                OSDictionary* properties) {
+                                                                    task_t owningTask,
+                                                                    void* securityToken,
+                                                                    UInt32 type,
+                                                                    OSDictionary* properties) {
     bool result = IOUserClient::initWithTask(owningTask, securityToken, type, properties);
     kernel = kern;
     if (!kernel) {
@@ -117,10 +119,8 @@ IOReturn IOKernelDarwinKitUserClient::clientDied() {
 
 void IOKernelDarwinKitUserClient::free() {}
 
-IOReturn IOKernelDarwinKitUserClient::clientMemoryForType(
-    UInt32 type,
-    IOOptionBits *options,
-    IOMemoryDescriptor **memory) {
+IOReturn IOKernelDarwinKitUserClient::clientMemoryForType(UInt32 type, IOOptionBits* options,
+                                                          IOMemoryDescriptor** memory) {
     if (type != 0) {
         return kIOReturnBadArgument;
     }
@@ -138,9 +138,9 @@ IOExternalTrap* IOKernelDarwinKitUserClient::getExternalTrapForIndex(UInt32 inde
 }
 
 UInt8* IOKernelDarwinKitUserClient::mapBufferFromClientTask(xnu::mach::VmAddress uaddr, Size size,
-                                                          IOOptionBits options,
-                                                          IOMemoryDescriptor** desc,
-                                                          IOMemoryMap** mapping) {
+                                                            IOOptionBits options,
+                                                            IOMemoryDescriptor** desc,
+                                                            IOMemoryMap** mapping) {
     UInt8* buffer;
     IOReturn ret;
     IOMemoryDescriptor* descriptor;
@@ -178,11 +178,8 @@ IOMemoryDescriptor* IOKernelDarwinKitUserClient::mapCoverageBitmap() {
     if (size % page_size != 0) {
         size = ((size / page_size) + 1) * page_size;
     }
-    IOMemoryDescriptor* map = IOMemoryDescriptor::withAddress(
-        (void*) coverage_bitmap,
-        size,
-        kIODirectionNone
-    );
+    IOMemoryDescriptor* map =
+        IOMemoryDescriptor::withAddress((void*)coverage_bitmap, size, kIODirectionNone);
     if (map) {
         map->retain();
     }
@@ -190,9 +187,9 @@ IOMemoryDescriptor* IOKernelDarwinKitUserClient::mapCoverageBitmap() {
 }
 
 IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
-                                                   IOExternalMethodArguments* arguments,
-                                                   IOExternalMethodDispatch* dispatch,
-                                                   OSObject* target, void* reference) {
+                                                     IOExternalMethodArguments* arguments,
+                                                     IOExternalMethodDispatch* dispatch,
+                                                     OSObject* target, void* reference) {
     IOReturn result = kIOReturnSuccess;
     DARWIN_KIT_LOG("DarwinKit::IOKernelDarwinKitUserClient::externalMethod() called!\n");
     switch (selector) {
@@ -210,7 +207,8 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
             Size code_size = hook_size % 0x1000 >= sizeof(UInt64)
                                  ? (hook_size - (hook_size % 0x1000)) + 0x1000
                                  : hook_size;
-            if (hook) {}
+            if (hook) {
+            }
         }
         break;
     case kIOKernelDarwinKitAddBreakpoint:
@@ -228,7 +226,8 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                                  ? (breakpoint_hook_size - (breakpoint_hook_size % 0x1000)) + 0x1000
                                  : breakpoint_hook_size;
             xnu::mach::VmAddress copyin;
-            if (breakpoint_hook) {}
+            if (breakpoint_hook) {
+            }
         }
         break;
     case kIOKernelDarwinKitKernelCall:
@@ -268,9 +267,9 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 IOMemoryMap* map;
                 Symbol* symbol;
                 xnu::mach::VmAddress symaddr;
-                UInt8* buf = mapBufferFromClientTask(arguments->scalarInput[0],
-                                                     arguments->scalarInput[1],
-                                                     kIODirectionOutIn, &descriptor, &map);
+                UInt8* buf =
+                    mapBufferFromClientTask(arguments->scalarInput[0], arguments->scalarInput[1],
+                                            kIODirectionOutIn, &descriptor, &map);
                 char* symname = reinterpret_cast<char*>(buf);
                 symaddr = kernel->GetSymbolAddressByName(symname);
 
@@ -294,13 +293,13 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 IOMemoryMap* map;
                 Symbol* symbol;
                 xnu::mach::VmAddress symaddr;
-                UInt8* buf1 = mapBufferFromClientTask(arguments->scalarInput[0],
-                                                      arguments->scalarInput[1],
-                                                            kIODirectionOutIn, &descriptor, &map);
+                UInt8* buf1 =
+                    mapBufferFromClientTask(arguments->scalarInput[0], arguments->scalarInput[1],
+                                            kIODirectionOutIn, &descriptor, &map);
 
-                UInt8* buf2 = mapBufferFromClientTask(arguments->scalarInput[2],
-                                                      arguments->scalarInput[3],
-                                                      kIODirectionOutIn, &descriptor, &map);
+                UInt8* buf2 =
+                    mapBufferFromClientTask(arguments->scalarInput[2], arguments->scalarInput[3],
+                                            kIODirectionOutIn, &descriptor, &map);
                 char* kextidentifier = reinterpret_cast<char*>(buf1);
                 xnu::Kext* kext =
                     getDarwinKitService()->getDarwinKit()->GetKextByIdentifier(kextidentifier);
@@ -458,8 +457,8 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 UInt64 paddr = arguments->scalarInput[0];
                 UInt64 data = arguments->scalarInput[1];
                 Size size = arguments->scalarInput[2];
-                UInt8* buf = mapBufferFromClientTask(
-                    data, size, kIODirectionOutIn, &descriptor, &map);
+                UInt8* buf =
+                    mapBufferFromClientTask(data, size, kIODirectionOutIn, &descriptor, &map);
                 success = kernel->PhysicalRead(paddr, (void*)buf, size);
                 if (!success) {
                     result = kIOReturnNoMemory;
@@ -482,8 +481,8 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 UInt64 paddr = arguments->scalarInput[0];
                 UInt64 data = arguments->scalarInput[1];
                 Size size = arguments->scalarInput[2];
-                UInt8* buf = mapBufferFromClientTask(
-                    data, size, kIODirectionOutIn, &descriptor, &map);
+                UInt8* buf =
+                    mapBufferFromClientTask(data, size, kIODirectionOutIn, &descriptor, &map);
                 success = kernel->PhysicalWrite(paddr, (void*)buf, size);
                 if (!success) {
                     result = kIOReturnNoMemory;
@@ -547,12 +546,12 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 bool success;
                 IOMemoryDescriptor* descriptor;
                 IOMemoryMap* map;
-                char* name = reinterpret_cast<char*>(mapBufferFromClientTask(
-                    arguments->scalarInput[0], arguments->scalarInput[1], kIODirectionOutIn,
-                    &descriptor, &map));
+                char* name = reinterpret_cast<char*>(
+                    mapBufferFromClientTask(arguments->scalarInput[0], arguments->scalarInput[1],
+                                            kIODirectionOutIn, &descriptor, &map));
                 DARWIN_KIT_LOG("DarwinKit::finding task with name = 0x%llx\n", (UInt64)(name));
-                xnu::mach::VmAddress task = reinterpret_cast<xnu::mach::VmAddress>(
-                    Task::FindTaskByName(kernel, name));
+                xnu::mach::VmAddress task =
+                    reinterpret_cast<xnu::mach::VmAddress>(Task::FindTaskByName(kernel, name));
                 if (!task) {
                     result = kIOReturnError;
                 }
@@ -572,12 +571,12 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
                 bool success;
                 IOMemoryDescriptor* descriptor;
                 IOMemoryMap* map;
-                char* name = reinterpret_cast<char*>(mapBufferFromClientTask(
-                    arguments->scalarInput[0], arguments->scalarInput[1], kIODirectionOutIn,
-                    &descriptor, &map));
+                char* name = reinterpret_cast<char*>(
+                    mapBufferFromClientTask(arguments->scalarInput[0], arguments->scalarInput[1],
+                                            kIODirectionOutIn, &descriptor, &map));
                 DARWIN_KIT_LOG("DarwinKit::finding proc with 0x%llx\n", (UInt64)(name));
-                xnu::mach::VmAddress proc = reinterpret_cast<xnu::mach::VmAddress>(
-                    Task::FindProcByName(kernel, name));
+                xnu::mach::VmAddress proc =
+                    reinterpret_cast<xnu::mach::VmAddress>(Task::FindProcByName(kernel, name));
                 if (!proc) {
                     result = kIOReturnError;
                 }

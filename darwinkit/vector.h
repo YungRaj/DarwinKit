@@ -140,14 +140,14 @@ public:
     T at(int index) {
         Node<T>* current = head;
         if (index < 0 && index >= sz) {
-            return (T)nullptr;
+            return (T) nullptr;
         }
         while (current && index) {
             current = current->next;
             index--;
         }
         if (!current) {
-            return (T)nullptr;
+            return (T) nullptr;
         }
         return current->t;
     }
@@ -158,7 +158,8 @@ public:
         while (current) {
             if (index >= sz) {
                 break;
-            } if (current->t == t) {
+            }
+            if (current->t == t) {
                 return index;
             }
             current = current->next;

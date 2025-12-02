@@ -16,15 +16,12 @@
 
 #include "hook.h"
 
+#include "arch.h"
+#include "disassembler.h"
+#include "kernel.h"
 #include "patcher.h"
 #include "payload.h"
-
-#include "disassembler.h"
-
-#include "kernel.h"
 #include "task.h"
-
-#include "arch.h"
 
 using namespace xnu;
 
@@ -41,7 +38,8 @@ Hook::Hook(Patcher* patcher, enum HookType hooktype, Task* task, xnu::mach::VmAd
       disassembler(task->GetDisassembler()), architecture(arch::InitArchitecture()) {
     if (hooktype == kHookTypeInstrumentFunction) {
         PrepareHook(task, from);
-    } if (hooktype == kHookTypeBreakpoint) {
+    }
+    if (hooktype == kHookTypeBreakpoint) {
         PrepareBreakpoint(task, from);
     }
 }
@@ -64,7 +62,7 @@ Hook* Hook::CreateHookForFunction(Task* task, Patcher* patcher, xnu::mach::VmAdd
 }
 
 Hook* Hook::CreateHookForFunction(void* target, xnu::Task* task, darwin::Patcher* patcher,
-                            xnu::mach::VmAddress address) {
+                                  xnu::mach::VmAddress address) {
     Hook* hook = Hook::CreateHookForFunction(task, patcher, address);
 #ifdef __KERNEL__
     address |= kBaseKernelAddress;
@@ -133,7 +131,7 @@ xnu::mach::VmAddress Hook::GetTrampolineFromChain(xnu::mach::VmAddress addr) {
         struct HookPatch* patch = hooks.at(i);
         xnu::mach::VmAddress tramp = patch->trampoline;
 #ifdef __arm64__
-         __asm__ volatile("PACIZA %[pac]" : [pac] "+rm"(tramp));
+        __asm__ volatile("PACIZA %[pac]" : [pac] "+rm"(tramp));
 #endif
         if (patch->to == addr) {
             return tramp;
@@ -232,8 +230,7 @@ void Hook::HookFunction(xnu::mach::VmAddress to, enum HookType hooktype) {
     RegisterHook(hook);
 }
 
-void Hook::UninstallHook() {
-}
+void Hook::UninstallHook() {}
 
 void Hook::AddBreakpoint(xnu::mach::VmAddress breakpoint_hook, enum HookType hooktype) {
     struct HookPatch* hook = new HookPatch;
@@ -308,8 +305,6 @@ void Hook::AddBreakpoint(xnu::mach::VmAddress breakpoint_hook, enum HookType hoo
     RegisterHook(hook);
 }
 
-void Hook::RemoveBreakpoint() {
+void Hook::RemoveBreakpoint() {}
 
-}
-
-}
+} // namespace darwin

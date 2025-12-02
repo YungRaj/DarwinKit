@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <types.h>
 #include <dwarf_v5.h>
+#include <types.h>
 
 class Symbol;
 class SymbolTable;
@@ -25,15 +25,13 @@ class SymbolTable;
 class Segment;
 class Section;
 
-#include "vector.h"
-
+#include "log.h"
 #include "macho.h"
 #include "section.h"
 #include "segment.h"
 #include "symbol.h"
 #include "symbol_table.h"
-
-#include "log.h"
+#include "vector.h"
 
 namespace debug {
 using namespace debug;
@@ -334,7 +332,7 @@ static LTStateMachine gInitialState = {.address = 0,
 
 class LineTable {
 public:
-    explicit LineTable(MachO *binary, Dwarf* dwarf) : macho(binary), dwarf(dwarf) {}
+    explicit LineTable(MachO* binary, Dwarf* dwarf) : macho(binary), dwarf(dwarf) {}
 
     std::vector<struct LTSourceFile*>* GetSourceFileNames() {
         return &files;

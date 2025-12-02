@@ -18,10 +18,9 @@
 
 #include <types.h>
 
+#include <mach/mach_types.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <mach/mach_types.h>
 #include <sys/types.h>
 
 #include "disassembler.h"
@@ -34,7 +33,7 @@ namespace darwin {
 namespace dyld {
 class Dyld;
 };
-};
+}; // namespace darwin
 
 namespace bsd {
 class Process;
@@ -62,7 +61,7 @@ public:
     explicit Task(xnu::Kernel* kernel, char* name);
 
     explicit Task(Kernel* kernel, xnu::mach::Port task_port)
-                : kernel(kernel), task_port(task_port) {}
+        : kernel(kernel), task_port(task_port) {}
 
     ~Task() = default;
 

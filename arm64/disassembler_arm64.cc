@@ -222,6 +222,6 @@ xnu::mach::VmAddress DisassembleSignature(xnu::mach::VmAddress address,
 }
 
 #endif
-} // namespace Disassembler
+} // namespace disassembler
 } // namespace arm64
 } // namespace arch

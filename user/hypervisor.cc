@@ -29,8 +29,8 @@ static inline int64_t get_clock(void) {
 namespace darwin {
 namespace vm {
 
-Hypervisor::Hypervisor(fuzzer::Harness* harness, xnu::mach::VmAddress virtualBase,
-                       UInt64 base, Size size, xnu::mach::VmAddress entryPoint)
+Hypervisor::Hypervisor(fuzzer::Harness* harness, xnu::mach::VmAddress virtualBase, UInt64 base,
+                       Size size, xnu::mach::VmAddress entryPoint)
     : harness(harness), virtualBase(virtualBase), base(base), size(size), entryPoint(entryPoint) {
     int ret;
     // Create the VM
@@ -883,7 +883,7 @@ void Hypervisor::Destroy() {
     free(mainMemory);
 }
 
-}
-}
+} // namespace vm
+} // namespace darwin
 
 #endif

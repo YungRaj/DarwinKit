@@ -16,14 +16,14 @@
 
 #include "kernel_patcher.h"
 
-#include "darwin_kit.h"
 #include "arch.h"
-#include "kernel_macho.h"
-#include "hook.h"
-#include "payload.h"
-#include "kernel.h"
-#include "task.h"
+#include "darwin_kit.h"
 #include "disassembler.h"
+#include "hook.h"
+#include "kernel.h"
+#include "kernel_macho.h"
+#include "payload.h"
+#include "task.h"
 
 #ifdef __arm64__
 
@@ -83,10 +83,9 @@ bool KernelPatcher::DummyBreakpoint(union arch::RegisterState* state) {
 
 Hook* KernelPatcher::InstallDummyBreakpoint() {
     Hook* hook;
-    xnu::mach::VmAddress mach_msg_trap =
-        GetKernel()->GetSymbolAddressByName("_mach_msg_trap");
+    xnu::mach::VmAddress mach_msg_trap = GetKernel()->GetSymbolAddressByName("_mach_msg_trap");
     hook = Hook::CreateBreakpointForAddress(dynamic_cast<Task*>(GetKernel()),
-                                      dynamic_cast<Patcher*>(this), mach_msg_trap);
+                                            dynamic_cast<Patcher*>(this), mach_msg_trap);
     hook->AddBreakpoint((xnu::mach::VmAddress)KernelPatcher::DummyBreakpoint);
     return hook;
 }
@@ -209,8 +208,8 @@ Hook* KernelPatcher::InstallCopyClientEntitlementHook() {
     Hook* hook;
     xnu::mach::VmAddress orig_copyClientEntitlement;
     xnu::mach::VmAddress hooked_copyClientEntitlement;
-    orig_copyClientEntitlement = GetKernel()->GetSymbolAddressByName(
-        "__ZN12IOUserClient21copyClientEntitlementEP4taskPKc");
+    orig_copyClientEntitlement =
+        GetKernel()->GetSymbolAddressByName("__ZN12IOUserClient21copyClientEntitlementEP4taskPKc");
     hooked_copyClientEntitlement =
         reinterpret_cast<xnu::mach::VmAddress>(KernelPatcher::CopyClientEntitlement);
     char buffer[128];
@@ -243,8 +242,7 @@ Hook* KernelPatcher::InstallBinaryLoadHook() {
     Hook* hook;
     xnu::mach::VmAddress orig_task_set_main_thread_qos;
     xnu::mach::VmAddress hooked_task_set_main_thread_qos;
-    orig_task_set_main_thread_qos =
-        GetKernel()->GetSymbolAddressByName("_task_main_thread_qos");
+    orig_task_set_main_thread_qos = GetKernel()->GetSymbolAddressByName("_task_main_thread_qos");
     hooked_task_set_main_thread_qos =
         reinterpret_cast<xnu::mach::VmAddress>(KernelPatcher::TaskSetMainThreadQos);
     hook = Hook::CreateHookForFunction(GetKernel(), this, orig_task_set_main_thread_qos);
@@ -277,9 +275,10 @@ void KernelPatcher::RegisterCallbacks() {
         (void*)this, [](void* user, task_t task, const char* path, Size len) {
             static_cast<KernelPatcher*>(user)->OnExec(task, path, len);
         });
-    darwinkit->RegisterKextLoadCallback((void*)this, [](void* user, void* kext, xnu::KmodInfo* kmod) {
-        static_cast<KernelPatcher*>(user)->OnKextLoad(kext, kmod);
-    });
+    darwinkit->RegisterKextLoadCallback(
+        (void*)this, [](void* user, void* kext, xnu::KmodInfo* kmod) {
+            static_cast<KernelPatcher*>(user)->OnKextLoad(kext, kmod);
+        });
 }
 
 void KernelPatcher::ProcessAlreadyLoadedKexts() {
@@ -290,8 +289,8 @@ void KernelPatcher::ProcessAlreadyLoadedKexts() {
             char buffer2[128];
             snprintf(buffer1, 128, "0x%lx", kmod->address);
             snprintf(buffer2, 128, "0x%x", *(UInt32*)kmod->address);
-            DARWIN_KIT_LOG("DarwinKit::KernelPatcher::processing Kext %s = %s @ %s\n", (char*)kmod->name,
-                       buffer1, buffer2);
+            DARWIN_KIT_LOG("DarwinKit::KernelPatcher::processing Kext %s = %s @ %s\n",
+                           (char*)kmod->name, buffer1, buffer2);
             ProcessKext(kmod, true);
         }
     }
@@ -321,8 +320,8 @@ void KernelPatcher::ProcessAlreadyLoadedKexts() {
                 char buffer2[128];
                 snprintf(buffer1, 128, "0x%llx", kmod->address);
                 snprintf(buffer2, 128, "0x%x", *(UInt32*)kmod->address);
-                DARWIN_KIT_LOG("DarwinKit::KernelPatcher::processing Kext %s = %s @ %s = %s\n", entry_id,
-                           buffer1, entry_id, buffer2);
+                DARWIN_KIT_LOG("DarwinKit::KernelPatcher::processing Kext %s = %s @ %s = %s\n",
+                               entry_id, buffer1, entry_id, buffer2);
             }
         }
         q += load_command->cmdsize;
@@ -336,7 +335,8 @@ void KernelPatcher::ProcessKext(xnu::KmodInfo* kmod, bool loaded) {
     void* OSKext;
     xnu::mach::VmAddress kmod_address = (xnu::mach::VmAddress)kmod->address;
     darwinkit = GetKernel()->GetDarwinKit();
-    StoredArray<DarwinKit::KextLoadCallback> *kextLoadCallbacks = &darwinkit->GetKextLoadCallbacks();
+    StoredArray<DarwinKit::KextLoadCallback>* kextLoadCallbacks =
+        &darwinkit->GetKextLoadCallbacks();
     OSKext = KernelPatcher::OSKextLookupKextWithIdentifier(static_cast<char*>(kmod->name));
     for (int i = 0; i < kextLoadCallbacks->size(); i++) {
         auto handler = kextLoadCallbacks->at(i);

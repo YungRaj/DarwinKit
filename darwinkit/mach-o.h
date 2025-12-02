@@ -9,9 +9,7 @@
 #include <sys/_types/_uuid_t.h>
 
 #ifdef __USER__
-
 typedef uint32_t mach_port_t;
-
 #endif
 
 #define LC_REQ_DYLD 0x80000000

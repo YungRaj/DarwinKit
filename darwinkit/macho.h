@@ -41,13 +41,10 @@ extern "C" {
 
 class MachO : public binary::BinaryFormat {
 public:
-    explicit MachO(char *buffer, xnu::macho::Header64 *header,
-                   xnu::mach::VmAddress address, Offset slide)
-                       : buffer(buffer),
-                         header(header),
-                         base(address),
-                         aslr_slide(slide),
-                         symbolTable(new SymbolTable()) {}
+    explicit MachO(char* buffer, xnu::macho::Header64* header, xnu::mach::VmAddress address,
+                   Offset slide)
+        : buffer(buffer), header(header), base(address), aslr_slide(slide),
+          symbolTable(new SymbolTable()) {}
 
     explicit MachO() = default;
 

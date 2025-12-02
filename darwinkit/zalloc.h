@@ -11,11 +11,8 @@
 struct zone;
 
 typedef struct zone* zone_t;
-
 typedef UInt16 zone_id_t;
-
 typedef UInt32 zone_kheap_id_t;
-
 typedef UInt32 hw_lock_bit_t;
 
 enum zone_create_flags_t {

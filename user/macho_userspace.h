@@ -16,16 +16,14 @@
 
 #pragma once
 
-#include <types.h>
 #include <vector>
-
-#include "macho.h"
-#include "symbol_table.h"
-
-#include "objc.h"
-#include "swift.h"
+#include <types.h>
 
 #include "dyld.h"
+#include "macho.h"
+#include "objc.h"
+#include "swift.h"
+#include "symbol_table.h"
 
 extern "C" {
 #include <mach-o.h>
@@ -115,8 +113,8 @@ public:
     virtual void WithBuffer(xnu::mach::VmAddress base, char* buffer, Offset slide,
                             bool is_dyld_cache);
 
-    virtual void WithBuffer(darwin::MachOUserspace* libobjc, xnu::mach::VmAddress base, char* buffer,
-                            Offset slide);
+    virtual void WithBuffer(darwin::MachOUserspace* libobjc, xnu::mach::VmAddress base,
+                            char* buffer, Offset slide);
 
     char* GetFilePath() {
         return dyld ? dyld->GetMainImagePath() : file_path;
@@ -126,7 +124,7 @@ public:
         return is_dyldCache;
     }
 
-    void  SetIsDyldCache(bool IsDyldCache) {
+    void SetIsDyldCache(bool IsDyldCache) {
         is_dyldCache = IsDyldCache;
     }
 

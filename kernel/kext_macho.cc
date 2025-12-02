@@ -59,8 +59,7 @@ KextMachO::KextMachO(Kernel* kernel, char* name, xnu::KmodInfo* kmod_info)
     InitWithBase(kmod_info->address, 0);
 }
 
-void KextMachO::ParseLinkedit() {
-}
+void KextMachO::ParseLinkedit() {}
 
 void KextMachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms, char* strtab,
                                  Size strsize) {
@@ -72,9 +71,8 @@ void KextMachO::ParseSymbolTable(xnu::macho::Nlist64* symtab, UInt32 nsyms, char
         xnu::mach::VmAddress address;
         name = &strtab[nl->n_strx];
         address = nl->n_value;
-        symbol =
-            new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
-                       SegmentForAddress(address), SectionForAddress(address));
+        symbol = new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
+                            SegmentForAddress(address), SectionForAddress(address));
         symbolTable->AddSymbol(symbol);
         char buffer[128];
         snprintf(buffer, 128, "0x%llx", address);
@@ -87,7 +85,8 @@ bool KextMachO::ParseLoadCommands() {
     struct mach_header_64* mh = GetMachHeader();
     char buffer[128];
     snprintf(buffer, 128, "0x%llx", (UInt64)(*this)[sizeof(struct mach_header_64)]);
-    DARWIN_KIT_LOG("DarwinKit::KextMachO::parseLoadCommands() mh + struct mach_header_64 = %s\n", buffer);
+    DARWIN_KIT_LOG("DarwinKit::KextMachO::parseLoadCommands() mh + struct mach_header_64 = %s\n",
+                   buffer);
 #ifdef __arm64__
     size = MachO::GetSize();
 #endif
@@ -154,11 +153,12 @@ bool KextMachO::ParseLoadCommands() {
             // DARWIN_KIT_LOG("DarwinKit::LC_SYMTAB\n");
             // DARWIN_KIT_LOG("DarwinKit::\tSymbol Table is at offset 0x%x (%u) with %u entries \n",
             //           symtab_command->symoff, symtab_command->symoff, symtab_command->nsyms);
-            // DARWIN_KIT_LOG("DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u bytes\n",
+            // DARWIN_KIT_LOG("DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u
+            // bytes\n",
             //          symtab_command->stroff, symtab_command->stroff, symtab_command->strsize);
             if (kernel_cache) {
-                symtab = reinterpret_cast<xnu::macho::Nlist64*>(kernel_cache +
-                                                                symtab_command->symoff);
+                symtab =
+                    reinterpret_cast<xnu::macho::Nlist64*>(kernel_cache + symtab_command->symoff);
                 nsyms = symtab_command->nsyms;
                 strtab = reinterpret_cast<char*>(kernel_cache + symtab_command->stroff);
                 strsize = symtab_command->strsize;
@@ -172,8 +172,8 @@ bool KextMachO::ParseLoadCommands() {
                 symtab = reinterpret_cast<xnu::macho::Nlist64*>(
                     GetBase() + (symtab_command->symoff - base_offset));
                 nsyms = symtab_command->nsyms;
-                strtab = reinterpret_cast<char*>(GetBase() +
-                                                 (symtab_command->stroff - base_offset));
+                strtab =
+                    reinterpret_cast<char*>(GetBase() + (symtab_command->stroff - base_offset));
                 strsize = symtab_command->strsize;
             } else {
                 symtab = nullptr;
@@ -191,12 +191,12 @@ bool KextMachO::ParseLoadCommands() {
             struct dysymtab_command* dysymtab_command =
                 reinterpret_cast<struct dysymtab_command*>(load_command);
             /* DARWIN_KIT_LOG("DarwinKit::LC_DYSYMTAB\n");
-            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n", dysymtab_command->ilocalsym,
-                       dysymtab_command->nlocalsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n", dysymtab_command->nextdefsym,
-                       dysymtab_command->iextdefsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n", dysymtab_command->nundefsym,
-                       dysymtab_command->iundefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n",
+            dysymtab_command->ilocalsym, dysymtab_command->nlocalsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n",
+            dysymtab_command->nextdefsym, dysymtab_command->iextdefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n",
+            dysymtab_command->nundefsym, dysymtab_command->iundefsym);
             DARWIN_KIT_LOG("DarwinKit::\t%u Indirect symbols at offset 0x%x\n",
                        dysymtab_command->nindirectsyms, dysymtab_command->indirectsymoff); */
 

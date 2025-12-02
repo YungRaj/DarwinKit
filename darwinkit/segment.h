@@ -20,15 +20,12 @@
 
 extern "C" {
 #include <mach-o.h>
-
 #include <mach/mach_types.h>
-
 #include <sys/types.h>
 }
 
-#include "section.h"
-
 #include "log.h"
+#include "section.h"
 
 class Segment {
 public:

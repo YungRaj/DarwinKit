@@ -102,8 +102,8 @@ bool KextMachO::ParseLoadCommands() {
             char buffer2[128];
             snprintf(buffer1, 128, "0x%08llx", segment_command->vmaddr);
             snprintf(buffer2, 128, "0x%08llx", segment_command->vmaddr + segment_command->vmsize);
-            DARWIN_KIT_LOG("DarwinKit::LC_SEGMENT_64 at 0x%llx - %s %s to %s \n", segment_command->fileoff,
-                       segment_command->segname, buffer1, buffer2);
+            DARWIN_KIT_LOG("DarwinKit::LC_SEGMENT_64 at 0x%llx - %s %s to %s \n",
+                           segment_command->fileoff, segment_command->segname, buffer1, buffer2);
             int j = 0;
             if (nsects * sizeof(struct section_64) + sizeof(struct segment_command_64) > cmdsize) {
                 return false;
@@ -117,7 +117,7 @@ bool KextMachO::ParseLoadCommands() {
                 snprintf(buffer1, 128, "0x%08llx", section->addr);
                 snprintf(buffer2, 128, "0x%08llx", section->addr + section->size);
                 DARWIN_KIT_LOG("DarwinKit::\tSection %d: %s to %s - %s\n", j, buffer1, buffer2,
-                           section->sectname);
+                               section->sectname);
                 if (section->offset > size || section->size > size - section->offset) {
                     return false;
                 }
@@ -135,15 +135,15 @@ bool KextMachO::ParseLoadCommands() {
             char* strtab;
             UInt32 strsize;
             if (symtab_command->stroff > size || symtab_command->symoff > size ||
-                symtab_command->nsyms >
-                    (size - symtab_command->symoff) / sizeof(struct nlist_64)) {
+                symtab_command->nsyms > (size - symtab_command->symoff) / sizeof(struct nlist_64)) {
                 return false;
             }
             DARWIN_KIT_LOG("DarwinKit::LC_SYMTAB\n");
             DARWIN_KIT_LOG("DarwinKit::\tSymbol Table is at offset 0x%x (%u) with %u entries \n",
-                       symtab_command->symoff, symtab_command->symoff, symtab_command->nsyms);
-            DARWIN_KIT_LOG("DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u bytes\n",
-                       symtab_command->stroff, symtab_command->stroff, symtab_command->strsize);
+                           symtab_command->symoff, symtab_command->symoff, symtab_command->nsyms);
+            DARWIN_KIT_LOG(
+                "DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u bytes\n",
+                symtab_command->stroff, symtab_command->stroff, symtab_command->strsize);
             symtab = reinterpret_cast<struct nlist_64*>(GetBase() + symtab_command->symoff);
             nsyms = symtab_command->nsyms;
             strtab = reinterpret_cast<char*>(GetBase() + symtab_command->stroff);
@@ -169,14 +169,14 @@ bool KextMachO::ParseLoadCommands() {
                 return false;
             }
             DARWIN_KIT_LOG("DarwinKit::LC_DYSYMTAB\n");
-            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n", dysymtab_command->ilocalsym,
-                       dysymtab_command->nlocalsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n", dysymtab_command->nextdefsym,
-                       dysymtab_command->iextdefsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n", dysymtab_command->nundefsym,
-                       dysymtab_command->iundefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n",
+                           dysymtab_command->ilocalsym, dysymtab_command->nlocalsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n",
+                           dysymtab_command->nextdefsym, dysymtab_command->iextdefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n",
+                           dysymtab_command->nundefsym, dysymtab_command->iundefsym);
             DARWIN_KIT_LOG("DarwinKit::\t%u Indirect symbols at offset 0x%x\n",
-                       dysymtab_command->nindirectsyms, dysymtab_command->indirectsymoff);
+                           dysymtab_command->nindirectsyms, dysymtab_command->indirectsymoff);
             break;
         }
         case LC_UUID: {

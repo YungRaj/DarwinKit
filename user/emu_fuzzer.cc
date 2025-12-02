@@ -92,8 +92,7 @@ char* Harness::GetMachOFromFatHeader(char* file_data) {
 
 void Harness::AddDebugSymbolsFromKernel(const char* kernelPath) {
     KernelMachO* macho = GetBinary<KernelMachO*>();
-    xnu::mach::VmAddress loadAddress =
-        reinterpret_cast<xnu::mach::VmAddress>(fuzzBinary->base);
+    xnu::mach::VmAddress loadAddress = reinterpret_cast<xnu::mach::VmAddress>(fuzzBinary->base);
     xnu::mach::VmAddress oldLoadAddress =
         reinterpret_cast<xnu::mach::VmAddress>(fuzzBinary->originalBase);
     char* file_data;
@@ -326,7 +325,7 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
             struct unixthread_command* thread_command =
                 reinterpret_cast<struct unixthread_command*>(load_command);
             DARWIN_KIT_LOG("DarwinKit::LC_UNIXTHREAD\n");
-        #ifdef __arm64__
+#ifdef __arm64__
             if (thread_command->flavor == ARM_THREAD_STATE64) {
                 struct arm_thread_state64 {
                     __uint64_t x[29]; /* General purpose registers x0-x28 */
@@ -344,7 +343,7 @@ void Harness::GetEntryPointFromKC(xnu::mach::VmAddress kc, xnu::mach::VmAddress*
 
                 *entryPoint = state->pc;
             }
-        #endif
+#endif
         }
         q += load_command->cmdsize;
     }
@@ -415,9 +414,9 @@ void Harness::StartKernel() {
     xnu::mach::VmAddress entryPoint;
     GetEntryPointFromKC((xnu::mach::VmAddress)fuzzBinary->base, &entryPoint);
 #ifdef __arm64__
-    hypervisor = new darwin::vm::Hypervisor(
-        this, (xnu::mach::VmAddress)fuzzBinary->originalBase,
-        (xnu::mach::VmAddress)fuzzBinary->base, fuzzBinary->size, entryPoint);
+    hypervisor = new darwin::vm::Hypervisor(this, (xnu::mach::VmAddress)fuzzBinary->originalBase,
+                                            (xnu::mach::VmAddress)fuzzBinary->base,
+                                            fuzzBinary->size, entryPoint);
 #endif
 }
 
@@ -436,8 +435,7 @@ void Harness::LoadKernel(const char* kernelPath, Offset slide) {
     Size kernelCacheSize = 0;
     Offset loadOffset = 0;
     xnu::mach::VmAddress loadAddress = 0;
-    if (LoadKernelCache(kernelPath, &kernelCache, &kernelCacheSize, &loadOffset,
-                              &loadAddress)) {
+    if (LoadKernelCache(kernelPath, &kernelCache, &kernelCacheSize, &loadOffset, &loadAddress)) {
         fuzzBinary->path = kernelPath;
         fuzzBinary->base = reinterpret_cast<void*>(kernelCache);
         fuzzBinary->originalBase = reinterpret_cast<void*>(loadAddress);
@@ -476,4 +474,4 @@ template <typename Func, typename... Args, typename Binary, typename Sym>
     }
 std::invoke_result_t<Func, Args...> Harness::Execute(const char* name, Func func, Args... args) {}
 
-}
+} // namespace fuzzer

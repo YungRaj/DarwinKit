@@ -18,15 +18,13 @@
 
 #include <IOKit/IOLib.h>
 #include <IOKit/IOUserClient.h>
-
 #include <mach/mach_types.h>
 #include <mach/vm_types.h>
-
 #include <types.h>
 
 #include "api_util.h"
-#include "kernel_darwin_kit.h"
 #include "kernel.h"
+#include "kernel_darwin_kit.h"
 
 namespace darwin {
 class DarwinKit;
@@ -38,8 +36,9 @@ using namespace darwin;
 class IOKernelDarwinKitService;
 
 class IOKernelDarwinKitUserClient : public IOUserClient {
-    OSDeclareDefaultStructors(IOKernelDarwinKitUserClient)
- public:
+    OSDeclareDefaultStructors(IOKernelDarwinKitUserClient);
+
+public:
     static IOKernelDarwinKitUserClient* darwinKitUserClientWithKernel(xnu::Kernel* kern,
                                                                       task_t owningTask,
                                                                       void* securityToken,
@@ -66,7 +65,8 @@ class IOKernelDarwinKitUserClient : public IOUserClient {
 
     virtual void free();
 
-    virtual IOReturn clientMemoryForType(UInt32 type, IOOptionBits *options, IOMemoryDescriptor **memory) override;
+    virtual IOReturn clientMemoryForType(UInt32 type, IOOptionBits* options,
+                                         IOMemoryDescriptor** memory) override;
 
     virtual IOExternalMethod* getExternalMethodForIndex(UInt32 index);
     virtual IOExternalTrap* getExternalTrapForIndex(UInt32 index);
@@ -89,7 +89,7 @@ class IOKernelDarwinKitUserClient : public IOUserClient {
 private:
     IOKernelDarwinKitService* darwinkitService;
     xnu::Kernel* kernel;
-    IOMemoryDescriptor *coverageMap = nullptr;
+    IOMemoryDescriptor* coverageMap = nullptr;
 
     task_t clientTask;
     task_t kernelTask;

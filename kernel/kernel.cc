@@ -16,14 +16,13 @@
 
 #include "kernel.h"
 
-#include "log.h"
-
-#include "kernel_darwin_kit.h"
-#include "darwin_kit.h"
-#include "kernel_macho.h"
-#include "pac.h"
 #include "coverage.h"
+#include "darwin_kit.h"
+#include "kernel_darwin_kit.h"
+#include "kernel_macho.h"
 #include "libafl_fuzzer.h"
+#include "log.h"
+#include "pac.h"
 
 extern "C" {
 #include "kern.h"
@@ -59,7 +58,7 @@ using namespace arch::x86_64::patchfinder;
 
 #endif
 
-char* GetBuildVersionFromOSVersion(char *osversion);
+char* GetBuildVersionFromOSVersion(char* osversion);
 
 namespace xnu {
 
@@ -128,20 +127,14 @@ Kernel::Kernel(xnu::mach::VmAddress base, Offset slide)
     disassembler = new Disassembler(this);
     macho->InitWithBase(base, slide);
 #ifdef __x86_64__
-
     GetKernelObjects();
-
     // CreateKernelTaskPort();
-
     set_kernel_map(GetKernelMap());
-
     set_vm_functions(
-        GetSymbolAddressByName("_vm_read_overwrite"),
-        GetSymbolAddressByName("_vm_write"), GetSymbolAddressByName("_vm_protect"),
-        GetSymbolAddressByName("_vm_remap"), GetSymbolAddressByName("_vm_allocate"),
-        GetSymbolAddressByName("_vm_deallocate"),
-        GetSymbolAddressByName("_vm_map_copyin"),
-        GetSymbolAddressByName("_vm_map_copy_overwrite"));
+        GetSymbolAddressByName("_vm_read_overwrite"), GetSymbolAddressByName("_vm_write"),
+        GetSymbolAddressByName("_vm_protect"), GetSymbolAddressByName("_vm_remap"),
+        GetSymbolAddressByName("_vm_allocate"), GetSymbolAddressByName("_vm_deallocate"),
+        GetSymbolAddressByName("_vm_map_copyin"), GetSymbolAddressByName("_vm_map_copy_overwrite"));
 
     set_phys_functions(GetSymbolAddressByName("_pmap_find_phys"),
                        GetSymbolAddressByName("_ml_phys_read_double_64"),
@@ -232,7 +225,6 @@ xnu::mach::VmAddress Kernel::FindKernelBase() {
         q += load_command->cmdsize;
     }
     kernel_base = 0;
-
 #endif
 #ifdef __x86_64__
     kc = Kernel::FindKernelCollection();
@@ -251,7 +243,6 @@ xnu::mach::VmAddress Kernel::FindKernelBase() {
         }
         q += load_command->cmdsize;
     }
-
 #endif
     return kernel_base;
 }
@@ -262,15 +253,12 @@ Offset Kernel::FindKernelSlide() {
     xnu::mach::VmAddress text_base;
     xnu::macho::Header64* mh;
     base = Kernel::FindKernelBase();
-
 #ifdef __arm64__
     if ((base - unslid_base) > 0xFFFFFFFF) {
         panic("kernel base minus unslid base is overflown!");
     }
     return (Offset)(base - unslid_base);
-
 #endif
-
 #ifdef __x86_64__
     static constexpr xnu::mach::VmAddress unslid_kernel_collection = 0xffffff8000200000;
     if ((base - unslid_kernel_collection) > 0xFFFFFFFF) {
@@ -320,8 +308,7 @@ void Kernel::GetKernelObjects() {
     map = _get_task_map(_kernel_task);
     typedef pmap_t (*get_task_pmap)(task_t task);
     pmap_t (*_get_task_pmap)(task_t);
-    _get_task_pmap =
-        reinterpret_cast<get_task_pmap>(GetSymbolAddressByName("_Get_task_pmap"));
+    _get_task_pmap = reinterpret_cast<get_task_pmap>(GetSymbolAddressByName("_Get_task_pmap"));
     pmap = _get_task_pmap(_kernel_task);
 
     snprintf(buffer1, 128, "0x%llx", (xnu::mach::VmAddress)_get_task_map);
@@ -330,8 +317,8 @@ void Kernel::GetKernelObjects() {
     snprintf(buffer1, 128, "0x%llx", (xnu::mach::VmAddress)GetKernelTask());
     snprintf(buffer2, 128, "0x%llx", (xnu::mach::VmAddress)GetKernelMap());
     snprintf(buffer3, 128, "0x%llx", (xnu::mach::VmAddress)GetKernelPmap());
-    DARWIN_KIT_LOG("DarwinKit::kernel_task = %s kernel_map = %s kernel_pmap = %s!\n", buffer1, buffer2,
-               buffer3);
+    DARWIN_KIT_LOG("DarwinKit::kernel_task = %s kernel_map = %s kernel_pmap = %s!\n", buffer1,
+                   buffer2, buffer3);
 }
 
 void Kernel::CreateKernelTaskPort() {
@@ -352,8 +339,8 @@ void Kernel::CreateKernelTaskPort() {
 
     _ipc_kobject_set =
         reinterpret_cast<ipc_kobject_set>(GetSymbolAddressByName("_ipc_kobject_set"));
-    _ipc_port_alloc_special = reinterpret_cast<ipc_port_alloc_special>(
-        GetSymbolAddressByName("_ipc_port_alloc_special"));
+    _ipc_port_alloc_special =
+        reinterpret_cast<ipc_port_alloc_special>(GetSymbolAddressByName("_ipc_port_alloc_special"));
     _ipc_port_dealloc_special = reinterpret_cast<ipc_port_dealloc_special>(
         GetSymbolAddressByName("_ipc_port_dealloc_special"));
     _ipc_port_make_send =
@@ -369,8 +356,9 @@ void Kernel::CreateKernelTaskPort() {
     snprintf(buffer1, 128, "0x%llx", (xnu::mach::VmAddress)_ipc_kobject_set);
     snprintf(buffer2, 128, "0x%llx", (xnu::mach::VmAddress)_ipc_port_alloc_special);
     snprintf(buffer3, 128, "0x%llx", (xnu::mach::VmAddress)_ipc_port_make_send);
-    DARWIN_KIT_LOG("MacPE::ipc_kobject_set = %s ipc_port_alloc_special = %s ipc_port_make_send = %s\n",
-               buffer1, buffer2, buffer3);
+    DARWIN_KIT_LOG(
+        "MacPE::ipc_kobject_set = %s ipc_port_alloc_special = %s ipc_port_make_send = %s\n",
+        buffer1, buffer2, buffer3);
     snprintf(buffer1, 128, "0x%llx", (xnu::mach::VmAddress)_kernel_task);
     snprintf(buffer2, 128, "0x%llx", (xnu::mach::VmAddress)_ipc_space_kernel);
     DARWIN_KIT_LOG("MacPE::kernel_task = %s ipc_space_kernel = %s\n", buffer1, buffer2);
@@ -395,14 +383,12 @@ void Kernel::CreateKernelTaskPort() {
 
     // set kobject of ipc_port
     *(UInt64*)(port_buf + 0x68) = (UInt64)kernel_task;
-
     kernel_task_port = _ipc_port_make_send(port);
 }
 
 bool Kernel::SetKernelWriting(bool enable) {
     static bool interruptsDisabled = false;
     Architecture* architecture = GetDarwinKit()->GetArchitecture();
-
     kern_return_t result = KERN_SUCCESS;
     if (enable) {
         interruptsDisabled = !SetInterrupts(false);
@@ -417,7 +403,6 @@ bool Kernel::SetKernelWriting(bool enable) {
             interruptsDisabled = SetInterrupts(true);
         }
     }
-
     return interruptsDisabled;
 }
 
@@ -427,7 +412,6 @@ bool Kernel::SetNXBit(bool enable) {
 
 bool Kernel::SetInterrupts(bool enable) {
     Architecture* architecture = GetDarwinKit()->GetArchitecture();
-
     return architecture->SetInterrupts(enable);
 }
 
@@ -446,268 +430,183 @@ UInt64 Kernel::Call(xnu::mach::VmAddress func, UInt64* arguments, Size argCount)
     switch (argCount) {
     case 0: {
         typedef UInt64 (*function0)(void);
-
         function0 funk = reinterpret_cast<function0>(function);
-
         ret = (UInt64)(*funk)();
-
         break;
     }
-
     case 1: {
         typedef UInt64 (*function1)(UInt64);
-
         function1 funk = reinterpret_cast<function1>(function);
-
         ret = (UInt64)(*funk)(arguments[0]);
-
         break;
     }
-
     case 2: {
         typedef UInt64 (*function2)(UInt64, UInt64);
-
         function2 funk = reinterpret_cast<function2>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1]);
-
         break;
     }
-
     case 3: {
         typedef UInt64 (*function3)(UInt64, UInt64, UInt64);
-
         function3 funk = reinterpret_cast<function3>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2]);
-
         break;
     }
-
     case 4: {
         typedef UInt64 (*function4)(UInt64, UInt64, UInt64, UInt64);
-
         function4 funk = reinterpret_cast<function4>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3]);
-
         break;
     }
-
     case 5: {
         typedef UInt64 (*function5)(UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function5 funk = reinterpret_cast<function5>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
-
         break;
     }
-
     case 6: {
         typedef UInt64 (*function6)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function6 funk = reinterpret_cast<function6>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5]);
-
         break;
     }
-
     case 7: {
         typedef UInt64 (*function7)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function7 funk = reinterpret_cast<function7>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6]);
-
         break;
     }
-
     case 8: {
         typedef UInt64 (*function8)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function8 funk = reinterpret_cast<function8>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7]);
-
         break;
     }
-
     case 9: {
         typedef UInt64 (*function9)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                     UInt64);
-
         function9 funk = reinterpret_cast<function9>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8]);
-
         break;
     }
-
     case 10: {
         typedef UInt64 (*function10)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64);
-
         function10 funk = reinterpret_cast<function10>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9]);
-
         break;
     }
-
     case 11: {
         typedef UInt64 (*function11)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64);
-
         function11 funk = reinterpret_cast<function11>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10]);
-
         break;
     }
-
     case 12: {
         typedef UInt64 (*function12)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64);
-
         function12 funk = reinterpret_cast<function12>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11]);
-
         break;
     }
-
     case 13: {
         typedef UInt64 (*function13)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function13 funk = reinterpret_cast<function13>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12]);
-
         break;
     }
-
     case 14: {
         typedef UInt64 (*function14)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function14 funk = reinterpret_cast<function14>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13]);
-
         break;
     }
-
     case 15: {
         typedef UInt64 (*function15)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64);
-
         function15 funk = reinterpret_cast<function15>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14]);
-
         break;
     }
-
     case 16: {
         typedef UInt64 (*function16)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64);
-
         function16 funk = reinterpret_cast<function16>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14], arguments[15]);
-
         break;
     }
-
     case 17: {
         typedef UInt64 (*function17)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64);
-
         function17 funk = reinterpret_cast<function17>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14], arguments[15], arguments[16]);
-
         break;
     }
-
     case 18: {
         typedef UInt64 (*function18)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64);
-
         function18 funk = reinterpret_cast<function18>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14], arguments[15], arguments[16], arguments[17]);
-
         break;
     }
-
     case 19: {
         typedef UInt64 (*function19)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64);
-
         function19 funk = reinterpret_cast<function19>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14], arguments[15], arguments[16], arguments[17],
                               arguments[18]);
-
         break;
     }
-
     case 20: {
         typedef UInt64 (*function20)(UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64, UInt64,
                                      UInt64, UInt64, UInt64, UInt64);
-
         function20 funk = reinterpret_cast<function20>(function);
-
         ret = (UInt64)(*funk)(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4],
                               arguments[5], arguments[6], arguments[7], arguments[8], arguments[9],
                               arguments[10], arguments[11], arguments[12], arguments[13],
                               arguments[14], arguments[15], arguments[16], arguments[17],
                               arguments[18], arguments[19]);
-
         break;
     }
-
     default:
         break;
     }
-
     return ret;
 }
 
@@ -749,13 +648,9 @@ xnu::mach::VmAddress Kernel::VmAllocate(Size size, UInt32 flags, xnu::mach::VmPr
     ret = static_cast<kern_return_t>(Call("_vm_map_enter", vmEnterArgs, 13));
 
 #elif __arm64__
-
 #include <arm64/isa_arm64.h>
-
     using namespace arch::arm64;
-
     char buffer[128];
-
     /*
     xnu::mach::VmAddress vm_allocate_external =
     GetSymbolAddressByName("_vm_allocate_external");
@@ -794,12 +689,9 @@ xnu::mach::VmAddress Kernel::VmAllocate(Size size, UInt32 flags, xnu::mach::VmPr
     prot, (UInt64) VM_PROT_ALL, (UInt64) VM_INHERIT_DEFAULT };
     ret = static_cast<kern_return_t>(Call(vm_map_enter, vmEnterArgs, 13));
     */
-
     map = *reinterpret_cast<xnu::mach::VmAddress*>(GetSymbolAddressByName("_kernel_map"));
     UInt64 vmAllocateExternalArgs[4] = {map, (UInt64)&address, size, VM_FLAGS_ANYWHERE};
-    ret =
-        static_cast<kern_return_t>(Call("_vm_allocate_external", vmAllocateExternalArgs, 4));
-
+    ret = static_cast<kern_return_t>(Call("_vm_allocate_external", vmAllocateExternalArgs, 4));
     /*
     xnu::mach::VmAddress vm_map_enter_mem_object_helper_strref =
     arch::arm64::patchfinder::FindStringReference(macho, "VM_FLAGS_RETURN_DATA_ADDR not expected for
@@ -814,7 +706,6 @@ xnu::mach::VmAddress Kernel::VmAllocate(Size size, UInt32 flags, xnu::mach::VmPr
 
     ret = static_cast<kern_return_t>(Call(vm_map_enter_mem_object_helper,
     vmMapEnterMemObjectHelperArgs, 15)); */
-
     snprintf(buffer, 128, "0x%llx", address);
     DARWIN_KIT_LOG("DarwinKit::vm_map_enter() return address = %s\n", buffer);
 #endif
@@ -831,17 +722,14 @@ void Kernel::VmDeallocate(xnu::mach::VmAddress address, Size size) {
 bool Kernel::VmProtect(xnu::mach::VmAddress address, Size size, xnu::mach::VmProtection prot) {
     kern_return_t ret;
 #ifdef __x86_64__
-
     UInt64 mlStaticProtectArgs[3] = {address, size, (UInt64)prot};
     ret = static_cast<kern_return_t>(Call("_ml_static_protect", mlStaticProtectArgs, 3));
-
 #elif __arm64__
     xnu::mach::VmAddress ml_static_protect;
     xnu::mach::VmAddress ml_static_protect_strref = arch::arm64::patchfinder::FindStringReference(
         macho, "ml_static_protect(): attempt to inject executable mapping on %p @%s:%d", 1,
         __cstring_, __TEXT_XNU_BASE, false);
     static bool patched = false;
-
     if (!patched) {
         UInt32 nop = 0xd503201f;
         xnu::mach::VmAddress panic = arch::arm64::patchfinder::StepBack64(
@@ -879,13 +767,11 @@ void* Kernel::VmRemap(xnu::mach::VmAddress address, Size size) {
     using namespace arch::arm64;
     kern_return_t ret;
     char buffer[128];
-
     xnu::mach::VmAddress map;
     xnu::mach::VmAddress addr = 0;
     xnu::mach::VmProtection cur_protection = VM_PROT_ALL;
     xnu::mach::VmProtection max_protection = VM_PROT_ALL;
     xnu::mach::VmAddress vm_map_remap;
-
     xnu::mach::VmAddress vm_map_protect_strref = arch::arm64::patchfinder::FindStringReference(
         macho, "vm_map_protect(%p,0x%llx,0x%llx) new=0x%x wired=%x @%s:%d", 1, __cstring_,
         __TEXT_XNU_BASE, false);
@@ -940,7 +826,7 @@ UInt64 Kernel::VirtualToPhysical(xnu::mach::VmAddress address) {
 #endif
     xnu::mach::VmAddress pmap =
         *reinterpret_cast<xnu::mach::VmAddress*>(GetSymbolAddressByName("_kernel_pmap"));
-    UInt64 pmapFindPhysArgs[2] = {pmap, (UInt64) address};
+    UInt64 pmapFindPhysArgs[2] = {pmap, (UInt64)address};
     UInt64 ppnum = Call("_pmap_find_phys", pmapFindPhysArgs, 2);
     return ((ppnum << 14) | (ppnum ? address & shift : 0));
 }
@@ -960,11 +846,14 @@ bool Kernel::PhysicalRead(UInt64 paddr, void* data, Size size) {
         }
         if (read_size == 8) {
             *(UInt64*)read_data = physical_read64(paddr);
-        } if (read_size == 4) {
+        }
+        if (read_size == 4) {
             *(UInt32*)read_data = physical_read32(paddr);
-        } if (read_size == 2) {
+        }
+        if (read_size == 2) {
             *(UInt16*)read_data = physical_read16(paddr);
-        } if (read_size == 1) {
+        }
+        if (read_size == 1) {
             *(UInt8*)read_data = physical_read8(paddr);
         }
         paddr += read_size;
@@ -1006,11 +895,14 @@ bool Kernel::PhysicalWrite(UInt64 paddr, void* data, Size size) {
         }
         if (write_size == 8) {
             physical_write64(paddr, *(UInt64*)write_data);
-        } if (write_size == 4) {
+        }
+        if (write_size == 4) {
             physical_write32(paddr, *(UInt32*)write_data);
-        } if (write_size == 2) {
+        }
+        if (write_size == 2) {
             physical_write16(paddr, *(UInt16*)write_data);
-        } if (write_size == 1) {
+        }
+        if (write_size == 1) {
             physical_write8(paddr, *(UInt8*)write_data);
         }
         paddr += write_size;
@@ -1092,7 +984,8 @@ bool Kernel::Write(xnu::mach::VmAddress address, void* data, Size size) {
     UInt64 src_ppnum = Call("_pmap_find_phys", src_pmapFindPhysArgs, 2);
     UInt64 src_pa = ((src_ppnum << 14) | (src_ppnum ? (xnu::mach::VmAddress)data & shift : 0));
     UInt64 dest_ppnum = Call("_pmap_find_phys", dest_pmapFindPhysArgs, 2);
-    UInt64 dest_pa = ((dest_ppnum << 14) | (dest_ppnum ? (xnu::mach::VmAddress)address & shift : 0));
+    UInt64 dest_pa =
+        ((dest_ppnum << 14) | (dest_ppnum ? (xnu::mach::VmAddress)address & shift : 0));
 
     if (src_pa && dest_pa) {
         UInt64 bcopyPhysArgs[3] = {src_pa, dest_pa, size};
@@ -1231,7 +1124,7 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign)
         }
     }
 #ifdef __arm64e__
-    if(sign) {
+    if (sign) {
         symbolAddress = PacSignPointerWithAKey(symbolAddress);
     }
 #endif
@@ -1240,17 +1133,18 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname, bool sign)
 
 void Kernel::Fuzz(enum FuzzContext context) {
     switch (context) {
-        case kLibAFLFuzzFromUserspace: {
-            panic("Fuzzing from userspace is not supported inside of kernel!");
-            break;
-        }
-        case kLibAFLFuzzInKernel: {
-            // Ensure collecting coverage occurs on all kernel code
-            // LibAFL Calibration stages will ensure basic block edges that are not from harness aren't included
-            userspace = false;
-            libafl_start_darwin_kit_fuzzer((unsigned char*) sanitizer_cov_get_bitmap());
-            break;
-        }
+    case kLibAFLFuzzFromUserspace: {
+        panic("Fuzzing from userspace is not supported inside of kernel!");
+        break;
+    }
+    case kLibAFLFuzzInKernel: {
+        // Ensure collecting coverage occurs on all kernel code
+        // LibAFL Calibration stages will ensure basic block edges that are not from harness aren't
+        // included
+        userspace = false;
+        libafl_start_darwin_kit_fuzzer((unsigned char*)sanitizer_cov_get_bitmap());
+        break;
+    }
     }
 }
 

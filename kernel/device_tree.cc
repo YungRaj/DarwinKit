@@ -20,9 +20,8 @@
 
 #include "device_tree.h"
 #include "kernel.h"
-#include "macho.h"
-
 #include "log.h"
+#include "macho.h"
 
 Bool is_ascii(char* c, Size len) {
     UInt32 zeros = 0;
@@ -304,6 +303,6 @@ PE_state_t* PlatformExpertState(xnu::Kernel* kernel) {
     return reinterpret_cast<PE_state_t*>(PE_state);
 }
 
-}
+} // namespace xnu
 
 #endif

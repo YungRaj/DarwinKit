@@ -21,8 +21,8 @@
 #include "arch.h"
 #include "kernel.h"
 #include "kernel_patcher.h"
-#include "plugin.h"
 #include "kext.h"
+#include "plugin.h"
 
 #include <string.h>
 
@@ -47,7 +47,7 @@ using StoredArray = std::vector<StoredPair<T, Y>*>;
 class DarwinKit {
 public:
     using EntitlementCallback = void (*)(void* user, task_t task, const char* entitlement,
-                                            void* original);
+                                         void* original);
     using BinaryLoadCallback = void (*)(void* user, task_t task, const char* path, Size len);
     using KextLoadCallback = void (*)(void* user, void* kext, xnu::KmodInfo* kmod_info);
 

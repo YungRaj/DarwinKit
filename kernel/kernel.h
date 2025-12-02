@@ -17,20 +17,19 @@
 #pragma once
 
 extern "C" {
-#include <libkern/libkern.h>
 #include <kern/host.h>
+#include <libkern/libkern.h>
 #include <mach/mach_types.h>
 #include <sys/sysctl.h>
 }
-
 #include <IOKit/IOLib.h>
 #include <types.h>
 
-#include "task.h"
+#include "coverage.h"
 #include "disassembler.h"
 #include "dwarf.h"
 #include "kernel_macho.h"
-#include "coverage.h"
+#include "task.h"
 
 class IOKernelDarwinKitService;
 
@@ -60,7 +59,8 @@ class Kernel : public xnu::Task {
 
     static Offset tempExecutableMemoryOffset;
 
-    static UInt8 tempExecutableMemory[tempExecutableMemorySize] __attribute__((section("__TEXT,__text")));
+    static UInt8 tempExecutableMemory[tempExecutableMemorySize]
+        __attribute__((section("__TEXT,__text")));
 
     static xnu::Kernel* kernel;
 

@@ -22,6 +22,6 @@ namespace assembler {
 uint32_t* Assemble(char* ins, uint32_t* nins);
 
 uint32_t AssembleInstruction(char* ins);
-}; // namespace Assembler
+}; // namespace assembler
 }; // namespace arm64
 }; // namespace arch

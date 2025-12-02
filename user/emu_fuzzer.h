@@ -26,8 +26,8 @@ extern "C" {
 #include <vector>
 #include <types.h>
 
-#include "kernel.h"
 #include "binary_format.h"
+#include "kernel.h"
 #include "kernel_macho.h"
 #include "kext_macho.h"
 #include "macho.h"
@@ -69,7 +69,7 @@ namespace darwin {
 namespace vm {
 class Hypervisor;
 };
-};
+}; // namespace darwin
 
 namespace emulation {
 class Unicorn;
@@ -109,7 +109,10 @@ struct LinkerMap {
     static_assert(MappableBinary<T, Sym, Sect>);
 
 public:
-    explicit LinkerMap(T binary, char* map) : binary(binary), mapFilePath(map) { Read(); ParseMapFile(); }
+    explicit LinkerMap(T binary, char* map) : binary(binary), mapFilePath(map) {
+        Read();
+        ParseMapFile();
+    }
 
     T GetBinary() const {
         return binary;
@@ -333,8 +336,9 @@ template <typename T>
 concept RawBinaryFormat = std::is_same_v<T, RawBinary*>;
 
 template <typename T>
-concept AnyBinaryFormat = BinaryFmt<T> || MachOFormat<T>  /* || ELFFormat<T> || PEFormat<T> ||
-                          TEFormat<T> */ || RawBinaryFormat<T> || VoidPointerType<T>;
+concept AnyBinaryFormat = BinaryFmt<T> ||
+                          MachOFormat<T> /* || ELFFormat<T> || PEFormat<T> ||
+         TEFormat<T> */ || RawBinaryFormat<T> || VoidPointerType<T>;
 
 static_assert(MachOFormat<xnu::KernelMachO*>,
               "KernelMachO does not satisfy MachOFormat constraint");
@@ -617,8 +621,8 @@ public:
 private:
     darwin::vm::Hypervisor* hypervisor;
 
-    emulation::Emulator<emulation::Unicorn> *unicorn;
-    emulation::Emulator<emulation::Panda> *panda;
+    emulation::Emulator<emulation::Unicorn>* unicorn;
+    emulation::Emulator<emulation::Panda>* panda;
 
     xnu::Kernel* kernel;
     xnu::KDKInfo* kdkInfo;
@@ -628,4 +632,4 @@ private:
 
     char* mapFile;
 };
-} // namespace Fuzzer
+} // namespace fuzzer

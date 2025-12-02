@@ -247,17 +247,20 @@ concept SupportedProcessor =
 
 template <enum Architectures ArchType>
 static constexpr UInt32 GetPageShift()
-    requires SupportedProcessor<ArchType> {
+    requires SupportedProcessor<ArchType>
+{
     if constexpr (ArchType == ARCH_arm64) {
         return PAGE_SHIFT_ARM64;
-    } if constexpr (ArchType == ARCH_x86_64) {
+    }
+    if constexpr (ArchType == ARCH_x86_64) {
         return PAGE_SHIFT_X86_64;
     }
 }
 
 template <enum Architectures ArchType>
 static constexpr UInt64 GetPageSize()
-    requires SupportedProcessor<ArchType> {
+    requires SupportedProcessor<ArchType>
+{
     return 1 << arch::GetPageShift<ArchType>();
 }
 
@@ -298,27 +301,27 @@ static inline void GetThreadState(union ThreadState* state) {
     if constexpr (ArchType == ARCH_x86_64) {
         x86_64_register_state* state_x86_64 = &state->state_x86_64;
         asm volatile("movq %%rsp, %0\n"
-                    "movq %%rbp, %1\n"
-                    "movq %%rax, %2\n"
-                    "movq %%rbx, %3\n"
-                    "movq %%rcx, %4\n"
-                    "movq %%rdx, %5\n"
-                    : "=m"(state_x86_64->rsp), "=m"(state_x86_64->rbp), "=m"(state_x86_64->rax),
-                    "=m"(state_x86_64->rbx), "=m"(state_x86_64->rcx), "=m"(state_x86_64->rdx));
+                     "movq %%rbp, %1\n"
+                     "movq %%rax, %2\n"
+                     "movq %%rbx, %3\n"
+                     "movq %%rcx, %4\n"
+                     "movq %%rdx, %5\n"
+                     : "=m"(state_x86_64->rsp), "=m"(state_x86_64->rbp), "=m"(state_x86_64->rax),
+                       "=m"(state_x86_64->rbx), "=m"(state_x86_64->rcx), "=m"(state_x86_64->rdx));
         asm volatile("movq %%rdi, %0\n"
-                    "movq %%rsi, %1\n"
-                    "movq %%r8, %2\n"
-                    "movq %%r9, %3\n"
-                    "movq %%r10, %4\n"
-                    "movq %%r11, %5\n"
-                    : "=m"(state_x86_64->rdi), "=m"(state_x86_64->rsi), "=m"(state_x86_64->r8),
-                    "=m"(state_x86_64->r9), "=m"(state_x86_64->r10), "=m"(state_x86_64->r11));
+                     "movq %%rsi, %1\n"
+                     "movq %%r8, %2\n"
+                     "movq %%r9, %3\n"
+                     "movq %%r10, %4\n"
+                     "movq %%r11, %5\n"
+                     : "=m"(state_x86_64->rdi), "=m"(state_x86_64->rsi), "=m"(state_x86_64->r8),
+                       "=m"(state_x86_64->r9), "=m"(state_x86_64->r10), "=m"(state_x86_64->r11));
         asm volatile("movq %%r12, %0\n"
-                    "movq %%r13, %1\n"
-                    "movq %%r14, %2\n"
-                    "movq %%r15, %3\n"
-                    : "=m"(state_x86_64->r12), "=m"(state_x86_64->r13), "=m"(state_x86_64->r14),
-                    "=m"(state_x86_64->r15));
+                     "movq %%r13, %1\n"
+                     "movq %%r14, %2\n"
+                     "movq %%r15, %3\n"
+                     : "=m"(state_x86_64->r12), "=m"(state_x86_64->r13), "=m"(state_x86_64->r14),
+                       "=m"(state_x86_64->r15));
     }
 }
 

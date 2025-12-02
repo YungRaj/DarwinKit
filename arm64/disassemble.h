@@ -40,6 +40,6 @@ namespace arm64 {
 namespace disassembler {
 bool Disassemble(MachO* macho, mach_vm_address_t pc, uint32_t op);
 void Disassemble(MachO* macho, mach_vm_address_t start, uint64_t* length);
-}; // namespace Disassembler
+}; // namespace disassembler
 }; // namespace arm64
 }; // namespace arch

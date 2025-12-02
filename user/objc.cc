@@ -18,7 +18,6 @@
 
 #include "macho.h"
 #include "macho_userspace.h"
-
 #include "pac.h"
 
 #include <assert.h>
@@ -171,7 +170,8 @@ void ParseMethodList(ObjCData* metadata, ObjC* object, std::vector<Method*>& met
             if (macho->GetObjectiveCLibrary()->GetBufferAddress(pointer_to_name)) {
                 Method* meth = new Method(object, method);
                 methodList.push_back(meth);
-                DARWIN_KIT_LOG("\t\t\t\t0x%08llx: %s%s\n", meth->GetImpl(), prefix, meth->GetName());
+                DARWIN_KIT_LOG("\t\t\t\t0x%08llx: %s%s\n", meth->GetImpl(), prefix,
+                               meth->GetName());
             }
 
         } else {
@@ -281,75 +281,69 @@ Protocol::Protocol(ObjCData* data, struct _objc_2_class_protocol* prot) {
         if (prot->instance_methods) {
             instanceMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 macho->GetBufferAddress(protocol->instance_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetInstanceMethods(),
-                                        INSTANCE_METHOD, instanceMethods);
+            objc::ParseMethodList(metadata, this, GetInstanceMethods(), INSTANCE_METHOD,
+                                  instanceMethods);
         }
         if (prot->class_methods) {
             classMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 macho->GetBufferAddress(protocol->class_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD,
-                                        classMethods);
+            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD, classMethods);
         }
         if (prot->opt_instance_methods) {
-            optionalInstanceMethods =
-                reinterpret_cast<struct _objc_2_class_method_info*>(macho->GetBufferAddress(
-                    protocol->opt_instance_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetOptionalInstanceMethods(),
-                                        OPT_INSTANCE_METHOD, optionalInstanceMethods);
+            optionalInstanceMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
+                macho->GetBufferAddress(protocol->opt_instance_methods - macho->GetAslrSlide()));
+            objc::ParseMethodList(metadata, this, GetOptionalInstanceMethods(), OPT_INSTANCE_METHOD,
+                                  optionalInstanceMethods);
         }
         if (prot->opt_class_methods) {
             optionalClassMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 macho->GetBufferAddress(protocol->opt_class_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetOptionalClassMethods(),
-                                        OPT_CLASS_METHOD, optionalClassMethods);
+            objc::ParseMethodList(metadata, this, GetOptionalClassMethods(), OPT_CLASS_METHOD,
+                                  optionalClassMethods);
         }
         if (prot->instance_properties) {
-            instanceProperties =
-                reinterpret_cast<struct _objc_2_class_property_info*>(macho->GetBufferAddress(
-                    protocol->instance_properties - macho->GetAslrSlide()));
-            objc::ParsePropertyList(metadata, this, GetInstanceProperties(),
-                                          instanceProperties);
+            instanceProperties = reinterpret_cast<struct _objc_2_class_property_info*>(
+                macho->GetBufferAddress(protocol->instance_properties - macho->GetAslrSlide()));
+            objc::ParsePropertyList(metadata, this, GetInstanceProperties(), instanceProperties);
         }
     } else {
         name = reinterpret_cast<char*>((prot->name & 0xFFFFFFF) +
-                                             reinterpret_cast<UInt64>(macho->GetMachHeader()));
+                                       reinterpret_cast<UInt64>(macho->GetMachHeader()));
         printf("\t\t$OBJC_PROTOCOL_%s\n", name);
         if (prot->instance_methods) {
             instanceMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 (protocol->instance_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
 
-            objc::ParseMethodList(metadata, this, GetInstanceMethods(),
-                                        INSTANCE_METHOD, instanceMethods);
+            objc::ParseMethodList(metadata, this, GetInstanceMethods(), INSTANCE_METHOD,
+                                  instanceMethods);
         }
         if (prot->class_methods) {
             classMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 (protocol->class_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
-            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD,
-                                        classMethods);
+            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD, classMethods);
         }
         if (prot->opt_instance_methods) {
             optionalInstanceMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 (protocol->opt_instance_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
 
-            objc::ParseMethodList(metadata, this, GetOptionalInstanceMethods(),
-                                        OPT_INSTANCE_METHOD, optionalInstanceMethods);
+            objc::ParseMethodList(metadata, this, GetOptionalInstanceMethods(), OPT_INSTANCE_METHOD,
+                                  optionalInstanceMethods);
         }
         if (prot->opt_class_methods) {
             optionalClassMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 (protocol->opt_class_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
-            objc::ParseMethodList(metadata, this, GetOptionalClassMethods(),
-                                        OPT_CLASS_METHOD, optionalClassMethods);
+            objc::ParseMethodList(metadata, this, GetOptionalClassMethods(), OPT_CLASS_METHOD,
+                                  optionalClassMethods);
         }
         if (prot->instance_properties) {
             instanceProperties = reinterpret_cast<struct _objc_2_class_property_info*>(
                 (protocol->instance_properties & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
-            objc::ParsePropertyList(metadata, this, GetInstanceProperties(),
-                                          instanceProperties);
+            objc::ParsePropertyList(metadata, this, GetInstanceProperties(), instanceProperties);
         }
     }
 }
@@ -378,20 +372,18 @@ Category::Category(ObjCData* data, struct _objc_2_category* cat) {
         if (cat->instance_methods) {
             instanceMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 macho->GetBufferAddress(category->instance_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetInstanceMethods(),
-                                        INSTANCE_METHOD, instanceMethods);
+            objc::ParseMethodList(metadata, this, GetInstanceMethods(), INSTANCE_METHOD,
+                                  instanceMethods);
         }
         if (cat->class_methods) {
             classMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 macho->GetBufferAddress(category->class_methods - macho->GetAslrSlide()));
-            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD,
-                                        classMethods);
+            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD, classMethods);
         }
         if (cat->properties) {
             catProperties = reinterpret_cast<struct _objc_2_class_property_info*>(
                 macho->GetBufferAddress(category->properties - macho->GetAslrSlide()));
-            objc::ParsePropertyList(metadata, this, GetProperties(),
-                                          catProperties);
+            objc::ParsePropertyList(metadata, this, GetProperties(), catProperties);
         }
     } else {
         name = reinterpret_cast<char*>((cat->category_name & 0xFFFFFFF) +
@@ -414,23 +406,21 @@ Category::Category(ObjCData* data, struct _objc_2_category* cat) {
                 (category->instance_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
 
-            objc::ParseMethodList(metadata, this, GetInstanceMethods(),
-                                        INSTANCE_METHOD, instanceMethods);
+            objc::ParseMethodList(metadata, this, GetInstanceMethods(), INSTANCE_METHOD,
+                                  instanceMethods);
         }
         if (cat->class_methods) {
             classMethods = reinterpret_cast<struct _objc_2_class_method_info*>(
                 (category->class_methods & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
 
-            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD,
-                                        classMethods);
+            objc::ParseMethodList(metadata, this, GetClassMethods(), CLASS_METHOD, classMethods);
         }
         if (cat->properties) {
             catProperties = reinterpret_cast<struct _objc_2_class_property_info*>(
                 (category->properties & 0xFFFFFFF) +
                 reinterpret_cast<UInt64>(macho->GetMachHeader()));
-            objc::ParsePropertyList(metadata, this, GetProperties(),
-                                          catProperties);
+            objc::ParsePropertyList(metadata, this, GetProperties(), catProperties);
         }
     }
 }
@@ -661,8 +651,8 @@ void ObjCClass::ParseMethods() {
     }
     meths = nullptr;
     if (macho->IsDyldCache()) {
-        meths = reinterpret_cast<struct _objc_2_class_method_info*>(macho->GetBufferAddress(
-            (d->methods & 0xFFFFFFFFFF) - macho->GetAslrSlide()));
+        meths = reinterpret_cast<struct _objc_2_class_method_info*>(
+            macho->GetBufferAddress((d->methods & 0xFFFFFFFFFF) - macho->GetAslrSlide()));
     } else {
         meths = reinterpret_cast<struct _objc_2_class_method_info*>(
             (d->methods & 0xFFFFFFFFF) + reinterpret_cast<UInt64>(macho->GetMachHeader()));
@@ -783,8 +773,8 @@ void ObjCClass::ParseProperties() {
     off = sizeof(struct _objc_2_class_property_info);
     DARWIN_KIT_LOG("\t\t\tProperties\n");
     for (int i = 0; i < props->count; i++) {
-        struct _objc_2_class_property* property = reinterpret_cast<struct _objc_2_class_property*>(
-            reinterpret_cast<UInt8*>(props) + off);
+        struct _objc_2_class_property* property =
+            reinterpret_cast<struct _objc_2_class_property*>(reinterpret_cast<UInt8*>(props) + off);
         Property* prop = new Property(this, property);
         properties.push_back(prop);
         DARWIN_KIT_LOG("\t\t\t\t%s %s\n", prop->GetAttributes(), prop->GetName());

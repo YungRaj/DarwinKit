@@ -17,7 +17,7 @@ extern "C" {
 #include <sys/systm.h>
 
 // Kernel: must log with a constant format string
-static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
+static inline void DARWIN_KIT_LOG_VA(const char* fmt, va_list args) {
     char buffer[256];
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     os_log(OS_LOG_DEFAULT, "%s", buffer);
@@ -27,13 +27,12 @@ static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
 
 #endif // __KERNEL__
 
-
 #ifdef __USER__
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
-static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
+static inline void DARWIN_KIT_LOG_VA(const char* fmt, va_list args) {
     vprintf(fmt, args);
 }
 
@@ -45,7 +44,7 @@ static inline void DARWIN_KIT_LOG_VA(const char *fmt, va_list args) {
 extern "C" {
 #endif
 
-void darwin_kit_log(const char *fmt, ...);
+void darwin_kit_log(const char* fmt, ...);
 
 #ifdef __cplusplus
 }

@@ -17,15 +17,11 @@
 #include "backtrace.h"
 
 #include "darwin_kit.h"
-
 #include "kernel.h"
 #include "kext.h"
-
 #include "macho.h"
-
 #include "section.h"
 #include "segment.h"
-
 #include "symbol.h"
 #include "symbol_table.h"
 
@@ -36,9 +32,8 @@ inline bool LooksLikeKernelPointer(xnu::mach::VmAddress address) {
 namespace debug {
 namespace symbolicate {
 
-void LookForAddressInsideKexts(xnu::mach::VmAddress address,
-                                                   std::vector<xnu::Kext*>& kexts, Symbol** sym,
-                                                   Offset* delta) {
+void LookForAddressInsideKexts(xnu::mach::VmAddress address, std::vector<xnu::Kext*>& kexts,
+                               Symbol** sym, Offset* delta) {
     for (int i = 0; i < kexts.size(); i++) {
         xnu::Kext* kext = kexts.at(i);
         xnu::KextMachO* macho = kext->GetMachO();
@@ -69,9 +64,8 @@ void LookForAddressInsideKexts(xnu::mach::VmAddress address,
     }
 }
 
-void LookForAddressInsideKernel(xnu::mach::VmAddress address,
-                                                    xnu::Kernel* kernel, Symbol** sym,
-                                                    Offset* delta) {
+void LookForAddressInsideKernel(xnu::mach::VmAddress address, xnu::Kernel* kernel, Symbol** sym,
+                                Offset* delta) {
     MachO* macho = kernel->GetMachO();
     std::vector<Symbol*>& kernelSymbols = kernel->GetAllSymbols();
     if (macho->AddressInSegment(address, "__TEXT") ||
@@ -125,7 +119,7 @@ Symbol* GetSymbolFromAddress(xnu::mach::VmAddress address, Offset* delta) {
     return kext_sym;
 }
 
-}  //namespace symbolicate
+} // namespace symbolicate
 
 void PrintBacktrace() {
     constexpr arch::Architectures arch = arch::GetCurrentArchitecture();
@@ -148,8 +142,8 @@ void PrintBacktrace() {
 
                 symbol = debug::symbolicate::GetSymbolFromAddress(lr, &delta);
                 if (symbol) {
-                    DARWIN_KIT_LOG("DarwinKit::frame %u: %s %s + %llu\n", frame, buffer, symbol->GetName(),
-                               delta);
+                    DARWIN_KIT_LOG("DarwinKit::frame %u: %s %s + %llu\n", frame, buffer,
+                                   symbol->GetName(), delta);
                 }
                 fp = *(UInt64*)fp;
             } else {
@@ -177,4 +171,4 @@ void PrintBacktrace() {
     }
 }
 
-}  // namespace debug
+} // namespace debug

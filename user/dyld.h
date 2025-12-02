@@ -17,10 +17,10 @@
 #pragma once
 
 extern "C" {
+#include <dyld_cache_format.h>
 #include <mach-o.h>
 #include <mach/mach_types.h>
 #include <sys/types.h>
-#include <dyld_cache_format.h>
 }
 
 #include <vector>
@@ -50,8 +50,7 @@ using ImageInfo = struct dyld_image_info;
 
 class Dyld {
 public:
-    explicit Dyld(xnu::Kernel* kernel, xnu::Task* task)
-                : kernel(kernel), task(task) {
+    explicit Dyld(xnu::Kernel* kernel, xnu::Task* task) : kernel(kernel), task(task) {
         IterateAllImages();
     }
 

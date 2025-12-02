@@ -27,7 +27,7 @@
 
 /* iOS App Crawler */
 
-extern NSString* kNSDarwinAppCrawlerCrawledViews;
+extern NSString *kNSDarwinAppCrawlerCrawledViews;
 
 namespace NSDarwin {
 namespace AppCrawler {
@@ -39,9 +39,9 @@ using namespace NSDarwin::AppCrawler;
 
 @interface NSViewCrawlData : NSObject
 
-@property(strong, nonatomic) NSString* name;
+@property(strong, nonatomic) NSString *name;
 
-@property(strong, nonatomic) NSString* parent;
+@property(strong, nonatomic) NSString *parent;
 
 @property(assign, nonatomic) CGRect frame;
 @property(assign, nonatomic) CGPoint position; // position in window
@@ -53,40 +53,42 @@ using namespace NSDarwin::AppCrawler;
 
 @interface NSDarwinAppCrawler : NSObject
 
-@property(atomic) CrawlManager* crawlManager;
+@property(atomic) CrawlManager *crawlManager;
 
-@property(strong, atomic) NSTimer* crawlingTimer;
-@property(strong, atomic) NSTimer* idleTimer;
+@property(strong, atomic) NSTimer *crawlingTimer;
+@property(strong, atomic) NSTimer *idleTimer;
 
-@property(strong, atomic) NSMutableDictionary* crawlData;
+@property(strong, atomic) NSMutableDictionary *crawlData;
 
-@property(strong, atomic) NSMutableArray* viewControllerStack;
+@property(strong, atomic) NSMutableArray *viewControllerStack;
 
 @property(assign, atomic) CFAbsoluteTime timeSinceLastUserInteraction;
 
 @property(assign, atomic) BOOL spriteKitCrawlCondition;
 @property(assign, atomic) BOOL crawlerTimerDidFire;
 
-- (instancetype)initWithCrawlingManager:(CrawlManager*)crawlManager;
+- (instancetype)initWithCrawlingManager:(CrawlManager *)crawlManager;
 
-- (NSMutableDictionary*)crawlData;
+- (NSMutableDictionary *)crawlData;
 
-- (NSViewCrawlData*)setupCrawlDataForView:(UIView*)view;
+- (NSViewCrawlData *)setupCrawlDataForView:(UIView *)view;
 
-- (UIViewController*)topViewController;
-- (UIViewController*)topViewControllerWithRootViewController:(UIViewController*)rootViewController;
+- (UIViewController *)topViewController;
+- (UIViewController *)topViewControllerWithRootViewController:
+    (UIViewController *)rootViewController;
 
-- (BOOL)hasViewBeenCrawled:(UIView*)view inViewController:(UIViewController*)vc;
+- (BOOL)hasViewBeenCrawled:(UIView *)view
+          inViewController:(UIViewController *)vc;
 
-- (void)crawlingTimerDidFire:(NSTimer*)timer;
-- (void)idlingTimerDidFire:(NSTimer*)timer;
+- (void)crawlingTimerDidFire:(NSTimer *)timer;
+- (void)idlingTimerDidFire:(NSTimer *)timer;
 
 - (void)simulateTouchEventAtPoint:(CGPoint)point;
-- (void)simulateTouchesOnSpriteKitView:(SKView*)view;
+- (void)simulateTouchesOnSpriteKitView:(SKView *)view;
 
-- (bool)bypassInterstitialAds:(UIViewController*)vc;
+- (bool)bypassInterstitialAds:(UIViewController *)vc;
 
-- (void)pushViewControllerToStack:(UIViewController*)vc;
+- (void)pushViewControllerToStack:(UIViewController *)vc;
 
 - (BOOL)simulatedTouchesHasHadNoEffect;
 
@@ -96,100 +98,86 @@ namespace NSDarwin {
 namespace AppCrawler {
 class CrawlManager {
 public:
-    explicit CrawlManager(UIApplication *application, id<UIApplicationDelegate> delegate) : application(application), delegate(delegate) {
-	    SetupAppCrawler();
+  explicit CrawlManager(UIApplication *application,
+                        id<UIApplicationDelegate> delegate)
+      : application(application), delegate(delegate) {
+    SetupAppCrawler();
+  }
+
+  ~CrawlManager() = default;
+
+  NSDarwinAppCrawler *GetCrawler() { return crawler; }
+
+  NSTimer *GetCrawlingTimer() { return crawler.crawlingTimer; }
+
+  NSTimer *GetIdleTimer() { return crawler.idleTimer; }
+
+  NSString *GetBundleID() { return bundleIdentifier; }
+
+  UIApplication *GetApplication() { return application; }
+
+  id<UIApplicationDelegate> GetAppDelegate() { return delegate; }
+
+  UIViewController *GetCurrentViewController() { return currentViewController; }
+
+  NSArray *GetViews() { return [currentViewController.view subviews]; }
+
+  void SetCurrentViewController(UIViewController *viewController) {
+    currentViewController = viewController;
+  }
+
+  void SetupAppCrawler();
+
+  inline void SetupCrawlingTimer() {
+    InvalidateCrawlingTimer();
+
+    crawler.crawlingTimer =
+        [NSTimer scheduledTimerWithTimeInterval:1.25f
+                                         target:crawler
+                                       selector:@selector(crawlingTimerDidFire:)
+                                       userInfo:nil
+                                        repeats:NO];
+  }
+
+  inline void SetupIdleTimer() {
+    InvalidateIdleTimer();
+
+    crawler.idleTimer =
+        [NSTimer scheduledTimerWithTimeInterval:3.5f
+                                         target:crawler
+                                       selector:@selector(idlingTimerDidFire:)
+                                       userInfo:nil
+                                        repeats:NO];
+  }
+
+  void InvalidateCrawlingTimer() {
+    if (crawler.crawlingTimer && [crawler.crawlingTimer isValid]) {
+      [crawler.crawlingTimer invalidate];
+      crawler.crawlingTimer = nullptr;
     }
+  }
 
-    ~CrawlManager() = default;
-
-    NSDarwinAppCrawler* GetCrawler() {
-        return crawler;
+  void InvalidateIdleTimer() {
+    if (crawler.idleTimer && [crawler.idleTimer isValid]) {
+      [crawler.idleTimer invalidate];
+      crawler.idleTimer = nullptr;
     }
+  }
 
-    NSTimer* GetCrawlingTimer() {
-        return crawler.crawlingTimer;
-    }
+  NSMutableArray *GetViewsForUserInteraction(UIViewController *viewController);
+  NSMutableArray *GetViewsForUserInteractionFromRootView(UIView *view);
 
-    NSTimer* GetIdleTimer() {
-        return crawler.idleTimer;
-    }
+  NSMutableArray *GetViewsWithKindOfClass(NSMutableArray *views, Class cls);
 
-    NSString* GetBundleID() {
-        return bundleIdentifier;
-    }
-
-    UIApplication* GetApplication() {
-        return application;
-    }
-
-    id<UIApplicationDelegate> GetAppDelegate() {
-        return delegate;
-    }
-
-    UIViewController* GetCurrentViewController() {
-        return currentViewController;
-    }
-
-    NSArray* GetViews() {
-        return [currentViewController.view subviews];
-    }
-
-    void SetCurrentViewController(UIViewController* viewController) {
-        currentViewController = viewController;
-    }
-
-    void SetupAppCrawler();
-
-    inline void SetupCrawlingTimer() {
-        InvalidateCrawlingTimer();
-
-        crawler.crawlingTimer =
-            [NSTimer scheduledTimerWithTimeInterval:1.25f
-                                             target:crawler
-                                           selector:@selector(crawlingTimerDidFire:)
-                                           userInfo:nil
-                                            repeats:NO];
-    }
-
-    inline void SetupIdleTimer() {
-        InvalidateIdleTimer();
-
-        crawler.idleTimer =
-            [NSTimer scheduledTimerWithTimeInterval:3.5f
-                                             target:crawler
-                                           selector:@selector(idlingTimerDidFire:)
-                                           userInfo:nil
-                                            repeats:NO];
-    }
-
-    void InvalidateCrawlingTimer() {
-        if (crawler.crawlingTimer && [crawler.crawlingTimer isValid]) {
-            [crawler.crawlingTimer invalidate];
-            crawler.crawlingTimer = nullptr;
-        }
-    }
-
-    void InvalidateIdleTimer() {
-        if (crawler.idleTimer && [crawler.idleTimer isValid]) {
-            [crawler.idleTimer invalidate];
-            crawler.idleTimer = nullptr;
-        }
-    }
-
-    NSMutableArray* GetViewsForUserInteraction(UIViewController* viewController);
-    NSMutableArray* GetViewsForUserInteractionFromRootView(UIView* view);
-
-    NSMutableArray* GetViewsWithKindOfClass(NSMutableArray* views, Class cls);
-
-    void OnViewControllerViewDidAppear(UIViewController* viewController);
+  void OnViewControllerViewDidAppear(UIViewController *viewController);
 
 private:
-    NSDarwinAppCrawler* crawler;
-    NSDictionary* crawlData;
-    NSString* bundleIdentifier;
-    UIApplication* application;
-    id<UIApplicationDelegate> delegate;
-    UIViewController* currentViewController;
+  NSDarwinAppCrawler *crawler;
+  NSDictionary *crawlData;
+  NSString *bundleIdentifier;
+  UIApplication *application;
+  id<UIApplicationDelegate> delegate;
+  UIViewController *currentViewController;
 };
 } // namespace AppCrawler
 } // namespace NSDarwin

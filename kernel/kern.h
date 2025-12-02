@@ -16,11 +16,9 @@
 
 #pragma once
 
+#include <IOKit/IOLib.h>
 #include <mach/mach_types.h>
 #include <mach/vm_types.h>
-
-#include <IOKit/IOLib.h>
-
 #include <os/log.h>
 
 typedef void* pmap_t;

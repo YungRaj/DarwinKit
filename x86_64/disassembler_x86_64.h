@@ -52,6 +52,6 @@ xnu::mach::VmAddress DisassembleNthInstruction(xnu::mach::VmAddress address, x86
 xnu::mach::VmAddress DisassembleSignature(xnu::mach::VmAddress address,
                                           std::vector<struct DisasmSig*>* signature, size_t num,
                                           size_t lookup_size);
-} // namespace Disassembler
+} // namespace disassembler
 } // namespace x86_64
 }; // namespace arch

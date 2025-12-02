@@ -35,8 +35,8 @@ class Symbol {
 public:
     explicit Symbol() {}
 
-    explicit Symbol(MachO* macho, UInt32 type, char* name, xnu::mach::VmAddress address, Offset offset,
-           Segment* segment, Section* section)
+    explicit Symbol(MachO* macho, UInt32 type, char* name, xnu::mach::VmAddress address,
+                    Offset offset, Segment* segment, Section* section)
         : macho(macho), type(type), name(name), demangled_name(nullptr), // getDemangledName();
           address(address), offset(offset), segment(segment), section(section) {}
 

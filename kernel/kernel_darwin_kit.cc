@@ -15,22 +15,19 @@
  */
 
 #include "kernel_darwin_kit.h"
-#include "kernel_darwin_kit_user_client.h"
 
 #include "darwin_kit.h"
-
 #include "kernel.h"
-
+#include "kernel_darwin_kit_user_client.h"
 #include "kext.h"
 #include "kext_macho.h"
-
 #include "log.h"
 
 static bool loaded = false;
 
 OSDefineMetaClassAndStructors(IOKernelDarwinKitService, IOService)
 
-bool IOKernelDarwinKitService::init(OSDictionary* properties) {
+    bool IOKernelDarwinKitService::init(OSDictionary* properties) {
     userClients = OSSet::withCapacity(1);
     if (!userClients) {
         return false;
@@ -76,7 +73,8 @@ bool IOKernelDarwinKitService::start(IOService* provider) {
             registerService();
         }
     } else {
-        DARWIN_KIT_LOG("DarwinKit::failed to load! Please enable keepsyms=1 as a boot-arg in NVRAM!\n");
+        DARWIN_KIT_LOG(
+            "DarwinKit::failed to load! Please enable keepsyms=1 as a boot-arg in NVRAM!\n");
         return kIOReturnUnsupported;
     }
     return ret == kIOReturnSuccess && IOService::start(provider);
@@ -105,11 +103,11 @@ void IOKernelDarwinKitService::clientClosed(IOUserClient* client) {
 }
 
 IOReturn IOKernelDarwinKitService::createUserClient(task_t task, void* securityID, UInt32 type,
-                                                  IOKernelDarwinKitUserClient** client) {
+                                                    IOKernelDarwinKitUserClient** client) {
     IOReturn result = kIOReturnSuccess;
     IOKernelDarwinKitUserClient* userClient;
-    userClient = IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(kernel, task,
-                                                                        securityID, type);
+    userClient =
+        IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(kernel, task, securityID, type);
     if (userClient) {
         *client = userClient;
     } else {
@@ -119,8 +117,8 @@ IOReturn IOKernelDarwinKitService::createUserClient(task_t task, void* securityI
 }
 
 IOReturn IOKernelDarwinKitService::createUserClient(task_t task, void* securityID, UInt32 type,
-                                                  OSDictionary* properties,
-                                                  IOKernelDarwinKitUserClient** client) {
+                                                    OSDictionary* properties,
+                                                    IOKernelDarwinKitUserClient** client) {
     IOReturn result = kIOReturnSuccess;
     IOKernelDarwinKitUserClient* userClient;
     userClient = IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(
@@ -134,7 +132,7 @@ IOReturn IOKernelDarwinKitService::createUserClient(task_t task, void* securityI
 }
 
 IOReturn IOKernelDarwinKitService::newUserClient(task_t task, void* securityID, UInt32 type,
-                                               OSDictionary* properties, IOUserClient** client) {
+                                                 OSDictionary* properties, IOUserClient** client) {
     IOReturn result;
     IOKernelDarwinKitUserClient* userClient;
     if (!isInactive()) {
@@ -157,7 +155,7 @@ IOReturn IOKernelDarwinKitService::newUserClient(task_t task, void* securityID, 
 }
 
 IOReturn IOKernelDarwinKitService::newUserClient(task_t task, void* securityID, UInt32 type,
-                                               IOUserClient** client) {
+                                                 IOUserClient** client) {
     IOReturn result;
     IOKernelDarwinKitUserClient* userClient;
     if (!isInactive()) {

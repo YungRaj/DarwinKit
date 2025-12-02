@@ -20,8 +20,8 @@
 
 #include <types.h>
 
-#include "objc.h"
 #include "dictionary.h"
+#include "objc.h"
 
 class MachO;
 

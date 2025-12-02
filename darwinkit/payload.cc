@@ -51,7 +51,7 @@ bool Payload::WriteBytes(Offset offset, UInt8* bytes, Size sz) {
 #ifdef __KERNEL__
     if (addr >= (xnu::mach::VmAddress)Kernel::GetExecutableMemory() &&
         addr < (xnu::mach::VmAddress)Kernel::GetExecutableMemory() +
-                      Kernel::GetExecutableMemorySize()) {
+                   Kernel::GetExecutableMemorySize()) {
         Kernel::SetExecutableMemoryOffset(Kernel::GetExecutableMemoryOffset() + sz);
     }
 #endif
@@ -93,4 +93,4 @@ bool Payload::Commit() {
     return true;
 }
 
-}
+} // namespace darwin

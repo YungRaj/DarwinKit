@@ -16,18 +16,14 @@
 
 #pragma once
 
+#include <mach-o.h>
+#include <mach/kmod.h>
+#include <mach/mach_types.h>
+#include <mach/vm_types.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
 #include <sys/types.h>
-
-#include <mach/mach_types.h>
-#include <mach/vm_types.h>
-
-#include <mach/kmod.h>
-
-#include <mach-o.h>
 
 using Bool = bool;
 
@@ -48,8 +44,8 @@ using Offset = off_t;
 using Size = size_t;
 #include "vector.h"
 #elif __USER__
-#include <IOKit/IOKitLib.h>
 #include <vector>
+#include <IOKit/IOKitLib.h>
 #endif
 
 namespace xnu {

@@ -24,12 +24,9 @@ extern "C" {
 
 #include "api.h"
 #include "api_util.h"
-
-#include "vector.h"
-
 #include "disassembler.h"
-
 #include "hook.h"
+#include "vector.h"
 
 namespace xnu {
 class Kernel;

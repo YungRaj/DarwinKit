@@ -17,10 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "objc.h"
 #include "macho_userspace.h"
 
 #include "dyld.h"
+#include "objc.h"
 #include "task.h"
 
 namespace darwin {
@@ -77,7 +77,8 @@ void MachOUserspace::WithBuffer(xnu::mach::VmAddress base_, char* buf, off_t sli
     ParseMachO();
 }
 
-void MachOUserspace::WithBuffer(xnu::mach::VmAddress base_, char* buf, off_t slide, bool is_dyld_cache) {
+void MachOUserspace::WithBuffer(xnu::mach::VmAddress base_, char* buf, off_t slide,
+                                bool is_dyld_cache) {
     buffer = buf;
     base = base_;
     header = (struct mach_header_64*)buffer;
@@ -87,7 +88,8 @@ void MachOUserspace::WithBuffer(xnu::mach::VmAddress base_, char* buf, off_t sli
     ParseMachO();
 }
 
-void MachOUserspace::WithBuffer(MachOUserspace* libobjc, xnu::mach::VmAddress base_, char* buf, off_t slide) {
+void MachOUserspace::WithBuffer(MachOUserspace* libobjc, xnu::mach::VmAddress base_, char* buf,
+                                off_t slide) {
     buffer = buf;
     base = base_;
     header = (struct mach_header_64*)buffer;
@@ -105,17 +107,21 @@ MachO* MachOUserspace::LibraryLoadedAt(xnu::mach::Port task_port, char* library)
 }
 
 UInt64 MachOUserspace::UntagPacPointer(xnu::mach::VmAddress base, enum dyld_fixup_t fixupKind,
-                                  UInt64 ptr, bool* bind, bool* auth, UInt16* pac, Size* skip) {
+                                       UInt64 ptr, bool* bind, bool* auth, UInt16* pac,
+                                       Size* skip) {
     pacptr_t pp;
     pp.ptr = ptr;
     if (fixupKind == DYLD_CHAINED_PTR_64_KERNEL_CACHE) {
         if (bind) {
             *bind = false;
-        } if (auth) {
+        }
+        if (auth) {
             *auth = !!(pp.cache.auth && pp.cache.tag);
-        } if (pac) {
+        }
+        if (pac) {
             *pac = pp.cache.div;
-        } if (skip) {
+        }
+        if (skip) {
             *skip = pp.cache.next * sizeof(UInt32);
         }
         return base + pp.cache.target;
@@ -134,31 +140,39 @@ UInt64 MachOUserspace::UntagPacPointer(xnu::mach::VmAddress base, enum dyld_fixu
 
         if (auth) {
             *auth = false;
-        } if (pac) {
+        }
+        if (pac) {
             *pac = 0;
-        } if (skip) {
+        }
+        if (skip) {
             *skip = pp.pac.next * sizeof(UInt32);
-        } if (pp.pac.auth) {
+        }
+        if (pp.pac.auth) {
             if (auth) {
                 *auth = !!pp.pac.tag;
-            } if (pac) {
+            }
+            if (pac) {
                 *pac = pp.pac.div;
             }
         }
         if (pp.pac.bind) {
             return pp.pac.off & 0xffff;
-        } if (pp.pac.auth) {
+        }
+        if (pp.pac.auth) {
             return base + pp.pac.off;
         }
         return (UInt64)pp.raw.lo;
     }
     if (bind) {
         *bind = false;
-    } if (auth) {
+    }
+    if (auth) {
         *auth = false;
-    } if (pac) {
+    }
+    if (pac) {
         *pac = 0;
-    } if (skip) {
+    }
+    if (skip) {
         *skip = 0;
     }
     return pp.ptr;
@@ -198,11 +212,10 @@ bool MachOUserspace::PointerIsInPacFixupChain(xnu::mach::VmAddress ptr) {
                                 Size skip = 0;
                                 do {
                                     UInt64 ptr_tag = *mem;
-                                    UInt64 ptr_tag_ptr =
-                                        ((UInt64)mem - (UInt64)header) + GetBase();
-                                    ptr_tag = UntagPacPointer(
-                                        GetBase(), DYLD_CHAINED_PTR_ARM64E, ptr_tag, &bind,
-                                        nullptr, nullptr, &skip);
+                                    UInt64 ptr_tag_ptr = ((UInt64)mem - (UInt64)header) + GetBase();
+                                    ptr_tag =
+                                        UntagPacPointer(GetBase(), DYLD_CHAINED_PTR_ARM64E, ptr_tag,
+                                                        &bind, nullptr, nullptr, &skip);
                                     if (ptr_tag_ptr == ptr) {
                                         return true;
                                     }
@@ -248,13 +261,12 @@ bool MachOUserspace::PointerIsInPacFixupChain(xnu::mach::VmAddress ptr) {
                 UInt64* mem =
                     starts->pointer_format == DYLD_CHAINED_PTR_ARM64E_KERNEL
                         ? reinterpret_cast<UInt64*>(AddressToPointer(base + where))
-                        : reinterpret_cast<UInt64*>(
-                              (reinterpret_cast<UIntPtr>(buffer) + where));
+                        : reinterpret_cast<UInt64*>((reinterpret_cast<UIntPtr>(buffer) + where));
                 do {
                     UInt64 ptr_tag = *mem;
                     UInt64 ptr_tag_ptr = ((UInt64)mem - (UInt64)buffer) + base;
-                    ptr_tag = UntagPacPointer(base, DYLD_CHAINED_PTR_ARM64E, ptr_tag,
-                                                    &bind, nullptr, nullptr, &skip);
+                    ptr_tag = UntagPacPointer(base, DYLD_CHAINED_PTR_ARM64E, ptr_tag, &bind,
+                                              nullptr, nullptr, &skip);
                     if (ptr_tag_ptr == ptr) {
                         return true;
                     }
@@ -285,7 +297,7 @@ xnu::mach::VmAddress MachOUserspace::GetBufferAddress(xnu::mach::VmAddress addre
 }
 
 void MachOUserspace::ParseSymbolTable(struct nlist_64* symtab, UInt32 nsyms, char* strtab,
-                                 Size strsize) {
+                                      Size strsize) {
     for (int i = 0; i < nsyms; i++) {
         Symbol* symbol;
         struct nlist_64* nl = &symtab[i];
@@ -294,9 +306,8 @@ void MachOUserspace::ParseSymbolTable(struct nlist_64* symtab, UInt32 nsyms, cha
         name = &strtab[nl->n_strx];
         address = nl->n_value;
         printf("%s\n", name);
-        symbol =
-            new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
-                       SegmentForAddress(address), SectionForAddress(address));
+        symbol = new Symbol(this, nl->n_type & N_TYPE, name, address, AddressToOffset(address),
+                            SegmentForAddress(address), SectionForAddress(address));
         symbolTable->AddSymbol(symbol);
     }
 }
@@ -406,8 +417,7 @@ bool MachOUserspace::ParseLoadCommands() {
             ;
             struct symtab_command* symtab_command = (struct symtab_command*)load_cmd;
             if (symtab_command->stroff > size || symtab_command->symoff > size ||
-                symtab_command->nsyms >
-                    (size - symtab_command->symoff) / sizeof(struct nlist_64)) {
+                symtab_command->nsyms > (size - symtab_command->symoff) / sizeof(struct nlist_64)) {
                 return false;
             }
             // printf("LC_SYMTAB\n");
@@ -643,8 +653,7 @@ void MachOUserspace::ParseHeader() {
     if (magic == FAT_CIGAM) {
         // ParseFatHeader();
         // Ignores fatHeader if we are parsing in memory MachO's that aren't dumps
-    }
-    else if (magic == MH_MAGIC_64) {
+    } else if (magic == MH_MAGIC_64) {
         ParseLoadCommands();
     }
 }

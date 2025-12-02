@@ -13,28 +13,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "darwin_kit.h"
-
 #include "kernel_macho.h"
 
+#include "darwin_kit.h"
 #include "kernel.h"
 
 KernelMachO::KernelMachO(Kernel* kernel)
     : kernel(kernel), kernel_collection(
 #ifdef __x86_64__
-    Kernel::FindKernelCollection()
+                          Kernel::FindKernelCollection()
 #else
-    0
+                          0
 #endif
-    ),
+                              ),
       kernel_cache(
 #ifdef __arm64__
-        Kernel::FindKernelCache()
+          Kernel::FindKernelCache()
 #else
-        0
+          0
 #endif
-) {
+      ) {
 }
 
 Kext* KernelMachO::KextLoadedAt(Kernel* kernel, xnu::mach::VmAddress address) {
@@ -109,7 +107,7 @@ bool KernelMachO::ParseLoadCommands() {
                 snprintf(buffer1, 128, "0x%08llx", section->addr);
                 snprintf(buffer2, 128, "0x%08llx", section->addr + section->size);
                 DARWIN_KIT_LOG("DarwinKit::\tSection %d: %s to %s - %s\n", j, buffer1, buffer2,
-                           section->sectname);
+                               section->sectname);
                 if (section->offset > size || section->size > size - section->offset) {
                     return false;
                 }
@@ -133,12 +131,13 @@ bool KernelMachO::ParseLoadCommands() {
             }
             DARWIN_KIT_LOG("DarwinKit::LC_SYMTAB\n");
             DARWIN_KIT_LOG("DarwinKit::\tSymbol Table is at offset 0x%x (%u) with %u entries \n",
-                       symtab_command->symoff, symtab_command->symoff, symtab_command->nsyms);
-            DARWIN_KIT_LOG("DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u bytes\n",
-                       symtab_command->stroff, symtab_command->stroff, symtab_command->strsize);
+                           symtab_command->symoff, symtab_command->symoff, symtab_command->nsyms);
+            DARWIN_KIT_LOG(
+                "DarwinKit::\tString Table is at offset 0x%x (%u) with size of %u bytes\n",
+                symtab_command->stroff, symtab_command->stroff, symtab_command->strsize);
             if (kernel_cache) {
-                symtab = reinterpret_cast<xnu::macho::Nlist64*>(kernel_cache +
-                                                                symtab_command->symoff);
+                symtab =
+                    reinterpret_cast<xnu::macho::Nlist64*>(kernel_cache + symtab_command->symoff);
                 nsyms = symtab_command->nsyms;
                 strtab = reinterpret_cast<char*>(kernel_cache + symtab_command->stroff);
                 strsize = symtab_command->strsize;
@@ -176,14 +175,14 @@ bool KernelMachO::ParseLoadCommands() {
                 return false;
             }
             DARWIN_KIT_LOG("DarwinKit::LC_DYSYMTAB\n");
-            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n", dysymtab_command->ilocalsym,
-                       dysymtab_command->nlocalsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n", dysymtab_command->nextdefsym,
-                       dysymtab_command->iextdefsym);
-            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n", dysymtab_command->nundefsym,
-                       dysymtab_command->iundefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u local symbols at index %u\n",
+                           dysymtab_command->ilocalsym, dysymtab_command->nlocalsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u external symbols at index %u\n",
+                           dysymtab_command->nextdefsym, dysymtab_command->iextdefsym);
+            DARWIN_KIT_LOG("DarwinKit::\t%u undefined symbols at index %u\n",
+                           dysymtab_command->nundefsym, dysymtab_command->iundefsym);
             DARWIN_KIT_LOG("DarwinKit::\t%u Indirect symbols at offset 0x%x\n",
-                       dysymtab_command->nindirectsyms, dysymtab_command->indirectsymoff);
+                           dysymtab_command->nindirectsyms, dysymtab_command->indirectsymoff);
             break;
         }
         case LC_UUID: {

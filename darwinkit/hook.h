@@ -16,9 +16,9 @@
 
 #pragma once
 
+#include "arch.h"
 #include "kernel.h"
 #include "patcher.h"
-#include "arch.h"
 #include "vector.h"
 
 #include <types.h>
@@ -89,14 +89,14 @@ public:
     ~Hook() = default;
 
     static Hook* CreateHookForFunction(xnu::Task* task, darwin::Patcher* patcher,
-                                      xnu::mach::VmAddress address);
+                                       xnu::mach::VmAddress address);
     static Hook* CreateHookForFunction(void* target, xnu::Task* task, darwin::Patcher* patcher,
-                                      xnu::mach::VmAddress address);
+                                       xnu::mach::VmAddress address);
 
     static Hook* CreateBreakpointForAddress(xnu::Task* task, darwin::Patcher* patcher,
                                             xnu::mach::VmAddress address);
     static Hook* CreateBreakpointForAddress(void* target, xnu::Task* task, darwin::Patcher* patcher,
-                                           xnu::mach::VmAddress address);
+                                            xnu::mach::VmAddress address);
 
     void* GetTarget() {
         return target;

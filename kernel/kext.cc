@@ -16,12 +16,10 @@
 
 #include "darwin_kit.h"
 
-#include "kext.h"
-#include "kext_macho.h"
-
 #include "kernel.h"
 #include "kernel_macho.h"
-
+#include "kext.h"
+#include "kext_macho.h"
 #include "macho.h"
 
 namespace xnu {

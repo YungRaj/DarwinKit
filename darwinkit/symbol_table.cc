@@ -17,12 +17,9 @@
 #include "symbol_table.h"
 
 #ifdef __USER__
-
+#include <memory>
 #include <cxxabi.h>
 #include <dlfcn.h>
-
-#include <memory>
-
 #endif
 
 extern "C" {

@@ -2630,7 +2630,7 @@ struct OSAction_vtbl_layout {
 };
 
 /* 132 */
-struct __cppobj OSInterface {};
+struct __cppobj OSInterface{};
 
 /* 131 */
 struct __cppobj OSActionInterface : OSInterface {};
@@ -34301,8 +34301,8 @@ typedef OSValueObject<void (*)(unsigned int, int, const void*, unsigned int, voi
         intrusive_osobject_retainer>::pointer;
 
 /* 7717 */
-struct __cppobj __attribute__((aligned(8)))
-OSValueObject<void (*)(unsigned int, int, const void*, unsigned int, void*)> : OSObject_1 {
+struct __cppobj __attribute__((aligned(
+    8))) OSValueObject<void (*)(unsigned int, int, const void*, unsigned int, void*)> : OSObject_1 {
     _BYTE gapC[8];
     _BYTE gap14[4];
 };
@@ -35303,8 +35303,8 @@ typedef libkern::bounded_array_ref<IODispatchQueue*, os_detail::panic_trapping_p
     OSBoundedArrayRef<IODispatchQueue*>;
 
 /* 7766 */
-struct __attribute__((aligned(8)))
-libkern::bounded_array_ref<IODispatchQueue*, os_detail::panic_trapping_policy> {
+struct __attribute__((
+    aligned(8))) libkern::bounded_array_ref<IODispatchQueue*, os_detail::panic_trapping_policy> {
     IODispatchQueue** data_;
     uint32_t size_;
 };
@@ -53129,8 +53129,8 @@ struct __attribute__((aligned(8))) necp_kernel_socket_policy {
     necp_sockaddr_union cond_remote_end;
     u_int8_t cond_remote_prefix;
     necp_policy_condition_agent_type cond_agent_type;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    necp_policy_condition_sdk_version cond_sdk_version;
+    __attribute__((packed))
+    __attribute__((aligned(1))) necp_policy_condition_sdk_version cond_sdk_version;
     char* cond_signing_identifier;
     u_int16_t cond_packet_filter_tags;
     u_int16_t cond_scheme_port;
@@ -61796,8 +61796,8 @@ struct mach_msg_trailer_t {
 };
 
 /* 5898 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_wait_quiet_with_options::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_wait_quiet_with_options::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_timespec_t wait_time;
@@ -61825,8 +61825,8 @@ __Request__io_registry_entry_get_property_bin_buf_t {
 };
 
 /* 5900 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_registry_entry_get_property_bin_buf::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_registry_entry_get_property_bin_buf::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t planeOffset;
@@ -61884,8 +61884,8 @@ struct _Xio_registry_entry_get_path_ool::Request {
 };
 
 /* 5905 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_add_notification_bin_64::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_add_notification_bin_64::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -61901,8 +61901,8 @@ _Xio_service_add_notification_bin_64::Request {
 };
 
 /* 5906 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_add_notification_bin::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_add_notification_bin::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -61918,8 +61918,8 @@ _Xio_service_add_notification_bin::Request {
 };
 
 /* 5907 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_match_property_table_bin::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_match_property_table_bin::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t matchingCnt;
@@ -61928,8 +61928,8 @@ _Xio_service_match_property_table_bin::Request {
 };
 
 /* 5908 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_get_matching_services_bin::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_get_matching_services_bin::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t matchingCnt;
@@ -61938,8 +61938,8 @@ _Xio_service_get_matching_services_bin::Request {
 };
 
 /* 5909 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_get_matching_service_bin::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_get_matching_service_bin::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t matchingCnt;
@@ -61948,8 +61948,8 @@ _Xio_service_get_matching_service_bin::Request {
 };
 
 /* 5910 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_registry_entry_get_property_bin::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_registry_entry_get_property_bin::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t planeOffset;
@@ -62034,8 +62034,8 @@ struct _Xio_registry_entry_get_registry_entry_id::Request {
 };
 
 /* 5919 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_add_notification_ool_64::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_add_notification_ool_64::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_ool_descriptor_t matching;
@@ -62144,8 +62144,8 @@ struct _Xio_connect_unmap_memory_from_task::Request {
 };
 
 /* 5927 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_map_memory_into_task::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_map_memory_into_task::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t into_task;
@@ -62191,8 +62191,8 @@ struct _Xio_object_get_superclass::Request {
 };
 
 /* 5931 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_service_add_notification_ool::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_service_add_notification_ool::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_ool_descriptor_t matching;
@@ -62234,8 +62234,8 @@ struct _Xio_service_get_state::Request {
 };
 
 /* 5935 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_registry_entry_get_property_recursively::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_registry_entry_get_property_recursively::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t planeOffset;
@@ -62270,8 +62270,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xio_connect_unmap_me
 };
 
 /* 5938 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_get_notification_semaphore::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_get_notification_semaphore::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     natural_t notification_type;
@@ -62319,8 +62319,8 @@ struct _Xio_service_add_notification::Request {
 };
 
 /* 5942 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_async_method_structureI_structureO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_async_method_structureI_structureO::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -62335,8 +62335,8 @@ _Xio_async_method_structureI_structureO::Request {
 };
 
 /* 5943 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_async_method_scalarI_structureI::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_async_method_scalarI_structureI::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -62352,8 +62352,8 @@ _Xio_async_method_scalarI_structureI::Request {
 };
 
 /* 5944 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_async_method_scalarI_structureO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_async_method_scalarI_structureO::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -62368,8 +62368,8 @@ _Xio_async_method_scalarI_structureO::Request {
 };
 
 /* 5945 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_async_method_scalarI_scalarO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_async_method_scalarI_scalarO::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t wake_port;
@@ -62472,8 +62472,8 @@ struct _Xio_iterator_is_valid::Request {
 };
 
 /* 5956 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_registry_entry_create_iterator::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_registry_entry_create_iterator::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t planeOffset;
@@ -62540,8 +62540,8 @@ struct _Xio_registry_entry_get_path::Request {
 };
 
 /* 5965 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_method_structureI_structureO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_method_structureI_structureO::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t selector;
@@ -62552,8 +62552,8 @@ _Xio_connect_method_structureI_structureO::Request {
 };
 
 /* 5966 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_method_scalarI_structureI::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_method_scalarI_structureI::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t selector;
@@ -62565,8 +62565,8 @@ _Xio_connect_method_scalarI_structureI::Request {
 };
 
 /* 5967 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_method_scalarI_structureO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_method_scalarI_structureO::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t selector;
@@ -62577,8 +62577,8 @@ _Xio_connect_method_scalarI_structureO::Request {
 };
 
 /* 5968 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_method_scalarI_scalarO::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_method_scalarI_scalarO::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t selector;
@@ -62620,8 +62620,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xio_connect_map_memo
 };
 
 /* 5972 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_connect_set_notification_port::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_connect_set_notification_port::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t port;
@@ -62664,8 +62664,8 @@ struct _Xio_registry_entry_get_child_iterator::Request {
 };
 
 /* 5977 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xio_registry_entry_get_property_bytes::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xio_registry_entry_get_property_bytes::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t property_nameOffset;
@@ -64054,8 +64054,8 @@ struct ipc_info_port {
 };
 
 /* 6142 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xthread_get_exception_ports_info::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xthread_get_exception_ports_info::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     exception_mask_t exception_mask;
@@ -64171,8 +64171,8 @@ struct _Xthread_swap_exception_ports::Request {
 };
 
 /* 6153 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xthread_get_exception_ports_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xthread_get_exception_ports_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     exception_mask_t exception_mask;
@@ -64214,8 +64214,8 @@ struct _Xthread_set_special_port::Request {
 };
 
 /* 6158 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xthread_get_special_port_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xthread_get_special_port_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     int which_port;
@@ -64323,8 +64323,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xtask_map_kcdata_obj
 };
 
 /* 6172 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_test_async_upcall_propagation::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_test_async_upcall_propagation::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t port;
@@ -64338,8 +64338,8 @@ _Xtask_test_async_upcall_propagation::Request {
 typedef uint32_t task_corpse_forking_behavior_t;
 
 /* 6174 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_set_corpse_forking_behavior::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_set_corpse_forking_behavior::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     task_corpse_forking_behavior_t behavior;
@@ -64355,8 +64355,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xtask_test_sync_upca
 };
 
 /* 6176 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_get_exception_ports_info::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_get_exception_ports_info::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     exception_mask_t exception_mask;
@@ -64364,8 +64364,8 @@ _Xtask_get_exception_ports_info::Request {
 };
 
 /* 6177 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_dyld_process_info_notify_deregister::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_dyld_process_info_notify_deregister::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 notify;
@@ -64376,8 +64376,8 @@ _Xtask_dyld_process_info_notify_deregister::Request {
 typedef natural_t task_flavor_t;
 
 /* 6178 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_identity_token_get_task_port::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_identity_token_get_task_port::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     task_flavor_t flavor;
@@ -64391,8 +64391,8 @@ struct _Xtask_create_identity_token::Request {
 };
 
 /* 6180 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_dyld_process_info_notify_register::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_dyld_process_info_notify_register::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t notify;
@@ -64480,8 +64480,8 @@ struct _Xtask_register_dyld_get_process_state::Request {
 };
 
 /* 6189 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_register_dyld_set_dyld_state::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_register_dyld_set_dyld_state::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint8_t dyld_state;
@@ -64589,8 +64589,8 @@ struct _Xtask_suspend2_mig::Request {
 };
 
 /* 6205 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_set_phys_footprint_limit::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_set_phys_footprint_limit::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     int new_limit;
@@ -64669,8 +64669,8 @@ struct _Xtask_swap_exception_ports::Request {
 };
 
 /* 6214 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_get_exception_ports_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_get_exception_ports_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     exception_mask_t exception_mask;
@@ -64716,8 +64716,8 @@ struct _Xtask_set_special_port_from_user::Request {
 };
 
 /* 6219 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_get_special_port_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_get_special_port_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     int which_port;
@@ -64772,8 +64772,8 @@ struct mach_msg_ool_ports_descriptor_t {
 struct _Xmach_ports_register::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_ool_ports_descriptor_t init_port_set;
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_ool_ports_descriptor_t init_port_set;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t init_port_setCnt;
     mach_msg_trailer_t trailer;
@@ -64802,8 +64802,8 @@ struct task_subsystem {
 };
 
 /* 6231 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xprocessor_set_tasks_with_flavor::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xprocessor_set_tasks_with_flavor::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_task_flavor_t flavor;
@@ -64993,8 +64993,8 @@ __Reply__vfs_resolve_dir_with_audit_token_t {
 };
 
 /* 6255 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-send_vfs_resolve_dir_with_audit_token::Reply {
+struct __attribute__((packed))
+__attribute__((aligned(4))) send_vfs_resolve_dir_with_audit_token::Reply {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     kern_return_t RetCode;
@@ -65033,8 +65033,8 @@ __Reply__vfs_resolve_file_with_audit_token_t {
 };
 
 /* 6259 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-send_vfs_resolve_file_with_audit_token::Reply {
+struct __attribute__((packed))
+__attribute__((aligned(4))) send_vfs_resolve_file_with_audit_token::Reply {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     kern_return_t RetCode;
@@ -65087,8 +65087,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) send_nspace_resolve_p
 };
 
 /* 6266 */
-union __attribute__((packed)) __attribute__((aligned(4)))
-send_nspace_resolve_path::nspace_resolve_pathMessU {
+union __attribute__((packed))
+__attribute__((aligned(4))) send_nspace_resolve_path::nspace_resolve_pathMessU {
     send_nspace_resolve_path::Request In;
     send_nspace_resolve_path::Reply Out;
 };
@@ -65101,8 +65101,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) __Reply__nspace_resol
 };
 
 /* 6268 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-send_sysdiagnose_notification_with_audit_token::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) send_sysdiagnose_notification_with_audit_token::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t flags;
@@ -65340,8 +65340,8 @@ struct task_restartable_range_t {
 };
 
 /* 6292 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xtask_restartable_ranges_register::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xtask_restartable_ranges_register::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t rangesCnt;
@@ -65429,8 +65429,8 @@ union send_cpu_usage_violation::cpu_usage_violationMessU {
 };
 
 /* 6302 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_memory_entry_ownership_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_memory_entry_ownership_from_user::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t owner;
@@ -65441,8 +65441,8 @@ _Xmach_memory_entry_ownership_from_user::Request {
 };
 
 /* 6303 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_memory_entry_access_tracking::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_memory_entry_access_tracking::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     int access_tracking;
@@ -65490,8 +65490,8 @@ struct _Xmach_voucher_attr_command::Request {
 };
 
 /* 6308 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_voucher_extract_all_attr_recipes::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_voucher_extract_all_attr_recipes::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t recipesCnt;
@@ -65832,8 +65832,8 @@ struct mach_service_port_info {
 };
 
 /* 6345 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_get_service_port_info::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_get_service_port_info::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -65850,8 +65850,8 @@ struct _Xmach_port_is_connection_for_service::Request {
 };
 
 /* 6347 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_kobject_description_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_kobject_description_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -65879,8 +65879,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xmach_port_guard_wit
 };
 
 /* 6350 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_special_reply_port_reset_link::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_special_reply_port_reset_link::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -65962,8 +65962,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xmach_port_set_conte
 };
 
 /* 6359 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_get_context_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_get_context_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -66076,8 +66076,8 @@ struct _Xmach_port_set_attributes::Request {
 };
 
 /* 6372 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_get_attributes_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_get_attributes_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -66139,8 +66139,8 @@ struct _Xmach_port_move_member::Request {
 };
 
 /* 6378 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_port_get_set_status_from_user::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_port_get_set_status_from_user::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     mach_port_name_t_0 name;
@@ -66343,8 +66343,8 @@ struct _Xmach_zone_info_for_zone::Request {
 };
 
 /* 6403 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xhost_set_multiuser_config_flags::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xhost_set_multiuser_config_flags::Request {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     uint32_t multiuser_flags;
@@ -66424,8 +66424,8 @@ struct _Xhost_statistics_from_user::Request {
 };
 
 /* 6414 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_memory_object_memory_entry_64::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_memory_object_memory_entry_64::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t pager;
@@ -66480,8 +66480,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _Xhost_processor_info
 };
 
 /* 6423 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_memory_object_memory_entry::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_memory_object_memory_entry::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t pager;
@@ -66524,8 +66524,8 @@ struct mach_host_subsystem {
 };
 
 /* 6428 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_exception_raise_backtrace::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_exception_raise_backtrace::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t kcdata_object_t;
@@ -66537,8 +66537,8 @@ _Xmach_exception_raise_backtrace::Request {
 };
 
 /* 6429 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_exception_raise_identity_protected::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_exception_raise_identity_protected::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t task_id_token_t;
@@ -66551,8 +66551,8 @@ _Xmach_exception_raise_identity_protected::Request {
 };
 
 /* 6430 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xmach_exception_raise_state_identity::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xmach_exception_raise_state_identity::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t thread;
@@ -66623,8 +66623,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) mach_exception_raise_
 };
 
 /* 6436 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-mach_exception_raise_identity_protected::Reply {
+struct __attribute__((packed))
+__attribute__((aligned(4))) mach_exception_raise_identity_protected::Reply {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     kern_return_t RetCode;
@@ -66632,8 +66632,8 @@ mach_exception_raise_identity_protected::Reply {
 };
 
 /* 6437 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-mach_exception_raise_identity_protected::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) mach_exception_raise_identity_protected::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t task_id_token_t;
@@ -66692,8 +66692,8 @@ __Reply__mach_exception_raise_state_identity_t {
 };
 
 /* 6443 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-mach_exception_raise_state_identity::Reply {
+struct __attribute__((packed))
+__attribute__((aligned(4))) mach_exception_raise_state_identity::Reply {
     mach_msg_header_t_0 Head;
     NDR_record_t_0 NDR;
     kern_return_t RetCode;
@@ -66704,8 +66704,8 @@ mach_exception_raise_state_identity::Reply {
 };
 
 /* 6444 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-mach_exception_raise_state_identity::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) mach_exception_raise_state_identity::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t thread;
@@ -67043,8 +67043,8 @@ struct mach_eventlink_subsystem {
 };
 
 /* 6480 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_Xexception_raise_state_identity::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _Xexception_raise_state_identity::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_port_descriptor_t thread;
@@ -70535,8 +70535,8 @@ struct xnu_hw_shmem_dbg_command_info {
     volatile uint64_t xhsdci_buf_phys_addr;
     volatile uint32_t xhsdci_buf_data_length;
     __attribute__((packed)) __attribute__((aligned(1))) uint64_t xhsdci_coredump_total_size_uncomp;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    uint64_t xhsdci_coredump_total_size_sent_uncomp;
+    __attribute__((packed))
+    __attribute__((aligned(1))) uint64_t xhsdci_coredump_total_size_sent_uncomp;
     uint32_t xhsdci_page_size;
 };
 
@@ -71397,8 +71397,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) _XUNDNotificationCrea
 };
 
 /* 7116 */
-struct __attribute__((packed)) __attribute__((aligned(4)))
-_XUNDAlertCompletedWithResult_rpc::Request {
+struct __attribute__((packed))
+__attribute__((aligned(4))) _XUNDAlertCompletedWithResult_rpc::Request {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
     mach_msg_ool_descriptor_t data;
@@ -71976,8 +71976,8 @@ struct __attribute__((packed)) __attribute__((aligned(4))) mach_gss_accept_sec_c
 };
 
 /* 7167 */
-union __attribute__((packed)) __attribute__((aligned(4)))
-mach_gss_accept_sec_context::mach_gss_accept_sec_contextMessU {
+union __attribute__((packed))
+__attribute__((aligned(4))) mach_gss_accept_sec_context::mach_gss_accept_sec_contextMessU {
     mach_gss_accept_sec_context::Request In;
     mach_gss_accept_sec_context::Reply Out;
 };
@@ -73588,9 +73588,9 @@ struct libkern::bounded_ptr<SerData, os_detail::panic_trapping_policy> {
 };
 
 /* 7485 */
-struct __attribute__((aligned(8)))
-libkern::safe_allocation<SerData, os_detail::IOKit_typed_allocator<SerData, true>,
-                         os_detail::panic_trapping_policy> {
+struct __attribute__((
+    aligned(8))) libkern::safe_allocation<SerData, os_detail::IOKit_typed_allocator<SerData, true>,
+                                          os_detail::panic_trapping_policy> {
     IOGeneralMemoryDescriptor::serialize::SerData* data_;
     uint32_t size_;
 };
@@ -73954,9 +73954,9 @@ struct __cppobj _IOServiceNotifier::MetaClass : OSMetaClass_0 {};
 struct __cppobj IOService::MetaClass : OSMetaClass_1 {};
 
 /* 7596 */
-struct __attribute__((aligned(8)))
-libkern::safe_allocation<char, os_detail::IOKit_typed_allocator<char, true>,
-                         os_detail::panic_trapping_policy> {
+struct __attribute__((
+    aligned(8))) libkern::safe_allocation<char, os_detail::IOKit_typed_allocator<char, true>,
+                                          os_detail::panic_trapping_policy> {
     char* data_;
     uint32_t size_;
 };
@@ -79698,8 +79698,8 @@ struct __Request__task_threads_from_user_t {
 struct __Request__mach_ports_register_t {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_ool_ports_descriptor_t init_port_set;
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_ool_ports_descriptor_t init_port_set;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t init_port_setCnt;
 };
@@ -80574,8 +80574,8 @@ typedef __Reply__mach_ports_lookup_t _Xmach_ports_lookup::Reply;
 struct __Reply__mach_ports_lookup_t {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_ool_ports_descriptor_t init_port_set;
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_ool_ports_descriptor_t init_port_set;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t init_port_setCnt;
 };
@@ -83137,8 +83137,8 @@ typedef __Reply__host_processor_sets_t _Xhost_processor_sets::Reply;
 struct __Reply__host_processor_sets_t {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_ool_ports_descriptor_t processor_sets;
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_ool_ports_descriptor_t processor_sets;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t processor_setsCnt;
 };
@@ -83160,8 +83160,8 @@ typedef __Reply__host_swap_exception_ports_t _Xhost_swap_exception_ports::Reply;
 struct __Reply__host_swap_exception_ports_t {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_port_descriptor_t old_handlerss[32];
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_port_descriptor_t old_handlerss[32];
     NDR_record_t_0 NDR;
     mach_msg_type_number_t masksCnt;
     exception_mask_t masks[32];
@@ -83223,8 +83223,8 @@ typedef __Reply__host_processors_t _Xhost_processors::Reply;
 struct __Reply__host_processors_t {
     mach_msg_header_t_0 Head;
     mach_msg_body_t_0 msgh_body;
-    __attribute__((packed)) __attribute__((aligned(1)))
-    mach_msg_ool_ports_descriptor_t out_processor_list;
+    __attribute__((packed))
+    __attribute__((aligned(1))) mach_msg_ool_ports_descriptor_t out_processor_list;
     NDR_record_t_0 NDR;
     mach_msg_type_number_t out_processor_listCnt;
 };

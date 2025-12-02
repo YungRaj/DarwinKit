@@ -199,6 +199,6 @@ mach_vm_address_t DisassembleSignature(mach_vm_address_t address,
                                        size_t lookup_size) {
     return 0;
 }
-} // namespace Disassembler
+} // namespace disassembler
 } // namespace x86_64
 } // namespace arch

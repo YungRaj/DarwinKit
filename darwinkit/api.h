@@ -17,10 +17,8 @@
 #pragma once
 
 #ifndef __KERNEL__
-
 #include <stdio.h>
 #include <unistd.h>
-
 #endif
 
 #include <stdbool.h>

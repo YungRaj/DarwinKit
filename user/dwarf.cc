@@ -15,8 +15,8 @@
  */
 
 #include "dwarf.h"
-#include "kernel.h"
 
+#include "kernel.h"
 #include "kernel_macho.h"
 #include "kext_macho.h"
 
@@ -723,7 +723,7 @@ void Dwarf<T>::ParseDebugAbbrev() {
                 stack.push_back(die);
                 dies.push_back(die);
                 DARWIN_KIT_LOG("\n\n[%llu] DW_TAG = %s children = %u\n", code, name,
-                           static_cast<UInt32>(children));
+                               static_cast<UInt32>(children));
             }
         } else {
             UInt64 value;
@@ -755,13 +755,13 @@ void Dwarf<T>::ParseDebugAbbrev() {
                     char* name = DWTagToString(tag);
                     DIE<T>* die = new DIE<T>(this, code, name, tag, children);
                     DARWIN_KIT_LOG("\n\n[%llu] DW_TAG = %s children = %u\n", code, name,
-                               static_cast<UInt32>(children));
+                                   static_cast<UInt32>(children));
                     stack.push_back(die);
                     dies.push_back(die);
                 }
             } else {
                 DARWIN_KIT_LOG("\tDW_AT = %s 0x%x DW_FORM = %s\n", DWAttrToString(attr),
-                           static_cast<UInt32>(attr), DWFormToString(form));
+                               static_cast<UInt32>(attr), DWFormToString(form));
                 DIE<T>* die = stack.at(stack.size() - 1);
                 struct AttrAbbrev* ab = new AttrAbbrev;
                 ab->tag = die->GetTag();
@@ -995,10 +995,10 @@ void Dwarf<T>::ParseDebugLines() {
                 }
             }
         }
-        DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "Address", "Line", "Column", "File",
-                   "ISA", "Discriminator", "Flags");
-        DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "--------------------", "--------",
-                   "------", "------", "----", "-------------", "-------------");
+        DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "Address", "Line", "Column",
+                       "File", "ISA", "Discriminator", "Flags");
+        DARWIN_KIT_LOG("%-20s %-6s %-6s %-6s %-4s %-13s %-13s\n", "--------------------",
+                       "--------", "------", "------", "----", "-------------", "-------------");
         struct Sequence* sequence = new Sequence;
         struct LTSourceFile* sourceFile = nullptr;
         struct LTSourceLine* sourceLine = nullptr;
@@ -1018,45 +1018,45 @@ void Dwarf<T>::ParseDebugLines() {
                 num_bytes--;
                 switch (static_cast<DW_LNE>(op)) {
                 case DW_LNE::end_sequence: {
-                        sequence->sourceLines.push_back(sourceLine);
-                        struct LTSourceLine* newSourceLine = new LTSourceLine;
-                        memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
-                        sourceLine = newSourceLine;
-                        sourceLine->state.end_sequence = 1;
-                        DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    sequence->sourceLines.push_back(sourceLine);
+                    struct LTSourceLine* newSourceLine = new LTSourceLine;
+                    memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
+                    sourceLine = newSourceLine;
+                    sourceLine->state.end_sequence = 1;
+                    DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                                    sourceLine->state.address, sourceLine->state.line,
                                    sourceLine->state.column, sourceLine->state.file,
                                    sourceLine->state.isa, sourceLine->state.discriminator,
                                    SourceLineFlagsToString(sourceLine));
-                        memcpy(&sourceLine->state, &gInitialState, sizeof(struct LTStateMachine));
-                        sourceLine->state.discriminator = 0;
-                        sourceLine->state.basic_block = 0;
-                        sourceLine->state.prologue_end = 0;
-                        sourceLine->state.epilogue_begin = 0;
-                        sourceLine->state.end_sequence = 0;
-                        break;
-                    }
+                    memcpy(&sourceLine->state, &gInitialState, sizeof(struct LTStateMachine));
+                    sourceLine->state.discriminator = 0;
+                    sourceLine->state.basic_block = 0;
+                    sourceLine->state.prologue_end = 0;
+                    sourceLine->state.epilogue_begin = 0;
+                    sourceLine->state.end_sequence = 0;
+                    break;
+                }
                 case DW_LNE::set_address: {
-                        UInt64 program_counter =
-                            *reinterpret_cast<UInt64*>(debug_line_begin + debug_line_offset);
-                        sourceLine->state.address = program_counter;
-                        DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    UInt64 program_counter =
+                        *reinterpret_cast<UInt64*>(debug_line_begin + debug_line_offset);
+                    sourceLine->state.address = program_counter;
+                    DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                                    sourceLine->state.address, sourceLine->state.line,
                                    sourceLine->state.column, sourceLine->state.file,
                                    sourceLine->state.isa, sourceLine->state.discriminator,
                                    SourceLineFlagsToString(sourceLine));
-                        sequence->sourceLines.push_back(sourceLine);
-                        struct LTSourceLine* newSourceLine = new LTSourceLine;
-                        memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
-                        sourceLine = newSourceLine;
-                        break;
-                    }
+                    sequence->sourceLines.push_back(sourceLine);
+                    struct LTSourceLine* newSourceLine = new LTSourceLine;
+                    memcpy(newSourceLine, sourceLine, sizeof(struct LTSourceLine));
+                    sourceLine = newSourceLine;
+                    break;
+                }
                 case DW_LNE::define_file: {
                     break;
                 }
                 case DW_LNE::set_discriminator: {
-                    UInt64 discriminator = debug::ReadUleb128(
-                        debug_line_begin + debug_line_offset, debug_line_end);
+                    UInt64 discriminator =
+                        debug::ReadUleb128(debug_line_begin + debug_line_offset, debug_line_end);
                     sourceLine->state.discriminator = discriminator;
                     // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                     // sourceLine->state.address, sourceLine->state.line,
@@ -1087,16 +1087,15 @@ void Dwarf<T>::ParseDebugLines() {
                     break;
                 }
                 case DW_LNS::advance_pc: {
-                        UInt64 program_counter =
-                            debug::ReadUleb128(debug_line_begin + debug_line_offset, debug_line_end,
-                                               &debug_line_offset);
-                        sourceLine->state.address += program_counter;
-                        sourceLine->state.prologue_end = 0;
-                        // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                        // sourceLine->state.address, sourceLine->state.line,
-                        // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                        // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
-                        break;
+                    UInt64 program_counter = debug::ReadUleb128(
+                        debug_line_begin + debug_line_offset, debug_line_end, &debug_line_offset);
+                    sourceLine->state.address += program_counter;
+                    sourceLine->state.prologue_end = 0;
+                    // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
+                    // sourceLine->state.address, sourceLine->state.line,
+                    // sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
+                    // sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                    break;
                 }
                 case DW_LNS::advance_line: {
                     Int64 line = debug::ReadSleb128(debug_line_begin + debug_line_offset,
@@ -1110,7 +1109,7 @@ void Dwarf<T>::ParseDebugLines() {
                 }
                 case DW_LNS::set_file: {
                     UInt64 file = debug::ReadUleb128(debug_line_begin + debug_line_offset,
-                                                        debug_line_end, &debug_line_offset);
+                                                     debug_line_end, &debug_line_offset);
                     sourceLine->state.file = file;
                     // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                     // sourceLine->state.address, sourceLine->state.line,
@@ -1120,7 +1119,7 @@ void Dwarf<T>::ParseDebugLines() {
                 }
                 case DW_LNS::set_column: {
                     UInt64 column = debug::ReadUleb128(debug_line_begin + debug_line_offset,
-                                                        debug_line_end, &debug_line_offset);
+                                                       debug_line_end, &debug_line_offset);
                     sourceLine->state.column = column;
                     // DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
                     // sourceLine->state.address, sourceLine->state.line,
@@ -1203,9 +1202,10 @@ void Dwarf<T>::ParseDebugLines() {
                 sourceLine->state.address += address_change;
                 sourceLine->state.line += line_change;
                 DARWIN_KIT_LOG("0x%-20llx %-6lld %-8lld %-6u %-4u %-13u %-13s\n",
-                           sourceLine->state.address, sourceLine->state.line,
-                           sourceLine->state.column, sourceLine->state.file, sourceLine->state.isa,
-                           sourceLine->state.discriminator, SourceLineFlagsToString(sourceLine));
+                               sourceLine->state.address, sourceLine->state.line,
+                               sourceLine->state.column, sourceLine->state.file,
+                               sourceLine->state.isa, sourceLine->state.discriminator,
+                               SourceLineFlagsToString(sourceLine));
                 sourceLine->state.prologue_end = 0;
                 sequence->sourceLines.push_back(sourceLine);
                 struct LTSourceLine* newSourceLine = new LTSourceLine;
@@ -1313,11 +1313,12 @@ void Dwarf<T>::ParseDebugAddressRanges() {
         UInt32 offset = debug_aranges_offset + sizeof(struct AddressRangeHeader);
         UInt32 segment_selector = *reinterpret_cast<UInt32*>(debug_aranges_begin + offset);
         offset += sizeof(UInt32);
-        DARWIN_KIT_LOG("Address Range Header: length = 0x%08x, version = 0x%04x, cu_offset = 0x%08x, "
-                   "addr_size = 0x%02x, seg_size = 0x%02x\n",
-                   address_range_header->length, address_range_header->version,
-                   address_range_header->offset, address_range_header->Addr_size,
-                   address_range_header->seg_size);
+        DARWIN_KIT_LOG(
+            "Address Range Header: length = 0x%08x, version = 0x%04x, cu_offset = 0x%08x, "
+            "addr_size = 0x%02x, seg_size = 0x%02x\n",
+            address_range_header->length, address_range_header->version,
+            address_range_header->offset, address_range_header->Addr_size,
+            address_range_header->seg_size);
         while (offset < debug_aranges_offset + length) {
             struct AddressRange* range = new AddressRange;
             UInt64 value0 = *reinterpret_cast<UInt64*>(debug_aranges_begin + offset);
@@ -1339,7 +1340,7 @@ void Dwarf<T>::ParseDebugAddressRanges() {
     }
 }
 
-}
+} // namespace debug
 
 template class debug::Dwarf<KernelMachO*>;
 template class debug::Dwarf<KextMachO*>;

@@ -254,15 +254,15 @@ UInt8* Kernel::GetCoverageMap() {
 
 void Kernel::Fuzz(enum FuzzContext context) {
     switch (context) {
-        case kLibAFLFuzzFromUserspace: {
-            UInt8 *coverage_map = GetCoverageMap();
-            libafl_start_darwin_kit_fuzzer(coverage_map);
-            break;
-        }
-        case kLibAFLFuzzInKernel: {
-            kcov_begin_fuzzing();
-            break;
-        }
+    case kLibAFLFuzzFromUserspace: {
+        UInt8* coverage_map = GetCoverageMap();
+        libafl_start_darwin_kit_fuzzer(coverage_map);
+        break;
+    }
+    case kLibAFLFuzzInKernel: {
+        kcov_begin_fuzzing();
+        break;
+    }
     }
 }
 
@@ -274,4 +274,4 @@ void Kernel::DisableCoverage() {
     kcov_disable_coverage();
 }
 
-}
+} // namespace xnu

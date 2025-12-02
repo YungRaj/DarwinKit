@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <types.h>
 #include <dwarf_v5.h>
+#include <types.h>
 
+#include "binary_format.h"
 #include "log.h"
 #include "vector.h"
-#include "binary_format.h"
 
 namespace Binary {
 class BinaryFormat;

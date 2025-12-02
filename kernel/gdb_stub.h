@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <types.h>
 #include <arch.h>
+#include <types.h>
 #include <vector.h>
 
 namespace xnu {
@@ -80,13 +80,9 @@ public:
 
 protected:
     GDBStubArch* arch;
-
     xnu::Kernel* kernel;
-
     debug::Dwarf* dwarf;
-
     xnu::KernelMachO* macho;
-
     darwin::DarwinKit* darwin;
 };
 

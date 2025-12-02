@@ -16,11 +16,10 @@
 
 #pragma once
 
-#include <types.h>
-
 #include <mach/mach_types.h>
-
 #include <ptrauth.h>
+
+#include <types.h>
 
 #include "arch.h"
 
@@ -36,7 +35,7 @@ UInt64 SignPointerWithAKey(UInt64 pointer);
 UInt64 SignPointerWithBKey(UInt64 pointer);
 
 void StripPointerAuthenticationCode(UInt64 pointer);
-} // namespace PAC
+} // namespace pac
 } // namespace arm64
 }; // namespace arch
 

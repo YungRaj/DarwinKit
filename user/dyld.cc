@@ -76,8 +76,7 @@ void Dyld::IterateAllImages() {
             task->Read(image_load_addr, &hdr, sizeof(hdr));
             if (hdr.magic == MH_MAGIC_64) {
                 main_image_path = image_file;
-                main_image_info =
-                    (struct dyld_image_info*)malloc(sizeof(struct dyld_image_info));
+                main_image_info = (struct dyld_image_info*)malloc(sizeof(struct dyld_image_info));
                 memcpy(main_image_info, image_info, sizeof(struct dyld_image_info));
                 dyld_shared_cache = all_image_infos->sharedCacheBaseAddress;
                 printf("%s main image loaded at 0x%llx\n", image_file, image_load_addr);
@@ -387,8 +386,8 @@ Size Dyld::GetAdjustedLinkeditSize(xnu::mach::VmAddress address) {
         } else if (load_cmd->cmd == LC_SYMTAB) {
             struct symtab_command* symtab_command = reinterpret_cast<struct symtab_command*>(q);
             task->Read(address + sizeof(struct mach_header_64), cmds, sizeofcmds);
-            UInt32 new_strsize = GetAdjustedStrtabSize(
-                symtab_command, linkedit_vmaddr + aslr_slide, linkedit_old_off);
+            UInt32 new_strsize = GetAdjustedStrtabSize(symtab_command, linkedit_vmaddr + aslr_slide,
+                                                       linkedit_old_off);
             UInt64 symsize = symtab_command->nsyms * sizeof(struct nlist_64);
             UInt64 strsize = symtab_command->strsize;
             UInt64 old_symoff = symtab_command->symoff;
@@ -610,7 +609,7 @@ MachO* Dyld::CacheDumpImage(char* image) {
             aslr_slide = 0;
         }
         task->Read(address + sizeof(struct mach_header_64),
-                         image_dump + sizeof(struct mach_header_64), hdr->sizeofcmds);
+                   image_dump + sizeof(struct mach_header_64), hdr->sizeofcmds);
         align = sizeof(struct mach_header_64) + hdr->sizeofcmds;
         current_offset = (align % 0x1000 > 0 ? align / 0x1000 + 1 : align / 0x1000) * 0x1000;
         cmds = reinterpret_cast<UInt8*>(hdr) + sizeof(struct mach_header_64);
@@ -642,14 +641,12 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     printf("Dumping %s at 0x%llx with size 0x%llx at 0x%llx\n", segment->segname,
                            vmaddr + aslr_slide, filesize, (UInt64)(image_dump + current_offset));
                     if (dylibInSharedCache &&
-                        !task->Read(vmaddr + aslr_slide, image_dump + current_offset,
-                                          filesize)) {
+                        !task->Read(vmaddr + aslr_slide, image_dump + current_offset, filesize)) {
                         printf("Failed to dump segment %s\n", segment->segname);
                         goto exit;
                     }
-                    if (!dylibInSharedCache &&
-                        !task->Read(address + vmaddr + aslr_slide,
-                                          image_dump + current_offset, filesize)) {
+                    if (!dylibInSharedCache && !task->Read(address + vmaddr + aslr_slide,
+                                                           image_dump + current_offset, filesize)) {
                         printf("Failed to dump segment %s\n", segment->segname);
                         goto exit;
                     }
@@ -682,10 +679,10 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt64 strtab =
                         (UInt64)(image_dump + linkedit_new_off + linkedit_off + symsize);
                     task->Read(linkedit_vmaddr + aslr_slide +
-                                         (symtab_command->symoff - linkedit_old_off),
-                                     image_dump + linkedit_new_off + linkedit_off, symsize);
+                                   (symtab_command->symoff - linkedit_old_off),
+                               image_dump + linkedit_new_off + linkedit_off, symsize);
                     RebuildSymtabStrtab(symtab_command, symtab, strtab,
-                                              linkedit_vmaddr + aslr_slide, linkedit_old_off);
+                                        linkedit_vmaddr + aslr_slide, linkedit_old_off);
                     symtab_command->symoff = linkedit_new_off + linkedit_off;
                     symtab_command->stroff = linkedit_new_off + linkedit_off + symsize;
                     symtab_command->strsize = new_strsize;
@@ -695,12 +692,10 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt64 strsize = symtab_command->strsize;
                     UInt64 symoff = symtab_command->symoff;
                     UInt64 stroff = symtab_command->stroff;
-                    task->Read(address + aslr_slide + symoff, image_dump + current_offset,
-                                     symsize);
+                    task->Read(address + aslr_slide + symoff, image_dump + current_offset, symsize);
                     symtab_command->symoff = current_offset;
                     current_offset += symsize;
-                    task->Read(address + aslr_slide + stroff, image_dump + current_offset,
-                                     strsize);
+                    task->Read(address + aslr_slide + stroff, image_dump + current_offset, strsize);
                     symtab_command->stroff = current_offset;
                     current_offset += strsize;
                 }
@@ -723,28 +718,28 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 locreloff = dysymtab_command->locreloff - linkedit_old_off;
                     UInt32 locrelsize = dysymtab_command->nlocrel * sizeof(struct relocation_info);
                     task->Read(linkedit_vmaddr + aslr_slide + tocoff,
-                                     image_dump + linkedit_new_off + linkedit_off, tocsize);
+                               image_dump + linkedit_new_off + linkedit_off, tocsize);
 
                     dysymtab_command->tocoff = linkedit_new_off + linkedit_off;
                     linkedit_off += tocsize;
                     task->Read(linkedit_vmaddr + aslr_slide + modtaboff,
-                                     image_dump + linkedit_new_off + linkedit_off, modtabsize);
+                               image_dump + linkedit_new_off + linkedit_off, modtabsize);
                     dysymtab_command->modtaboff = linkedit_new_off + linkedit_off;
                     linkedit_off += modtabsize;
                     task->Read(linkedit_vmaddr + aslr_slide + extrefsymoff,
-                                     image_dump + linkedit_new_off + linkedit_off, extrefsize);
+                               image_dump + linkedit_new_off + linkedit_off, extrefsize);
                     dysymtab_command->extrefsymoff = linkedit_new_off + linkedit_off;
                     linkedit_off += extrefsize;
                     task->Read(linkedit_vmaddr + aslr_slide + indirectsymoff,
-                                     image_dump + linkedit_new_off + linkedit_off, indirectsize);
+                               image_dump + linkedit_new_off + linkedit_off, indirectsize);
                     dysymtab_command->indirectsymoff = linkedit_new_off + linkedit_off;
                     linkedit_off += indirectsize;
                     task->Read(linkedit_vmaddr + aslr_slide + extreloff,
-                                     image_dump + linkedit_new_off + linkedit_off, extrelsize);
+                               image_dump + linkedit_new_off + linkedit_off, extrelsize);
                     dysymtab_command->extreloff = linkedit_new_off + linkedit_off;
                     linkedit_off += extrelsize;
                     task->Read(linkedit_vmaddr + aslr_slide + locreloff,
-                                     image_dump + linkedit_new_off + linkedit_off, locrelsize);
+                               image_dump + linkedit_new_off + linkedit_off, locrelsize);
                     dysymtab_command->locreloff = linkedit_new_off + linkedit_off;
                     linkedit_off += locrelsize;
                 } else {
@@ -762,28 +757,27 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 extrelsize = dysymtab_command->nextrel * sizeof(struct relocation_info);
                     UInt32 locreloff = dysymtab_command->locreloff;
                     UInt32 locrelsize = dysymtab_command->nlocrel * sizeof(struct relocation_info);
-                    task->Read(address + aslr_slide + tocoff, image_dump + current_offset,
-                                     tocsize);
+                    task->Read(address + aslr_slide + tocoff, image_dump + current_offset, tocsize);
                     dysymtab_command->tocoff = current_offset;
                     current_offset += tocsize;
                     task->Read(address + aslr_slide + modtaboff, image_dump + current_offset,
-                                     modtabsize);
+                               modtabsize);
                     dysymtab_command->modtaboff = current_offset;
                     current_offset += modtabsize;
-                    task->Read(address + aslr_slide + extrefsymoff,
-                                     image_dump + current_offset, extrefsize);
+                    task->Read(address + aslr_slide + extrefsymoff, image_dump + current_offset,
+                               extrefsize);
                     dysymtab_command->extrefsymoff = current_offset;
                     current_offset += extrefsize;
-                    task->Read(address + aslr_slide + indirectsymoff,
-                                     image_dump + current_offset, indirectsize);
+                    task->Read(address + aslr_slide + indirectsymoff, image_dump + current_offset,
+                               indirectsize);
                     dysymtab_command->indirectsymoff = current_offset;
                     current_offset += indirectsize;
                     task->Read(address + aslr_slide + extreloff, image_dump + current_offset,
-                                     extrelsize);
+                               extrelsize);
                     dysymtab_command->extreloff = current_offset;
                     current_offset += extrelsize;
                     task->Read(address + aslr_slide + locreloff, image_dump + current_offset,
-                                     locrelsize);
+                               locrelsize);
                     dysymtab_command->locreloff = current_offset;
                     current_offset += locrelsize;
                 }
@@ -803,23 +797,23 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 export_off = dyld_info_command->export_off - linkedit_old_off;
                     UInt32 export_size = dyld_info_command->export_size;
                     task->Read(linkedit_vmaddr + aslr_slide + rebase_off,
-                                     image_dump + linkedit_new_off + linkedit_off, rebase_size);
+                               image_dump + linkedit_new_off + linkedit_off, rebase_size);
                     dyld_info_command->rebase_off = linkedit_new_off + linkedit_off;
                     linkedit_off += rebase_size;
                     task->Read(linkedit_vmaddr + aslr_slide + bind_off,
-                                     image_dump + linkedit_new_off + linkedit_off, bind_size);
+                               image_dump + linkedit_new_off + linkedit_off, bind_size);
                     dyld_info_command->bind_off = linkedit_new_off + linkedit_off;
                     linkedit_off += bind_size;
                     task->Read(linkedit_vmaddr + aslr_slide + weak_bind_off,
-                                     image_dump + linkedit_new_off + linkedit_off, weak_bind_size);
+                               image_dump + linkedit_new_off + linkedit_off, weak_bind_size);
                     dyld_info_command->weak_bind_off = linkedit_new_off + linkedit_off;
                     linkedit_off += weak_bind_size;
                     task->Read(linkedit_vmaddr + aslr_slide + lazy_bind_off,
-                                     image_dump + linkedit_new_off + linkedit_off, lazy_bind_size);
+                               image_dump + linkedit_new_off + linkedit_off, lazy_bind_size);
                     dyld_info_command->lazy_bind_off = linkedit_new_off + linkedit_off;
                     linkedit_off += lazy_bind_size;
                     task->Read(linkedit_vmaddr + aslr_slide + export_off,
-                                     image_dump + linkedit_new_off + linkedit_off, export_size);
+                               image_dump + linkedit_new_off + linkedit_off, export_size);
                     dyld_info_command->export_off = linkedit_new_off + linkedit_off;
                     linkedit_off += export_size;
                 } else {
@@ -834,23 +828,23 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 export_off = dyld_info_command->export_off - linkedit_old_off;
                     UInt32 export_size = dyld_info_command->export_size;
                     task->Read(address + aslr_slide + rebase_off, image_dump + current_offset,
-                                     rebase_size);
+                               rebase_size);
                     dyld_info_command->rebase_off = current_offset;
                     current_offset += rebase_size;
                     task->Read(address + aslr_slide + bind_off, image_dump + current_offset,
-                                     bind_size);
+                               bind_size);
                     dyld_info_command->bind_off = current_offset;
                     current_offset += bind_size;
-                    task->Read(address + aslr_slide + weak_bind_off,
-                                     image_dump + current_offset, weak_bind_size);
+                    task->Read(address + aslr_slide + weak_bind_off, image_dump + current_offset,
+                               weak_bind_size);
                     dyld_info_command->weak_bind_off = current_offset;
                     current_offset += weak_bind_size;
-                    task->Read(address + aslr_slide + lazy_bind_off,
-                                     image_dump + current_offset, lazy_bind_size);
+                    task->Read(address + aslr_slide + lazy_bind_off, image_dump + current_offset,
+                               lazy_bind_size);
                     dyld_info_command->lazy_bind_off = current_offset;
                     current_offset += lazy_bind_size;
                     task->Read(address + aslr_slide + export_off, image_dump + current_offset,
-                                     export_size);
+                               export_size);
                     dyld_info_command->export_off = current_offset;
                     current_offset += export_size;
                 }
@@ -862,7 +856,7 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 dataoff = linkedit_data_command->dataoff - linkedit_old_off;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(linkedit_vmaddr + aslr_slide + dataoff,
-                                     image_dump + linkedit_new_off + linkedit_off, datasize);
+                               image_dump + linkedit_new_off + linkedit_off, datasize);
 
                     linkedit_data_command->dataoff = linkedit_new_off + linkedit_off;
                     linkedit_off += datasize;
@@ -870,7 +864,7 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 dataoff = linkedit_data_command->dataoff;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(address + aslr_slide + dataoff, image_dump + current_offset,
-                                     datasize);
+                               datasize);
                     linkedit_data_command->dataoff = current_offset;
                     current_offset += datasize;
                 }
@@ -882,14 +876,14 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 dataoff = linkedit_data_command->dataoff - linkedit_old_off;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(linkedit_vmaddr + aslr_slide + dataoff,
-                                     image_dump + linkedit_new_off + linkedit_off, datasize);
+                               image_dump + linkedit_new_off + linkedit_off, datasize);
                     linkedit_data_command->dataoff = linkedit_new_off + linkedit_off;
                     linkedit_off += datasize;
                 } else {
                     UInt32 dataoff = linkedit_data_command->dataoff;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(address + aslr_slide + dataoff, image_dump + current_offset,
-                                     datasize);
+                               datasize);
                     linkedit_data_command->dataoff = current_offset;
                     current_offset += datasize;
                 }
@@ -900,14 +894,14 @@ MachO* Dyld::CacheDumpImage(char* image) {
                     UInt32 dataoff = linkedit_data_command->dataoff - linkedit_old_off;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(linkedit_vmaddr + aslr_slide + dataoff,
-                                     image_dump + linkedit_new_off + linkedit_off, datasize);
+                               image_dump + linkedit_new_off + linkedit_off, datasize);
                     linkedit_data_command->dataoff = linkedit_new_off + linkedit_off;
                     linkedit_off += datasize;
                 } else {
                     UInt32 dataoff = linkedit_data_command->dataoff;
                     UInt32 datasize = linkedit_data_command->datasize;
                     task->Read(address + aslr_slide + dataoff, image_dump + current_offset,
-                                     datasize);
+                               datasize);
                     linkedit_data_command->dataoff = current_offset;
                     current_offset += datasize;
                 }
@@ -959,5 +953,5 @@ MachO* Dyld::CacheDumpImageToFile(char* image, char* path) {
     return macho;
 }
 
-}
-}
+} // namespace dyld
+} // namespace darwin
