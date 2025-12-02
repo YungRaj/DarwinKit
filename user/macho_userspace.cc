@@ -29,7 +29,7 @@ MachOUserspace::MachOUserspace(const char* path) : objc(nullptr), file_path(strd
     WithFilePath(path);
 }
 
-void MachOUserspace::WithTask(Task* task) {
+void MachOUserspace::WithTask(xnu::Task* task) {
     task = task;
     dyld = task->GetDyld();
     dyld_base = dyld->GetDyld();

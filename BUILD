@@ -227,10 +227,36 @@ cc_library(
         "Hypervisor",
         "-lEndpointSecurity",
         "-lbsm",
+        "-iframework",
+        "/System/Library/PrivateFrameworks",
+        "-framework",
+        "DiskImages2",
     ],
     linkstatic = True,
     visibility = ["//visibility:public"],
     deps = [":DarwinKit_user_iokit"],
+    alwayslink = True,
+)
+
+objc_library(
+    name = "DarwinKit_tool_fuzzer",
+    srcs = glob(["user/*.mm"]),
+    hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]),
+    copts = [
+        "-w",
+        "-std=c++20",
+        "-D__USER__",
+        "-I./",
+        "-I./capstone/include",
+        "-DCAPSTONE_HAS_X86",
+        "-DCAPSTONE_HAS_ARM64",
+    ],
+    includes = [
+        "darwinkit",
+        "user",
+    ],
+    linkopts = [],
+    visibility = ["//visibility:public"],
     alwayslink = True,
 )
 
@@ -240,9 +266,16 @@ macos_command_line_application(
         "--entitlements",
         "entitlements.xml",
     ],
-    linkopts = ["-lresolv"],
+    linkopts = [
+        "-lresolv",
+        "-framework",
+        "DiskImages2",
+        "-framework",
+        "DiskArbitration",
+    ],
     minimum_os_version = "11.0",
     deps = [
+        ":DarwinKit_tool_fuzzer",
         ":DarwinKit_user",
         ":libafl_fuzzer_frida",
     ],
@@ -250,7 +283,7 @@ macos_command_line_application(
 
 objc_library(
     name = "cycript_runner",
-    srcs = ["user/cycript_runner.mm"],
+    srcs = ["user/lib/cycript_runner.mm"],
     hdrs = [],
     linkopts = [
         "-framework",
@@ -514,8 +547,8 @@ macos_kernel_extension(
 
 objc_library(
     name = "Crawler_static",
-    srcs = glob(["user/FakeTouch/*.mm"]) + glob(["user/crawler.mm"]),
-    hdrs = glob(["user/FakeTouch/*.h"]) + glob(["user/crawler.h"]),
+    srcs = glob(["user/FakeTouch/*.mm"]) + glob(["user/lib/crawler.mm"]),
+    hdrs = glob(["user/FakeTouch/*.h"]) + glob(["user/lib/crawler.h"]),
     alwayslink = True,
 )
 

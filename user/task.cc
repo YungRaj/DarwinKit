@@ -38,6 +38,8 @@ static int EndsWith(const char* str, const char* suffix) {
     return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
 }
 
+Task::Task() : disassembler(new Disassembler(this)) {}
+
 Task::Task(Kernel* kernel, int pid)
     : kernel(kernel), pid(pid), task_port(Task::GetTaskForPid(pid)),
       proc(Task::FindProcByPid(kernel, pid)) {

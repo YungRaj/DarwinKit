@@ -21,8 +21,6 @@
 #include <vector>
 #include <types.h>
 
-#include "pac.h"
-
 class Segment;
 class Section;
 
@@ -34,17 +32,12 @@ class MachOUserspace;
 
 namespace objc {
 #ifdef __arm64e__
-
 static const UInt64 bigSignedMethodListFlag = 0x8000000000000000;
-
 #else
-
 static const UInt64 bigSignedMethodListFlag = 0x0;
-
 #endif
 
 static const UInt32 smallMethodListFlag = 0x80000000;
-
 static const UInt32 relativeMethodSelectorsAreDirectFlag = 0x40000000;
 
 #define RO_META (1 << 0)

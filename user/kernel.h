@@ -27,12 +27,13 @@ extern "C" {
 #include "kern_user.h"
 }
 
-#include "disassembler.h"
 #include "dwarf.h"
 #include "kernel_macho.h"
 #include "macho.h"
 #include "macho_userspace.h"
 #include "task.h"
+
+class Disassembler;
 
 namespace xnu {
 class Task;

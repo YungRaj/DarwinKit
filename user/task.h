@@ -23,7 +23,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "disassembler.h"
+class Disassembler;
 
 namespace xnu {
 class Kernel;
@@ -54,7 +54,7 @@ using namespace darwin;
 namespace xnu {
 class Task {
 public:
-    explicit Task() : disassembler(new Disassembler(this)) {}
+    explicit Task();
 
     explicit Task(xnu::Kernel* kernel, int pid);
 
