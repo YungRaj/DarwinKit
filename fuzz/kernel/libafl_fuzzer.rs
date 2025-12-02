@@ -25,12 +25,11 @@ use libafl::{
     mutators::{havoc_mutations::havoc_mutations, scheduled::HavocScheduledMutator},
     observers::ConstMapObserver,
     schedulers::QueueScheduler,
-    stages::{CalibrationStage, mutational::StdMutationalStage},
+    stages::{mutational::StdMutationalStage, CalibrationStage},
     state::StdState,
 };
 use libafl_bolts::{nonnull_raw_mut, nonzero, rands::StdRand, tuples::tuple_list, AsSlice};
 #[cfg(any(windows, unix))]
-
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -55,7 +54,10 @@ extern "C" {
 /// Provides the macOS kernel time in millsecs to Rust in `no_std` environment
 #[no_mangle]
 extern "C" {
-    pub fn clock_get_system_microtime(secs: *mut core::ffi::c_ulong, microsecs: *mut core::ffi::c_ulong);
+    pub fn clock_get_system_microtime(
+        secs: *mut core::ffi::c_ulong,
+        microsecs: *mut core::ffi::c_ulong,
+    );
 }
 
 /// Provide custom time in `no_std` environment

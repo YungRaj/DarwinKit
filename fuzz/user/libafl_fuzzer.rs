@@ -2,6 +2,7 @@
 //! The example harness is built for libpng.
 use std::{cell::RefCell, path::PathBuf, rc::Rc};
 
+use core::ptr::NonNull;
 use frida_gum::Gum;
 use libafl::{
     corpus::{CachedOnDiskCorpus, Corpus, OnDiskCorpus},
@@ -45,7 +46,6 @@ use libafl_frida::{
 };
 use libafl_targets::cmplog::CmpLogObserver;
 use mimalloc::MiMalloc;
-use core::ptr::NonNull;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -53,7 +53,9 @@ static GLOBAL: MiMalloc = MiMalloc;
 const COVERAGE_MAP_SIZE: usize = 65536;
 
 #[no_mangle]
-pub extern "C" fn libafl_start_darwin_kit_fuzzer(kernel_coverage_map: *const core::ffi::c_uchar) -> isize {
+pub extern "C" fn libafl_start_darwin_kit_fuzzer(
+    kernel_coverage_map: *const core::ffi::c_uchar,
+) -> isize {
     env_logger::init();
     color_backtrace::install();
     let options = parse_args();
@@ -68,7 +70,10 @@ pub extern "C" fn libafl_start_darwin_kit_fuzzer(kernel_coverage_map: *const cor
 
 /// The actual fuzzer
 #[expect(clippy::too_many_lines)]
-fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar) -> Result<(), Error> {
+fn fuzz(
+    options: &FuzzerOptions,
+    kernel_coverage_map: *const core::ffi::c_uchar,
+) -> Result<(), Error> {
     // 'While the stats are state, they are usually used in the broker - which is likely never restarted
     let monitor = MultiMonitor::new(|s| println!("{s}"));
 
@@ -132,7 +137,8 @@ fn fuzz(options: &FuzzerOptions, kernel_coverage_map: *const core::ffi::c_uchar)
             .cast::<[u8; COVERAGE_MAP_SIZE]>();
 
         // Create an observation channel using the signals map
-        let kernel_edges_observer = unsafe { ConstMapObserver::from_mut_ptr("edges_kernel", map_ptr) };
+        let kernel_edges_observer =
+            unsafe { ConstMapObserver::from_mut_ptr("edges_kernel", map_ptr) };
 
         // Create an observation channel using the coverage map
         let edges_observer = HitcountsMapObserver::new(unsafe {
