@@ -427,21 +427,14 @@ void KernelPatcher::PatchPmapEnterOptions() {
 #endif
 
 void KernelPatcher::ApplyKernelPatch(struct KernelPatch* patch) {
-    xnu::Kernel* kernel;
-    MachO* macho;
+    xnu::Kernel *kernel = patch->kernel;
+    MachO *macho = patch->macho;
     Symbol* symbol;
-    const UInt8* find;
-    const UInt8* replace;
-    Size size;
-    Size count;
-    Offset offset;
-    kernel = patch->kernel;
-    macho = patch->macho;
-    find = patch->find;
-    replace = patch->replace;
-    size = patch->size;
-    count = patch->count;
-    offset = patch->offset;
+    const UInt8 *find = patch->find;
+    const UInt8 *replace = patch->replace;
+    Size size = patch->size;
+    Size count = patch->count;
+    Offset offset = patch->offset;
     if (!symbol) {
         // Patches everything you can N times;
         xnu::mach::VmAddress base = kernel->GetBase();
@@ -478,21 +471,14 @@ void KernelPatcher::ApplyKernelPatch(struct KernelPatch* patch) {
 }
 
 void KernelPatcher::ApplyKextPatch(struct KextPatch* patch) {
-    Kext* kext;
-    MachO* macho;
+    Kext *kext = patch->kext;
+    MachO *macho = patch->macho;
     Symbol* symbol;
-    const UInt8* find;
-    const UInt8* replace;
-    Size size;
-    Size count;
-    Offset offset;
-    kext = patch->kext;
-    macho = patch->macho;
-    find = patch->find;
-    replace = patch->replace;
-    size = patch->size;
-    count = patch->count;
-    offset = patch->offset;
+    const UInt8 *find = patch->find;
+    const UInt8 *replace = patch->replace;
+    Size size = patch->size;
+    Size count = patch->count;
+    Offset offset = patch->offset;
     if (!symbol) {
         // Patches everything you can N times;
         xnu::mach::VmAddress base = kext->GetBase();
@@ -529,21 +515,14 @@ void KernelPatcher::ApplyKextPatch(struct KextPatch* patch) {
 }
 
 void KernelPatcher::RemoveKernelPatch(struct KernelPatch* patch) {
-    xnu::Kernel* kernel;
-    MachO* macho;
+    xnu::Kernel *kernel = patch->kernel;
+    MachO *macho = patch->macho;
     Symbol* symbol;
-    const UInt8* find;
-    const UInt8* replace;
-    Size size;
-    Size count;
-    Offset offset;
-    kernel = patch->kernel;
-    macho = patch->macho;
-    find = patch->find;
-    replace = patch->replace;
-    size = patch->size;
-    count = patch->count;
-    offset = patch->offset;
+    const UInt8 *find = patch->find;
+    const UInt8 *replace = patch->replace;
+    Size size = patch->size;
+    Size count = patch->count;
+    Offset offset = patch->offset;
     if (!symbol) {
         // Patches everything you can N times;
         xnu::mach::VmAddress base = kernel->GetBase();
@@ -580,21 +559,14 @@ void KernelPatcher::RemoveKernelPatch(struct KernelPatch* patch) {
 }
 
 void KernelPatcher::RemoveKextPatch(struct KextPatch* patch) {
-    Kext* kext;
-    MachO* macho;
+    Kext *kext = patch->kext;
+    MachO *macho = patch->macho;
     Symbol* symbol;
-    const UInt8* find;
-    const UInt8* replace;
-    Size size;
-    Size count;
-    Offset offset;
-    kext = patch->kext;
-    macho = patch->macho;
-    find = patch->find;
-    replace = patch->replace;
-    size = patch->size;
-    count = patch->count;
-    offset = patch->offset;
+    const UInt8 *find = patch->find;
+    const UInt8 *replace = patch->replace;
+    Size size = patch->size;
+    Size count = patch->count;
+    Offset offset = patch->offset;
     if (!symbol) {
         // Patches everything you can N times;
         xnu::mach::VmAddress base = kext->GetBase();

@@ -247,8 +247,7 @@ concept SupportedProcessor =
 
 template <enum Architectures ArchType>
 static constexpr UInt32 GetPageShift()
-    requires SupportedProcessor<ArchType>
-{
+    requires SupportedProcessor<ArchType> {
     if constexpr (ArchType == ARCH_arm64) {
         return PAGE_SHIFT_ARM64;
     }
@@ -259,8 +258,7 @@ static constexpr UInt32 GetPageShift()
 
 template <enum Architectures ArchType>
 static constexpr UInt64 GetPageSize()
-    requires SupportedProcessor<ArchType>
-{
+    requires SupportedProcessor<ArchType> {
     return 1 << arch::GetPageShift<ArchType>();
 }
 
