@@ -4,6 +4,6 @@
 #include <DiskArbitration/DiskArbitration.h>
 
 extern "C" {
-void MountPartition(NSString *bsdDeviceName);
-void MountDmg(NSString *path);
+int MountPartition(NSString *bsdDeviceName);
+int MountDmg(NSString *path);
 }

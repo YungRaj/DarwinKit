@@ -10,6 +10,7 @@ int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
     // Only enable coverage during each test case
     kernel->EnableCoverage();
     // Start fuzzing here
+    int result;
     @autoreleasepool {
         // Creates NSData object from fuzzer input
         NSData *dmgData = [NSData dataWithBytes:data length:size];
@@ -22,13 +23,14 @@ int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
         BOOL success = [dmgData writeToFile:filePath options:NSDataWritingAtomic error:&error];
         if (!success) {
             NSLog(@"Failed to write DMG file: %@, Error: %@", filePath, error);
-            return 0; 
+            return -1; 
         }
         // Performs the DMG mount and attach operation
         // Attach and mount the dmg file contents
-        MountDmg(filePath);
+        result = MountDmg(filePath);
         // Cleans up the temporary file
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
     }
     kernel->DisableCoverage();
+    return result;
 }

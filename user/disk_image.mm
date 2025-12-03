@@ -22,12 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-void MountPartition(NSString *bsdDeviceName) {
+int MountPartition(NSString *bsdDeviceName) {
     // Creates a Disk Arbitration Session
     DASessionRef session = DASessionCreate(kCFAllocatorDefault);
     if (!session) {
         NSLog(@"[Partition Mount] Failed to create DA Session for %@", bsdDeviceName);
-        return;
+        return -1;
     }
     // Gets a DADiskRef from the BSD name (e.g., /dev/diskXs1)
     DADiskRef daDisk = DADiskCreateFromBSDName(kCFAllocatorDefault, session,
@@ -35,7 +35,7 @@ void MountPartition(NSString *bsdDeviceName) {
     if (!daDisk) {
         NSLog(@"[Partition Mount] Failed to create DADiskRef for %@", bsdDeviceName);
         CFRelease(session);
-        return;
+        return -1;
     }
     // Mounts the disk. DADiskMount is asynchronous and requires 5 arguments.
     // We pass NULL for the path, callback, and context to use default options and block implicitly.
@@ -47,15 +47,17 @@ void MountPartition(NSString *bsdDeviceName) {
     NSLog(@"[Partition Mount] Attempted to mount partition: %@", bsdDeviceName);
     CFRelease(daDisk);
     CFRelease(session);
+    return 0;
 }
 
-void MountDmg(NSString *path) {
+int MountDmg(NSString *path) {
     NSURL *dmgURL = [NSURL fileURLWithPath: path];
     NSError *error;
     DIAttachParams *params = [[DIAttachParams alloc] initWithURL: dmgURL error:&error];
     DIDeviceHandle *deviceAttached;
     [DiskImages2 attachWithParams: params handle: &deviceAttached error: nil];
     if (deviceAttached) {
+        int result = 0;
         NSString *parentBSDName = [deviceAttached BSDName];
         printf("Attached dmg, Parent BSD Name: %s\n", [parentBSDName UTF8String]);
         // Finds partitions using DADiskCopyWholeDisk's description
@@ -71,17 +73,25 @@ void MountDmg(NSString *path) {
                 for (id partition in (__bridge NSArray *)wholeDiskPartitions) {
                     NSString *bsdName = partition[@"DADeviceBSDName"];
                     if (bsdName) {
-                        MountPartition(bsdName);
+                        result = MountPartition(bsdName);
+                        if (result != 0) {
+                            return result;
+                        }
                     }
                 }
             } else {
                 NSLog(@"Could not find partitions array in disk description.");
+                return -1;
             }
             CFRelease(diskDescription);
             CFRelease(wholeDisk);
+        } else {
+            result = -1;
         }
         CFRelease(lookupSession);
+        return result;
     } else {
         fprintf(stderr, "couldn't attach DMG or get device handle\n");
+        return -1;
     }
 }
