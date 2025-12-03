@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "libafl_fuzzer.h"
+#include "fuzzer.h"
 
 namespace xnu {
 
@@ -261,6 +262,18 @@ void Kernel::Fuzz(enum FuzzContext context) {
     }
     case kLibAFLFuzzInKernel: {
         kcov_begin_fuzzing();
+        break;
+    }
+    }
+}
+
+void Kernel::FuzzOne(enum FuzzContext context, UInt8* data, Size size) {
+    switch (context) {
+    case kLibAFLFuzzFromUserspace: {
+        LLVMFuzzerTestOneInput(data, size);
+        break;
+    }
+    case kLibAFLFuzzInKernel: {
         break;
     }
     }

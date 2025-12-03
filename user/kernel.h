@@ -123,6 +123,7 @@ public:
     void DisableCoverage();
 
     void Fuzz(enum FuzzContext context);
+    void FuzzOne(enum FuzzContext context, UInt8 *data, Size size);
 
 private:
     darwin::MachOUserspace* macho;

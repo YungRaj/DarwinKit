@@ -62,7 +62,7 @@ void print_usage() {
 
 #include "fuzzer.h"
 
-int main(int argc, char** argv, char** envp) {
+extern "C" int darwinkit_tool_main(int argc, char** argv, char** envp) {
     bool fuzz, from_kernel, from_user = false;
     int err;
     char* wait_for_process_name = nullptr;

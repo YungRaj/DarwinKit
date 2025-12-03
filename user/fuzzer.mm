@@ -5,7 +5,7 @@
 
 #include <Foundation/Foundation.h>
 
-int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
     xnu::Kernel* kernel = xnu::Kernel::Xnu();
     // Only enable coverage during each test case
     kernel->EnableCoverage();

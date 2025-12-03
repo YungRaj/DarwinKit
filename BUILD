@@ -212,6 +212,8 @@ cc_library(
         "-I./capstone/include",
         "-DCAPSTONE_HAS_X86",
         "-DCAPSTONE_HAS_ARM64",
+        "-iframework",
+        "/System/Library/PrivateFrameworks",
     ],
     includes = [
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
@@ -223,23 +225,16 @@ cc_library(
     linkopts = [
         "-framework",
         "IOKit",
-        "-framework",
-        "Hypervisor",
         "-lEndpointSecurity",
         "-lbsm",
-        "-iframework",
-        "/System/Library/PrivateFrameworks",
-        "-framework",
-        "DiskImages2",
     ],
-    linkstatic = True,
     visibility = ["//visibility:public"],
     deps = [":DarwinKit_user_iokit"],
     alwayslink = True,
 )
 
 objc_library(
-    name = "DarwinKit_tool_fuzzer",
+    name = "DarwinKit_LLVMFuzzer",
     srcs = glob(["user/*.mm"]),
     hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]),
     copts = [
@@ -255,9 +250,45 @@ objc_library(
         "darwinkit",
         "user",
     ],
-    linkopts = [],
     visibility = ["//visibility:public"],
     alwayslink = True,
+)
+
+cc_shared_library(
+    name = "DarwinKitTool_fuzzer",
+    additional_linker_inputs = [
+        ":DarwinKit_LLVMFuzzer",
+    ],
+    user_link_flags = [
+        "-lresolv",
+        "-framework",
+        "Hypervisor",
+        "-iframework",
+        "/System/Library/PrivateFrameworks",
+        "-framework",
+        "DiskImages2",
+        "-framework",
+        "DiskArbitration",
+        "$(location :DarwinKit_LLVMFuzzer)",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":DarwinKit_user",
+        ":libafl_fuzzer_frida",
+    ],
+)
+
+cc_library(
+    name = "DarwinKitTool_main",
+    srcs = ["main.cc"],
+    additional_linker_inputs = [
+        ":DarwinKitTool_fuzzer",
+    ],
+    linkopts = [
+        "$(location :DarwinKitTool_fuzzer)",
+        "-Wl,-rpath,@executable_path/",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 macos_command_line_application(
@@ -266,18 +297,9 @@ macos_command_line_application(
         "--entitlements",
         "entitlements.xml",
     ],
-    linkopts = [
-        "-lresolv",
-        "-framework",
-        "DiskImages2",
-        "-framework",
-        "DiskArbitration",
-    ],
     minimum_os_version = "11.0",
     deps = [
-        ":DarwinKit_tool_fuzzer",
-        ":DarwinKit_user",
-        ":libafl_fuzzer_frida",
+        ":DarwinKitTool_main",
     ],
 )
 
@@ -505,7 +527,6 @@ cc_library(
 cc_library(
     name = "libafl_fuzzer_frida",
     srcs = [":libafl_fuzzer_frida_genrule"],
-    linkstatic = True,
     alwayslink = True,
 )
 
