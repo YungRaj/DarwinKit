@@ -16,10 +16,10 @@
 
 #include "kernel.h"
 
-#include <memory>
-
-#include "libafl_fuzzer.h"
 #include "fuzzer.h"
+#include "libafl_fuzzer.h"
+
+#include <memory>
 
 namespace xnu {
 
@@ -253,18 +253,12 @@ UInt8* Kernel::GetCoverageMap() {
     return kcov_get_coverage_map();
 }
 
-void Kernel::Fuzz(enum FuzzContext context) {
-    switch (context) {
-    case kLibAFLFuzzFromUserspace: {
-        UInt8* coverage_map = GetCoverageMap();
-        libafl_start_darwin_kit_fuzzer(coverage_map);
-        break;
-    }
-    case kLibAFLFuzzInKernel: {
-        kcov_begin_fuzzing();
-        break;
-    }
-    }
+void Kernel::EnableCoverage() {
+    kcov_enable_coverage();
+}
+
+void Kernel::DisableCoverage() {
+    kcov_disable_coverage();
 }
 
 void Kernel::FuzzOne(enum FuzzContext context, UInt8* data, Size size) {
@@ -277,14 +271,6 @@ void Kernel::FuzzOne(enum FuzzContext context, UInt8* data, Size size) {
         break;
     }
     }
-}
-
-void Kernel::EnableCoverage() {
-    kcov_enable_coverage();
-}
-
-void Kernel::DisableCoverage() {
-    kcov_disable_coverage();
 }
 
 } // namespace xnu

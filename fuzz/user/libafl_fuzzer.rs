@@ -27,7 +27,7 @@ use libafl::{
     Error, HasMetadata,
 };
 use libafl_bolts::{
-    cli::{parse_args, FuzzerOptions},
+    cli::{parse_from, FuzzerOptions},
     rands::StdRand,
     shmem::{ShMemProvider, StdShMemProvider},
     tuples::{tuple_list, Merge},
@@ -46,6 +46,7 @@ use libafl_frida::{
 };
 use libafl_targets::cmplog::CmpLogObserver;
 use mimalloc::MiMalloc;
+use std::io::{self, Write};
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -56,9 +57,16 @@ const COVERAGE_MAP_SIZE: usize = 65536;
 pub extern "C" fn libafl_start_darwin_kit_fuzzer(
     kernel_coverage_map: *const core::ffi::c_uchar,
 ) -> isize {
+    let args: Vec<String> = std::env::args().collect();
+    let mut libafl_args: Vec<String> = if let Some(idx) = args.iter().position(|x| x == "--") {
+        args[idx + 1..].to_vec()
+    } else {
+        vec![]
+    };
+    libafl_args.insert(0, "darwinkit_tool".to_string());
     env_logger::init();
     color_backtrace::install();
-    let options = parse_args();
+    let options = parse_from(libafl_args);
 
     log::info!("Frida fuzzer starting up.");
     match fuzz(&options, kernel_coverage_map) {
@@ -193,6 +201,8 @@ fn fuzz(
             StdMutationalStage::new(mutator)
         );
 
+        println!("We're a client, let's fuzz :)");
+
         // If not restarting, create a State from scratch
         let mut state = state.unwrap_or_else(|| {
             StdState::new(
@@ -208,8 +218,6 @@ fn fuzz(
             )
             .unwrap()
         });
-
-        println!("We're a client, let's fuzz :)");
 
         // A minimization+queue policy to get testcasess from the corpus
         let scheduler =

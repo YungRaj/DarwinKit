@@ -6,7 +6,6 @@
   "linker": "clang",
   "vendor": "apple",
   "is-like-darwin": true,
-  "target-family": "unix",
   "binary-format": "mach-o",
   "executables": false,
   "relocation-model": "static",

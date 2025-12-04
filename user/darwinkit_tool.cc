@@ -51,12 +51,12 @@ static struct option long_options[] = {{"pid", required_argument, 0, 'p'},
                                        {"wait_for_process", required_argument, 0, 'w'},
                                        {"fuzz", no_argument, 0, 'f'},
                                        {"kernel", no_argument, 0, 'k'},
-                                       {"user", no_argument, 0, 'u'}};
+                                       {0, 0, 0, 0}};
 
 void print_usage() {
     printf("darwinkit_tool -p <pid> -w <process_name> /path/to/dynamic/library.dylib\n");
     printf("               -f -k\n");
-    printf("               -f -u\n");
+    printf("               no_arguments\n");
     exit(-1);
 }
 
@@ -72,7 +72,6 @@ extern "C" int darwinkit_tool_main(int argc, char** argv, char** envp) {
 
     xnu::Kernel* kernel = xnu::Kernel::Xnu();
     std::unique_ptr<xnu::Task> task = nullptr;
-
     // Example - running code in the macOS kernel in userspace
     // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
 
@@ -86,36 +85,42 @@ extern "C" int darwinkit_tool_main(int argc, char** argv, char** envp) {
     // using namespace debug;
     // Dwarf<xnu::KernelMachO*>
     // dwarf("/Library/Developer/KDKs/KDK_13.6_22G120.kdk/System/Library/Kernels/kernel.release.t8112.dSYM/Contents/Resources/DWARF/kernel.release.t8112");
+    opterr = 0;
+    int opts = 0;
     while (1) {
         int option_index = 0;
-        c = getopt_long(argc, argv, "p:w:fku", long_options, &option_index);
+        c = getopt_long(argc, argv, "p:w:fk", long_options, &option_index);
         if (c == -1) {
             break;
         }
         switch (c) {
         case 'p':
             pid = atoi(optarg);
+            opts++;
             break;
         case 'w':
             wait_for_process_name = optarg;
+            opts++;
             break;
         case 'f':
             fuzz = true;
+            opts++;
             break;
         case 'k':
             from_kernel = true;
+            opts++;
             break;
-        case 'u':
-            from_user = true;
         default:
             break;
         }
     }
-
+    if (opts == 0) {
+        optind = 1;
+        optreset = 1;
+        return 1;
+    }
     if (fuzz && from_kernel) {
-        kernel->Fuzz(kLibAFLFuzzInKernel);
-    } else if (fuzz && from_user) {
-        kernel->Fuzz(kLibAFLFuzzFromUserspace);
+        return 2;
     }
     if (pid <= 0) {
         print_usage();

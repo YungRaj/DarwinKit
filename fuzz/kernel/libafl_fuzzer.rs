@@ -29,7 +29,6 @@ use libafl::{
     state::StdState,
 };
 use libafl_bolts::{nonnull_raw_mut, nonzero, rands::StdRand, tuples::tuple_list, AsSlice};
-#[cfg(any(windows, unix))]
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {

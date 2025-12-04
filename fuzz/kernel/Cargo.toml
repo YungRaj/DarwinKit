@@ -22,9 +22,6 @@ libafl = { default-features = false, git = "https://github.com/AFLplusplus/LibAF
 libafl_bolts = { default-features = false, git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main" }
 log = { version = "0.4.22", features = ["release_max_level_info"] }
 
-[target.'cfg(unix)'.dependencies]
-libc = "0.2.159"
-
 [lib]
 name = "libafl_fuzzer_no_std_lib"
 crate-type = ["staticlib"]

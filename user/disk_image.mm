@@ -59,7 +59,6 @@ int MountDmg(NSString *path) {
     if (deviceAttached) {
         int result = 0;
         NSString *parentBSDName = [deviceAttached BSDName];
-        printf("Attached dmg, Parent BSD Name: %s\n", [parentBSDName UTF8String]);
         // Finds partitions using DADiskCopyWholeDisk's description
         DASessionRef lookupSession = DASessionCreate(kCFAllocatorDefault);
         DADiskRef wholeDisk = DADiskCreateFromBSDName(kCFAllocatorDefault, lookupSession, [parentBSDName UTF8String]);
@@ -91,7 +90,6 @@ int MountDmg(NSString *path) {
         CFRelease(lookupSession);
         return result;
     } else {
-        fprintf(stderr, "couldn't attach DMG or get device handle\n");
         return -1;
     }
 }

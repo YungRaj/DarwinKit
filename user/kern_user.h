@@ -24,6 +24,10 @@
 
 #include "api.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern mach_port_t connection;
 
 mach_port_t open_kernel_tfp0_connection();
@@ -106,3 +110,7 @@ void kcov_enable_coverage();
 void kcov_disable_coverage();
 void kcov_begin_fuzzing();
 uint8_t* kcov_get_coverage_map();
+
+#ifdef __cplusplus
+}
+#endif

@@ -19,23 +19,22 @@ debug = true
 panic = 'abort'
 
 [dependencies]
-libafl = { git = "https://github.com/RajYung/LibAFL.git", branch = "main", features = [
+libafl = { git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main", features = [
   "std",
   "llmp_compression",
   "llmp_bind_public",
   "frida_cli",
   "errors_backtrace",
 ] } #,  "llmp_small_maps", "llmp_debug"]}
-libafl_bolts = { git = "https://github.com/RajYung/LibAFL.git", branch = "main" }
-frida-gum = { git = "https://github.com/frida/frida-rust", features = [
+libafl_bolts = { git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main" }
+frida-gum = { version = "0.17.1", features = [
   "auto-download",
   "event-sink",
   "invocation-listener",
   "script",
 ] }
-
-libafl_frida = { git = "https://github.com/RajYung/LibAFL.git", branch = "main", features = ["cmplog"] }
-libafl_targets = { git = "https://github.com/RajYung/LibAFL.git", branch = "main", features = [
+libafl_frida = { git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main", features = ["cmplog"] }
+libafl_targets = { git = "https://github.com/AFLplusplus/LibAFL.git", branch = "main", features = [
   "sancov_cmplog",
 ] }
 libloading = "0.8.5"

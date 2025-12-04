@@ -260,7 +260,6 @@ cc_shared_library(
         ":DarwinKit_LLVMFuzzer",
     ],
     user_link_flags = [
-        "-lresolv",
         "-framework",
         "Hypervisor",
         "-iframework",
@@ -274,28 +273,43 @@ cc_shared_library(
     visibility = ["//visibility:public"],
     deps = [
         ":DarwinKit_user",
-        ":libafl_fuzzer_frida",
+        ":capstone_fat_static_universal",
     ],
 )
 
 cc_library(
     name = "DarwinKitTool_main",
     srcs = ["main.cc"],
+    hdrs = glob(["user/*.h"]) + glob(["darwinkit/*.h"]),
     additional_linker_inputs = [
         ":DarwinKitTool_fuzzer",
     ],
+    includes = [
+        "darwinkit",
+        "user",
+    ],
     linkopts = [
+        "-lresolv",
         "$(location :DarwinKitTool_fuzzer)",
         "-Wl,-rpath,@executable_path/",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        ":libafl_fuzzer_frida",
+    ],
 )
 
 macos_command_line_application(
     name = "darwinkit_tool",
+    additional_linker_inputs = [
+        ":DarwinKitTool_fuzzer",
+    ],
     codesignopts = [
         "--entitlements",
         "entitlements.xml",
+    ],
+    linkopts = [
+        "$(location :DarwinKitTool_fuzzer)",
     ],
     minimum_os_version = "11.0",
     deps = [
@@ -453,6 +467,8 @@ genrule(
         "fuzz/kernel/libafl_fuzzer.rs",
         "fuzz/kernel/allocator.rs",
         "fuzz/kernel/Cargo.toml",
+        "fuzz/kernel/arm64e-kernel.json",
+        "fuzz/kernel/x86_64-kernel.json",
     ],
     outs = ["liblibafl_fuzzer_no_std_lib.a"],
     cmd = """  
@@ -497,10 +513,11 @@ genrule(
     ],
     outs = ["liblibafl_fuzzer_frida_lib.a"],
     cmd = """  
+        export SDKROOT=$$(xcrun --sdk macosx --show-sdk-path)
         export RUSTUP_TOOLCHAIN=nightly
         cargo clean
-	rustup default nightly
-	rustup target add aarch64-apple-darwin
+        rustup default nightly
+        rustup target add aarch64-apple-darwin
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
         rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
@@ -511,7 +528,7 @@ genrule(
         rustup install nightly-x86_64-apple-darwin --force-non-host
         cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
         cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
-	cargo clean
+        cargo clean
         lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
     """,
     tags = ["no-sandbox"],
