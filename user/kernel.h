@@ -42,7 +42,8 @@ const char* GetKernelVersion();
 const char* GetOSBuildVersion();
 
 class Kernel : public xnu::Task {
-    static constexpr Size coverageMapSize = 64 * 1024;
+    static constexpr UInt8* kXnuKcovCoverageMap = kernel_coverage_map;
+    static constexpr Size kXnuKcovCoverageMapSize = KCOV_COVERAGE_BITMAP_SIZE;
 
 public:
     explicit Kernel();
@@ -117,7 +118,7 @@ public:
 
     virtual xnu::mach::VmAddress GetSymbolAddressByName(char* symbolname);
 
-    virtual UInt8* GetCoverageMap();
+    void CollectCoverage();
 
     void EnableCoverage();
     void DisableCoverage();

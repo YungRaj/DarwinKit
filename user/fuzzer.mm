@@ -32,5 +32,6 @@ extern "C" int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
     }
     kernel->DisableCoverage();
+    kernel->CollectCoverage();
     return result;
 }

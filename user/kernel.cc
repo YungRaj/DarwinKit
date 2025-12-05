@@ -249,8 +249,8 @@ xnu::mach::VmAddress Kernel::GetSymbolAddressByName(char* symbolname) {
     return get_kernel_symbol(symbolname);
 }
 
-UInt8* Kernel::GetCoverageMap() {
-    return kcov_get_coverage_map();
+void Kernel::CollectCoverage() {
+    kcov_collect_coverage();
 }
 
 void Kernel::EnableCoverage() {

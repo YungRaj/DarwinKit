@@ -24,6 +24,7 @@
 const char *service_name = "IOKernelDarwinKitService";
 
 mach_port_t connection = MACH_PORT_NULL;
+uint8_t kernel_coverage_map[KCOV_COVERAGE_BITMAP_SIZE];
 
 mach_port_t open_kernel_tfp0_connection() {
 	io_connect_t conn;
@@ -48,6 +49,7 @@ mach_port_t open_kernel_tfp0_connection() {
 		return MACH_PORT_NULL;
 	}
 	connection = conn;
+	memset(kernel_coverage_map, 0x0, KCOV_COVERAGE_BITMAP_SIZE);
 	return connection;
 }
 
@@ -571,17 +573,17 @@ void kcov_begin_fuzzing() {
 	kr = IOConnectCallMethod(connection, kIOKernelDarwinKitStartHarness, input, 0, 0, 0, output, &outputCnt, 0, 0);
 }
 
+void kcov_collect_coverage() {
+	if (connection == MACH_PORT_NULL) {
+		fprintf(stderr, "DarwinKit user client connection is MACH_PORT_NULL!");
+		exit(-1);
+	}
+	uint64_t input[] = {(uint64_t) kernel_coverage_map, KCOV_COVERAGE_BITMAP_SIZE};
+	uint64_t output[] = {};
+	uint32_t outputCnt = 0;
+	kern_return_t kr = IOConnectCallMethod(connection, kIOKernelDarwinKitStartHarness, input, 2, 0, 0, output, &outputCnt, 0, 0);
+}
+
 uint8_t* kcov_get_coverage_map() {
-	uintptr_t user_addr = 0;
-	size_t user_size = 0;
-	IOConnectMapMemory(
-    	connection,
-		0,
-		mach_task_self(),
-		&user_addr,
-		&user_size,
-		kIOMapAnywhere
-	);
-	uint8_t *coverage_map = (uint8_t*)user_addr;
-	return coverage_map;
+	return kernel_coverage_map;
 }

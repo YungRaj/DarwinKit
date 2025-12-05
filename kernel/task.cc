@@ -70,17 +70,13 @@ void Task::Initialize() {
 
 xnu::mach::Port Task::GetTaskPort(Kernel* kernel, int pid) {
     char buffer[128];
-
     proc_t proc = Task::FindProcByPid(kernel, pid);
-
     snprintf(buffer, 128, "0x%llx", (xnu::mach::VmAddress)proc);
     DARWIN_KIT_LOG("DarwinKit::Task::GetTaskPort() proc = %s\n", buffer);
 
     typedef task_t (*proc_task)(proc_t proc);
     auto _proc_task = reinterpret_cast<proc_task>(kernel->GetSymbolAddressByName("_proc_task"));
-
     task_t task = _proc_task(proc);
-
     snprintf(buffer, 128, "0x%llx", (xnu::mach::VmAddress)task);
     DARWIN_KIT_LOG("DarwinKit::Task::GetTaskPort() task = %s\n", buffer);
 
@@ -89,21 +85,18 @@ xnu::mach::Port Task::GetTaskPort(Kernel* kernel, int pid) {
         kernel->GetSymbolAddressByName("_convert_task_to_port"));
 
     ipc_port_t port = _convert_task_to_port(task);
-
     snprintf(buffer, 128, "0x%llx", (xnu::mach::VmAddress)port);
     DARWIN_KIT_LOG("DarwinKit::Task::GetTaskPort() port = %s\n", buffer);
-
     if (!port) {
         return nullptr;
     }
-
     return (xnu::mach::Port)port;
 }
 
 pid_t Task::GetPid(task_t task) {
     Kernel* kernel = xnu::Kernel::Xnu();
     auto _get_bsd_task_info = reinterpret_cast<proc_t (*)(task_t task)>(
-        kernel->GetSymbolAddressByName("_get_bsdtask_info", /*sign=*/true));
+        kernel->GetSymbolAddressByName("_get_bsdtask_info"));
     proc_t proc = _get_bsd_task_info(task);
 
     auto _proc_pid = reinterpret_cast<int (*)(proc_t proc)>(
@@ -146,13 +139,11 @@ proc_t Task::FindProcByPid(Kernel* kernel, int pid) {
     proc_t current_proc;
     int current_pid;
     char buffer[128];
-
     current_proc = *reinterpret_cast<proc_t*>(kernel->GetSymbolAddressByName("_kernproc"));
     current_proc = (proc_t) * (UInt64*)((UInt8*)current_proc + 0x8);
 
     typedef int (*proc_pid)(proc_t proc);
     auto _proc_pid = reinterpret_cast<proc_pid>(kernel->GetSymbolAddressByName("_proc_pid", true));
-
     while (current_proc) {
         current_pid = _proc_pid(current_proc);
 

@@ -89,7 +89,6 @@ public:
 private:
     IOKernelDarwinKitService* darwinkitService;
     xnu::Kernel* kernel;
-    IOMemoryDescriptor* coverageMap = nullptr;
 
     task_t clientTask;
     task_t kernelTask;
@@ -99,5 +98,5 @@ private:
     UInt8* mapBufferFromClientTask(xnu::mach::VmAddress uaddr, Size size, IOOptionBits options,
                                    IOMemoryDescriptor** desc, IOMemoryMap** mapping);
 
-    IOMemoryDescriptor* mapCoverageBitmap();
+    IOReturn setClientTaskKernelCoverageBuffer(mach_vm_address_t user_addr, uint64_t size);
 };

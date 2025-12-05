@@ -192,7 +192,6 @@ fn fuzz(
         let mutator = HavocScheduledMutator::new(havoc_mutations().merge(tokens_mutations()));
 
         let mut stages = tuple_list!(
-            CalibrationStage::new(&feedback.first),
             IfElseStage::new(
                 |_, _, _, _| Ok(is_cmplog(&options, &client_description)),
                 tuple_list!(tracing, i2s),
@@ -227,6 +226,7 @@ fn fuzz(
         let mut fuzzer = StdFuzzer::new(scheduler, feedback, objective);
 
         let observers = tuple_list!(
+            kernel_edges_observer,
             frida_helper_observer,
             edges_observer,
             time_observer,

@@ -28,7 +28,10 @@
 extern "C" {
 #endif
 
+#define KCOV_COVERAGE_BITMAP_SIZE 64 * 1024
+
 extern mach_port_t connection;
+extern uint8_t kernel_coverage_map[KCOV_COVERAGE_BITMAP_SIZE];
 
 mach_port_t open_kernel_tfp0_connection();
 void close_kernel_tfp0_connection();
@@ -109,6 +112,7 @@ uint64_t virtual_to_physical(mach_port_t task, mach_vm_address_t vaddr);
 void kcov_enable_coverage();
 void kcov_disable_coverage();
 void kcov_begin_fuzzing();
+void kcov_collect_coverage();
 uint8_t* kcov_get_coverage_map();
 
 #ifdef __cplusplus

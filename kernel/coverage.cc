@@ -15,7 +15,6 @@ extern "C" {
 extern task_t current_task();
 extern thread_t current_thread();
 
-Int32 current_pid = 0;
 task_t client_task = nullptr;
 
 alignas(16 * 1024) __attribute__((section("__DATA,__cov"))) UInt64
@@ -39,7 +38,7 @@ void instrument_thunks() {
                             "    STR x30, [sp, #-16]!\n" // save LR. we can't restore it in
                                                          // pop_regs. as we have jumped here.
                             "    BL _push_regs\n"
-                            "    MOV x0, #0x0000\n" // placeholder targeted_kext flag.
+                            "    MOV x0, #0x0000\n"      // placeholder targeted_kext flag.
                             "    MOV x1, #0x4141\n" // fix the correct numner when instrumenting as
                                                     // arg0.
                             "    MOV x1, #0x4141\n" // placeholder for BB address

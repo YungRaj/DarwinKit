@@ -32,10 +32,10 @@ extern "C" {
 #include "kern.h"
 }
 
-OSDefineMetaClassAndStructors(IOKernelDarwinKitUserClient, IOUserClient)
+OSDefineMetaClassAndStructors(IOKernelDarwinKitUserClient, IOUserClient);
 
-    IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(
-        xnu::Kernel* kernel, task_t owningTask, void* securityToken, UInt32 type) {
+IOKernelDarwinKitUserClient* IOKernelDarwinKitUserClient::darwinKitUserClientWithKernel(
+    xnu::Kernel* kernel, task_t owningTask, void* securityToken, UInt32 type) {
     IOKernelDarwinKitUserClient* client = new IOKernelDarwinKitUserClient();
     if (client) {
         if (!client->initDarwinKitUserClientWithKernel(kernel, owningTask, securityToken, type)) {
@@ -71,9 +71,7 @@ bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel*
     }
     clientTask = owningTask;
     kernelTask = *(task_t*)kernel->GetSymbolAddressByName("_kernel_task");
-    coverageMap = mapCoverageBitmap();
     client_task = clientTask;
-    current_pid = Task::GetPid(clientTask);
     return result;
 }
 
@@ -89,9 +87,7 @@ bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel*
     }
     clientTask = owningTask;
     kernelTask = *(task_t*)kernel->GetSymbolAddressByName("_kernel_task");
-    coverageMap = mapCoverageBitmap();
     client_task = clientTask;
-    current_pid = Task::GetPid(clientTask);
     return result;
 }
 
@@ -119,22 +115,43 @@ IOReturn IOKernelDarwinKitUserClient::clientDied() {
 
 void IOKernelDarwinKitUserClient::free() {}
 
-IOReturn IOKernelDarwinKitUserClient::clientMemoryForType(UInt32 type, IOOptionBits* options,
-                                                          IOMemoryDescriptor** memory) {
-    if (type != 0) {
-        return kIOReturnBadArgument;
-    }
-    *options = 0;
-    *memory = coverageMap;
-    return kIOReturnSuccess;
-}
-
 IOExternalMethod* IOKernelDarwinKitUserClient::getExternalMethodForIndex(UInt32 index) {
     return nullptr;
 }
 
 IOExternalTrap* IOKernelDarwinKitUserClient::getExternalTrapForIndex(UInt32 index) {
     return nullptr;
+}
+
+IOReturn IOKernelDarwinKitUserClient::setClientTaskKernelCoverageBuffer(mach_vm_address_t user_addr,
+                                                                        uint64_t size) {
+    // Creates an IOMemoryDescriptor of the userspace kernel coverage map
+    IOMemoryDescriptor* descriptor =
+        IOMemoryDescriptor::withAddressRange(user_addr, size, kIODirectionOutIn, clientTask);
+    if (!descriptor) {
+        return kIOReturnNoMemory;
+    }
+    IOReturn ret = descriptor->prepare();
+    if (ret != kIOReturnSuccess) {
+        descriptor->release();
+        return ret;
+    }
+    // Maps userspace coverage map into kernel
+    IOMemoryMap* map = descriptor->map();
+    if (!map) {
+        descriptor->complete();
+        descriptor->release();
+        return kIOReturnCannotWire;
+    }
+    void* kernel_ptr = (void*)map->getAddress();
+    size = map->getLength();
+    // Copies live kernel coverage into user buffer
+    memcpy(kernel_ptr, coverage_bitmap, size);
+
+    map->release();
+    descriptor->complete();
+    descriptor->release();
+    return kIOReturnSuccess;
 }
 
 UInt8* IOKernelDarwinKitUserClient::mapBufferFromClientTask(xnu::mach::VmAddress uaddr, Size size,
@@ -171,19 +188,6 @@ fail:
     *mapping = nullptr;
 
     return nullptr;
-}
-
-IOMemoryDescriptor* IOKernelDarwinKitUserClient::mapCoverageBitmap() {
-    size_t size = KCOV_COVERAGE_BITMAP_SIZE;
-    if (size % page_size != 0) {
-        size = ((size / page_size) + 1) * page_size;
-    }
-    IOMemoryDescriptor* map =
-        IOMemoryDescriptor::withAddress((void*)coverage_bitmap, size, kIODirectionNone);
-    if (map) {
-        map->retain();
-    }
-    return map;
 }
 
 IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
@@ -235,7 +239,6 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
             xnu::mach::VmAddress func = arguments->scalarInput[0];
             Size argCount = arguments->scalarInputCount - 1;
             UInt64* args = new UInt64[argCount];
-
             for (UInt32 i = 1; i < argCount + 1; i++) {
                 args[i - 1] = arguments->scalarInput[i];
             }
@@ -852,6 +855,19 @@ IOReturn IOKernelDarwinKitUserClient::externalMethod(UInt32 selector,
         break;
     case kIOKernelDarwinKitMapSharedMemory:
         break;
+    case kIOKernelDarwinKitCollectCoverage: {
+        if (arguments) {
+            if (arguments->scalarInputCount == 2) {
+                xnu::mach::VmAddress user_addr = (xnu::mach::VmAddress)arguments->scalarInput[0];
+                Size user_size = (Size)arguments->scalarInput[1];
+                IOReturn ret = setClientTaskKernelCoverageBuffer(user_addr, user_size);
+                if (ret != KERN_SUCCESS) {
+                    DARWIN_KIT_LOG("DarwinKit::Failed to write client task kernel coverage map!");
+                }
+            }
+        }
+        break;
+    }
     case kIOKernelDarwinKitEnableCoverage: {
         kernel->EnableCoverage();
         break;

@@ -73,6 +73,7 @@ enum kIOKernelDarwinKitOperation {
     kIOKernelDarwinKitMapSharedMemory,
     kIOKernelDarwinKitEnableCoverage,
     kIOKernelDarwinKitDisableCoverage,
+    kIOKernelDarwinKitCollectCoverage,
     kIOKernelDarwinKitStartHarness,
 };
 

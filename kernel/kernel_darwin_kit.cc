@@ -160,7 +160,6 @@ IOReturn IOKernelDarwinKitService::newUserClient(task_t task, void* securityID, 
     IOKernelDarwinKitUserClient* userClient;
     if (!isInactive()) {
         result = createUserClient(task, securityID, type, &userClient);
-
         if ((result == kIOReturnSuccess) && (userClient != nullptr)) {
             if (!reinterpret_cast<IOService*>(userClient)->attach(this)) {
                 result = kIOReturnError;
