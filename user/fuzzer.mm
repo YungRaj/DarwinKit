@@ -5,6 +5,8 @@
 
 #include <Foundation/Foundation.h>
 
+static size_t fuzz_counter = 0;
+
 extern "C" int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
     xnu::Kernel* kernel = xnu::Kernel::Xnu();
     // Only enable coverage during each test case
@@ -16,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(uint8_t* data, size_t size) {
         NSData *dmgData = [NSData dataWithBytes:data length:size];
         // Generates a temporary, unique file path for the DMG
         NSString *tempDir = NSTemporaryDirectory();
-        NSString *fileName = [NSString stringWithFormat:@"fuzz-input-%d.dmg", getpid()];
+        NSString *fileName = [NSString stringWithFormat:@"fuzz-input-%d-%llu.dmg", getpid(), fuzz_counter++];
         NSString *filePath = [tempDir stringByAppendingPathComponent:fileName];
         // Writes the input data to the temporary file
         NSError *error = nil;

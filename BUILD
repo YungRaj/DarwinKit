@@ -517,14 +517,13 @@ genrule(
         rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
         rustup install nightly-aarch64-apple-darwin --force-non-host
         rustup run nightly-aarch64-apple-darwin cargo build --target aarch64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
-        cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a $(OUTS)
-        # cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_arm64.a
-        # rustup target add x86_64-apple-darwin
-        # rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
-        # rustup install nightly-x86_64-apple-darwin --force-non-host
-        # cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
-        # cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
-        # lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
+        cp target/aarch64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_arm64.a
+        rustup target add x86_64-apple-darwin
+        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+        rustup install nightly-x86_64-apple-darwin --force-non-host
+        cargo build --target x86_64-apple-darwin --manifest-path fuzz/user/Cargo.toml -v
+        cp target/x86_64-apple-darwin/debug/liblibafl_fuzzer_frida_lib.a liblibafl_fuzzer_frida_lib_x86_64.a
+        lipo -create -output $(OUTS) liblibafl_fuzzer_frida_lib_x86_64.a liblibafl_fuzzer_frida_lib_arm64.a
     """,
     tags = ["no-sandbox"],
 )
