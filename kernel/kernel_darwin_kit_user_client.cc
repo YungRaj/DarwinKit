@@ -71,7 +71,6 @@ bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel*
     }
     clientTask = owningTask;
     kernelTask = *(task_t*)kernel->GetSymbolAddressByName("_kernel_task");
-    client_task = clientTask;
     return result;
 }
 
@@ -87,7 +86,6 @@ bool IOKernelDarwinKitUserClient::initDarwinKitUserClientWithKernel(xnu::Kernel*
     }
     clientTask = owningTask;
     kernelTask = *(task_t*)kernel->GetSymbolAddressByName("_kernel_task");
-    client_task = clientTask;
     return result;
 }
 

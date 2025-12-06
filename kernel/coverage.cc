@@ -12,11 +12,6 @@
 
 extern "C" {
 
-extern task_t current_task();
-extern thread_t current_thread();
-
-task_t client_task = nullptr;
-
 alignas(16 * 1024) __attribute__((section("__DATA,__cov"))) UInt64
     coverage_bitmap[KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)];
 
@@ -144,17 +139,10 @@ void sanitizer_cov_disable_coverage() {
 
 void sanitizer_cov_trace_pc(UInt16 kext, UInt64 address) {
     if (collect_coverage) {
-        task_t t = current_task();
-        thread_t tr = current_thread();
-        if (userspace && client_task != t) {
-            return;
-        }
         /* Kernel-only coverage tracking using a bitmap */
-        UInt64 index = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
-        curr_location = index;
+        curr_location = address & ((KCOV_COVERAGE_BITMAP_SIZE / sizeof(UInt64)) - 1);
         /* AFL-style edge tracking */
-        UInt64 edge = curr_location ^ prev_location;
-        coverage_bitmap[edge]++;
+        coverage_bitmap[curr_location ^ prev_location]++;
         prev_location = curr_location >> 1;
     }
 }

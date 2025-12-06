@@ -70,8 +70,6 @@ extern "C" int darwinkit_tool_main(int argc, char** argv, char** envp) {
     int pid = -1;
     int c;
 
-    xnu::Kernel* kernel = xnu::Kernel::Xnu();
-    std::unique_ptr<xnu::Task> task = nullptr;
     // Example - running code in the macOS kernel in userspace
     // fuzzer::Harness *harness = new fuzzer::Harness(new xnu::Kernel());
 
@@ -125,6 +123,8 @@ extern "C" int darwinkit_tool_main(int argc, char** argv, char** envp) {
     if (pid <= 0) {
         print_usage();
     }
+    xnu::Kernel* kernel = xnu::Kernel::Xnu();
+    std::unique_ptr<xnu::Task> task = nullptr;
     if (pid) {
         task = std::make_unique<Task>(kernel, pid);
     }
